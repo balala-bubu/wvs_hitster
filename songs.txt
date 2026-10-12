@@ -1,0 +1,115 @@
+# ─────────────────────────────────────────────
+#  朋友版 Hitster 歌單
+#
+#  [歌單名稱]           開始一份新歌單
+#  歌名 | 歌手          一行一首
+#  歌名 | 歌手 | 年份   年份抓錯時，可以在第三欄自己寫
+#  # 開頭的行           註解，不會被讀取
+#
+#  存檔後 GitHub 會自動去 Apple Music 查好每首歌，
+#  大約幾分鐘後網站就會更新。
+# ─────────────────────────────────────────────
+
+[華語金曲 90–00 年代]
+晴天 | 周杰倫
+七里香 | 周杰倫
+倔強 | 五月天
+溫柔 | 五月天
+遇見 | 孫燕姿
+日不落 | 蔡依林
+紅豆 | 王菲
+吻別 | 張學友
+後來 | 劉若英
+十年 | 陳奕迅
+勇氣 | 梁靜茹
+Super Star | S.H.E
+江南 | 林俊傑
+唯一 | 王力宏
+聽海 | 張惠妹
+朋友 | 周華健
+挪威的森林 | 伍佰
+陰天 | 莫文蔚
+愛很簡單 | 陶喆
+心太軟 | 任賢齊
+隱形的翅膀 | 張韶涵
+童話 | 光良
+我們的愛 | F.I.R.
+最初的夢想 | 范瑋琪
+曖昧 | 楊丞琳
+月亮代表我的心 | 鄧麗君
+童年 | 羅大佑
+小情歌 | 蘇打綠
+
+[華語近年 2010 之後]
+小幸運 | 田馥甄
+愛人錯過 | 告五人
+披星戴月的想你 | 告五人
+泡沫 | 鄧紫棋
+光年之外 | 鄧紫棋
+說謊 | 林宥嘉
+魚仔 | 盧廣仲
+大風吹 | 草東沒有派對
+浪子回頭 | 茄子蛋
+如果可以 | 韋禮安
+你，好不好？ | 周興哲
+年少有為 | 李榮浩
+消愁 | 毛不易
+怪美的 | 蔡依林
+告白氣球 | 周杰倫
+可惜沒如果 | 林俊傑
+身騎白馬 | 徐佳瑩
+起風了 | 吳青峰
+想見你想見你想見你 | 八三夭
+突然好想你 | 五月天
+
+[西洋流行經典]
+Bohemian Rhapsody | Queen
+Dancing Queen | ABBA
+Billie Jean | Michael Jackson
+I Will Always Love You | Whitney Houston
+Take On Me | a-ha
+Livin' on a Prayer | Bon Jovi
+I Want It That Way | Backstreet Boys
+...Baby One More Time | Britney Spears
+Wannabe | Spice Girls
+Wonderwall | Oasis
+Smells Like Teen Spirit | Nirvana
+Crazy in Love | Beyoncé
+Umbrella | Rihanna
+Rolling in the Deep | Adele
+Uptown Funk | Mark Ronson
+Shape of You | Ed Sheeran
+Shake It Off | Taylor Swift
+Blinding Lights | The Weeknd
+bad guy | Billie Eilish
+Levitating | Dua Lipa
+drivers license | Olivia Rodrigo
+As It Was | Harry Styles
+Complicated | Avril Lavigne
+In the End | Linkin Park
+Viva La Vida | Coldplay
+Get Lucky | Daft Punk
+Hey Jude | The Beatles
+Stayin' Alive | Bee Gees
+Hotel California | Eagles
+Like a Prayer | Madonna
+
+[日韓流行]
+First Love | 宇多田ヒカル
+夜に駆ける | YOASOBI
+アイドル | YOASOBI
+Lemon | 米津玄師
+白日 | King Gnu
+Pretender | Official髭男dism
+雪の華 | 中島美嘉
+残響散歌 | Aimer
+マリーゴールド | あいみょん
+Dynamite | BTS
+DDU-DU DDU-DU | BLACKPINK
+Lovesick Girls | BLACKPINK
+TT | TWICE
+Gangnam Style | PSY
+Haru Haru | BIGBANG
+Hype Boy | NewJeans
+Good Day | IU
+Gee | Girls' Generation
