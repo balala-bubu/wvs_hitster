@@ -2,1159 +2,1222 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#14111f">
-<title>朋友版 Hitster</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06080b">
+<title>朋友版猜歌</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+<link rel="dns-prefetch" href="https://i.ytimg.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-/* Layout: one-screen phone app. Setup → round (song + buzz pads) → reveal/scoreboard */
 :root{
-  --ink:#14111f; --surface:#211b33; --line:#3a3152;
-  --fg:#f4effc; --muted:#a399bd;
-  --pink:#ff3d8b; --cyan:#2de2e6; --sun:#ffd23f; --lime:#9be564; --violet:#a98bff; --orange:#ff9f45;
-  --display:"Bricolage Grotesque","Noto Sans TC",system-ui,sans-serif;
-  --body:"Noto Sans TC",system-ui,-apple-system,"PingFang TC",sans-serif;
-  color-scheme:dark;
+  --bg:#05070a; --bg2:#0a0f14; --panel:#0d141b; --panel2:#111b24; --panel3:#16232e;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.13);
+  --text:#e9eef2; --mute:#8b98a5; --dim:#5b6874;
+  --teal:#5fd6d2; --teal2:#2a8f8c; --tealbg:rgba(95,214,210,.09);
+  --sun:#f1d27a; --good:#3fcf8e; --goodbg:rgba(63,207,142,.13); --bad:#ff6b6b; --badbg:rgba(255,107,107,.12);
+  --grad:linear-gradient(100deg,#67dcd9 0%,#a6e3c0 55%,#f1dd8c 100%);
+  --r:18px; --r2:12px;
+  --num:"Outfit","Noto Sans TC",system-ui,sans-serif;
+  --safeB:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--ink);color:var(--fg);font:15px/1.6 var(--body);-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:15px/1.5 "Noto Sans TC",system-ui,-apple-system,"PingFang TC",sans-serif;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(1200px 600px at 70% -10%,rgba(60,140,150,.10),transparent 60%),var(--bg);overflow-x:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;touch-action:manipulation}
-:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+button{cursor:pointer;border:0;background:none;padding:0;-webkit-tap-highlight-color:transparent}
+button:disabled{cursor:default;opacity:.45}
 [hidden]{display:none!important}
+svg.i{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.18em}
+kbd{font:600 11px/1 var(--num);border:1px solid var(--line2);border-radius:6px;padding:4px 6px;color:var(--mute);background:rgba(255,255,255,.03)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 
-.app{min-height:100%;display:flex;flex-direction:column;max-width:720px;margin:0 auto;padding-inline:16px;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px}
-.logo{font:800 22px/1 var(--display);letter-spacing:-.02em}
-.logo b{color:var(--pink)}
-.linkbtn{background:none;border:0;color:var(--muted);padding:6px 4px}
+/* ---------- top bar ---------- */
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;gap:12px}
+.logo{font:700 26px/1 var(--num);letter-spacing:.06em;display:flex;align-items:center;gap:10px}
+.logo b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo small{font:500 12px "Noto Sans TC";letter-spacing:0;color:var(--mute)}
+.me{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border:1px solid var(--line2);border-radius:999px;background:var(--panel)}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--num);color:#062022;background:var(--grad);flex:none}
 
-h2{font:800 19px/1.2 var(--display);margin:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-h2 small{font:500 13px var(--body);color:var(--muted)}
-.note{font-size:13px;color:var(--muted);margin:0}
-.err{color:var(--pink)}
-.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:700;background:var(--fg);color:var(--ink);min-height:50px}
-.btn.pink{background:var(--pink);color:#fff}
-.btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
-.btn.small{padding:7px 14px;min-height:38px;border-radius:10px;font-weight:500}
-.btn:disabled{opacity:.45}
-.row{display:flex;flex-wrap:wrap;gap:10px}
-.input{flex:1;min-width:0;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px}
-.input:focus{border-color:var(--cyan);outline:none}
-textarea.input{min-height:150px;resize:vertical;width:100%}
+/* ---------- lobby ---------- */
+.lobby{padding:0 28px 120px;max-width:1500px;margin:0 auto}
+.hero{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;padding:8px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+.hcard{display:flex;align-items:center;gap:16px;padding:20px 22px;border-radius:16px;border:1px solid transparent;text-align:left;transition:.2s}
+.hcard .ic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line2);font-size:20px;flex:none}
+.hcard b{font-size:19px;display:block}
+.hcard span{color:var(--mute);font-size:13px}
+.hcard.on{background:linear-gradient(90deg,rgba(95,214,210,.13),rgba(95,214,210,.04));border-color:rgba(95,214,210,.45);box-shadow:0 0 30px rgba(95,214,210,.08) inset}
+.hcard.on .ic{border-color:rgba(95,214,210,.5);color:var(--teal)}
+.hcard:not(.on):hover{background:rgba(255,255,255,.03)}
+.lib>section{min-width:0}
+.lib{display:grid;grid-template-columns:250px 1fr;gap:20px;margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.012)}
+.side{display:flex;flex-direction:column;gap:8px;border-right:1px solid var(--line);padding-right:18px}
+.nav{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;color:#cfd8df;text-align:left;border:1px solid transparent}
+.nav:hover{background:rgba(255,255,255,.035)}
+.nav.on{background:var(--panel2);border-color:rgba(95,214,210,.35);color:#fff;box-shadow:inset 3px 0 0 var(--teal)}
+.side .grow{flex:1;min-height:20px}
+.cta{border:1px dashed rgba(95,214,210,.35);border-radius:16px;padding:16px;font-size:13px;color:var(--mute);line-height:1.6}
+.cta b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+.cta code{background:rgba(255,255,255,.06);padding:1px 5px;border-radius:5px;color:#cfe}
+.side a{color:var(--dim);font-size:12px;text-decoration:none;padding:4px 6px}
+.side a:hover{color:var(--mute)}
+.bar{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:18px;margin-bottom:14px}
+.search{flex:1;display:flex;align-items:center;gap:10px;padding:0 16px;height:46px;border-radius:14px;background:var(--bg2);border:1px solid var(--line)}
+.search input{flex:1;background:none;border:0;outline:0;min-width:0}
+.search input::placeholder{color:var(--dim)}
+.chip{font-size:13px;color:var(--mute);border:1px solid var(--line2);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.seg{display:flex;padding:4px;border-radius:999px;border:1px solid var(--line2);gap:2px}
+.seg button{width:38px;height:34px;border-radius:999px;display:grid;place-items:center;color:var(--mute)}
+.seg button.on{background:var(--panel3);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{border-radius:var(--r);overflow:hidden;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);text-align:left;transition:transform .2s,border-color .2s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px);border-color:rgba(95,214,210,.35)}
+.cv{position:relative;aspect-ratio:16/8;background:#111;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;overflow:hidden}
+.cv img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.9)}
+.cv.one{grid-template-columns:1fr;grid-template-rows:1fr}
+.cv:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),transparent 40%,rgba(8,12,16,.6))}
+.tags{position:absolute;left:10px;top:10px;display:flex;gap:6px;z-index:1;flex-wrap:wrap}
+.tag{font-size:11.5px;padding:3px 9px;border-radius:999px;background:rgba(5,8,11,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+.cb{padding:14px 18px 16px;display:flex;flex-direction:column;gap:6px}
+.cb h3{margin:0;font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.meta .star{color:var(--sun)}
+.stats{display:flex;gap:16px;font:600 15px var(--num);color:#d6dee5;margin-top:6px;align-items:center}
+.stats span{display:flex;align-items:center;gap:6px}
+.stats .i{color:var(--teal)}
+.grid.rows{grid-template-columns:1fr}
+.grid.rows .card{flex-direction:row;align-items:center}
+.grid.rows .cv{width:200px;flex:none;aspect-ratio:16/9}
+.grid.rows .cb{flex:1;min-width:0}
+.empty{grid-column:1/-1;padding:50px 20px;text-align:center;color:var(--mute);border:1px dashed var(--line2);border-radius:var(--r)}
+.empty b{display:block;color:var(--text);font-size:18px;margin-bottom:6px}
 
-/* ---------- setup ---------- */
-.setup{display:flex;flex-direction:column;gap:26px;padding-block:4px 20px}
-.block{display:flex;flex-direction:column;gap:12px}
-.lists{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.list{position:relative;text-align:left;border:0;border-radius:16px;padding:14px;min-height:96px;background:var(--surface);display:flex;flex-direction:column;justify-content:space-between;gap:8px;box-shadow:inset 0 0 0 2px transparent}
-.list .n{font-weight:700;line-height:1.3}
-.list .c{font-size:12px;color:var(--muted)}
-.list[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--cyan)}
-.list .mine{position:absolute;top:10px;right:10px;font-size:11px;color:var(--ink);background:var(--sun);border-radius:6px;padding:0 6px}
-.list.add{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);align-items:center;justify-content:center;color:var(--muted);text-align:center}
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:50px;padding:0 24px;border-radius:14px;font-weight:700;border:1px solid var(--line2);background:var(--panel2);white-space:nowrap}
+.btn:hover:not(:disabled){border-color:rgba(255,255,255,.25)}
+.btn.pri{background:var(--grad);color:#08201f;border:0;box-shadow:0 8px 30px rgba(95,214,210,.18)}
+.btn.pri:hover:not(:disabled){filter:brightness(1.06)}
+.btn.sm{height:38px;padding:0 14px;border-radius:11px;font-size:14px;font-weight:600}
+.btn.danger{color:#ffb3b3;border-color:rgba(255,107,107,.35)}
+.btn.warn{color:var(--sun);border-color:rgba(241,210,122,.35)}
+.btn.info{color:#9fd8ff;border-color:rgba(120,190,255,.35)}
 
-.players{display:flex;flex-wrap:wrap;gap:8px}
-.chip{display:flex;align-items:center;gap:6px;border-radius:999px;padding:4px 6px 4px 12px;background:var(--surface);font-weight:500}
-.chip i{width:10px;height:10px;border-radius:50%;flex:none}
-.chip button{border:0;background:var(--line);width:24px;height:24px;border-radius:50%;font-size:12px;line-height:1}
-.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.opt{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
-.opt select{flex:none;width:100%}
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);animation:fade .2s}
+.sheet{width:min(1180px,72vw);height:100%;background:linear-gradient(180deg,#0c151d,#091017);border-left:1px solid var(--line2);border-radius:24px 0 0 24px;display:flex;flex-direction:column;animation:slide .28s cubic-bezier(.2,.8,.2,1)}
+.sheet.narrow{width:min(720px,100vw)}
+@keyframes slide{from{transform:translateX(40px);opacity:0}}
+@keyframes fade{from{opacity:0}}
+.mh{display:flex;align-items:center;gap:12px;padding:20px 28px;border-bottom:1px solid var(--line)}
+.mh h2{margin:0;font-size:24px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mh .x{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px}
+.mh .x:hover{background:rgba(255,255,255,.06)}
+.mh .esc{font-size:13px;color:var(--mute)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:4px 11px;border:1px solid var(--line2);border-radius:999px;color:#cfd8df;white-space:nowrap}
+.mb{flex:1;overflow:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
+.mb>div{padding:24px 28px;overflow:auto}
+.mb>div+div{border-left:1px solid var(--line)}
+.mf{display:flex;align-items:center;gap:12px;padding:16px 28px calc(16px + var(--safeB));border-top:1px solid var(--line);background:rgba(0,0,0,.2)}
+.mf .lbl{flex:1;min-width:0}
+.mf .lbl small{display:block;font-size:12px;color:var(--mute);letter-spacing:.15em}
+.mf .lbl b{font-size:17px}
+.dcover{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:#000;border:1px solid var(--line)}
+.dcover img{width:100%;height:100%;object-fit:cover}
+.dcover .tags{top:12px;left:12px}
+.dstats{display:flex;gap:18px;align-items:center;padding:14px 4px;color:#cfd8df;flex-wrap:wrap}
+.dstats span{display:flex;gap:7px;align-items:center}
+.dstats .i{color:var(--teal)}
+.dstats .sp{flex:1}
+.tabs{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);margin:8px 0 6px}
+.tabs button{height:42px;border-radius:11px;color:var(--mute);font-weight:600}
+.tabs button.on{background:var(--panel3);color:#fff}
+.tracks{list-style:none;margin:0;padding:0}
+.tracks li{display:flex;gap:14px;align-items:center;padding:10px 6px;border-bottom:1px solid var(--line)}
+.tracks img{width:88px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#111;flex:none}
+.tracks .tt{flex:1;min-width:0}
+.tracks .tt b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tracks .tt small{color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.tracks .n{font:600 13px var(--num);color:var(--dim)}
+.howto{color:#c5d0d9;line-height:1.8;font-size:14.5px}
+.howto h4{margin:16px 0 4px;color:#fff}
+.howto p{margin:0}
+.lbh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.lbh h3{margin:0;font-size:21px}
+.mbox{border:1px solid var(--line2);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.015);margin-bottom:14px}
+.mbox .t{flex:1}
+.mbox .t b{display:block}
+.mbox .t small{color:var(--mute)}
+.sel{background:transparent;border:0;font:700 22px var(--num);color:#fff;outline:0;cursor:pointer}
+.sel option{background:#111;color:#fff;font-size:15px}
+.lrow{display:flex;align-items:center;gap:14px;padding:13px 18px;border:1px solid var(--line);border-radius:16px;margin-bottom:10px;background:rgba(255,255,255,.015)}
+.lrow .rk{font:700 16px var(--num);width:34px;color:#cfd8df}
+.lrow .who{flex:1;min-width:0}
+.lrow .who b{display:block}
+.lrow .who small{color:var(--mute);font-size:12.5px}
+.lrow .sc{font:700 18px var(--num)}
+.lrow.g1{border-color:rgba(241,210,122,.5);background:linear-gradient(90deg,rgba(241,210,122,.08),transparent)}
+.lrow.g2{border-color:rgba(200,215,230,.38)}
+.lrow.g3{border-color:rgba(214,150,100,.42);background:linear-gradient(90deg,rgba(214,150,100,.06),transparent)}
+.lrow.mine{box-shadow:inset 3px 0 0 var(--teal)}
+.note{color:var(--mute);font-size:13.5px;padding:14px 18px;border:1px solid var(--line);border-radius:14px}
 
-/* ---------- import sheet ---------- */
-.sheet{position:fixed;inset:0;background:rgba(10,8,16,.7);display:flex;align-items:flex-end;justify-content:center;z-index:20}
-.sheet .panel{width:100%;max-width:720px;max-height:92%;overflow:auto;background:var(--ink);border-radius:22px 22px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px;box-shadow:0 -1px 0 var(--line)}
+/* settings */
+.setup{display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden}
+.setup aside{padding:24px;border-right:1px solid var(--line);overflow:auto}
+.setup aside img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block}
+.setup aside b{display:block;margin-top:12px;font-size:17px}
+.setup aside small{color:var(--mute)}
+.setup .form{padding:24px 30px 40px;overflow:auto}
+.sec{margin-bottom:26px}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:700;font-size:16.5px}
+.sh .i{color:var(--teal)}
+.sh small{margin-left:auto;font-weight:400;color:var(--mute);font-size:13px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{display:flex;gap:14px;align-items:flex-start;text-align:left;padding:18px;border-radius:16px;border:1px solid var(--line2);background:rgba(255,255,255,.015)}
+.mode .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--panel3);font-size:19px;flex:none}
+.mode b{display:block;font-size:16px}
+.mode span{font-size:13px;color:var(--mute)}
+.mode.on{border-color:rgba(95,214,210,.6);background:linear-gradient(90deg,rgba(95,214,210,.12),rgba(95,214,210,.03))}
+.mode.on .ic{background:rgba(95,214,210,.18);color:var(--teal)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.stepper button.rd{width:50px;height:50px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;font-size:20px}
+.stepper .v{font:700 34px var(--num)}
+.stepper .v small{font:500 15px "Noto Sans TC";color:var(--mute);margin-left:4px}
+.quick{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.quick button{padding:6px 14px;border-radius:999px;border:1px solid var(--line2);font:600 13.5px var(--num);color:#cfd8df}
+.quick button.on{border-color:var(--teal);color:#fff;background:var(--tealbg)}
+.box{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:rgba(255,255,255,.015)}
+.box+.box{margin-top:12px}
+.box .bt{display:flex;align-items:center;gap:8px;font-weight:700}
+.box .bd{font-size:13px;color:var(--mute);margin:3px 0 10px}
+.rangev{font:700 26px var(--num)}
+input[type=range]{width:100%;accent-color:var(--teal);height:28px}
+.opts3{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.opt3{padding:14px 16px;border-radius:14px;border:1px solid var(--line2);text-align:left}
+.opt3 b{display:block;font-size:15px}
+.opt3 span{font-size:12.5px;color:var(--mute)}
+.opt3.on{border-color:rgba(241,210,122,.65);background:linear-gradient(90deg,rgba(241,210,122,.1),transparent)}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.prow{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line2);border-radius:14px}
+.prow .dot{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none;box-shadow:0 0 10px var(--c)}
+.prow input{flex:1;min-width:0;background:none;border:0;outline:0;font-weight:600}
+.prow kbd{flex:none}
+.prow .rm{color:var(--dim);width:26px;height:26px;border-radius:8px;display:grid;place-items:center}
+.prow .rm:hover{color:var(--bad);background:var(--badbg)}
+.addp{border:1px dashed var(--line2);border-radius:14px;color:var(--mute);min-height:48px}
+.field{width:100%;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:12px 14px;outline:0}
+.field:focus{border-color:var(--teal)}
+textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo,monospace}
+.msg{color:var(--sun);font-size:13.5px;margin:0}
 
-/* ---------- round ---------- */
-.round{flex:1;display:flex;flex-direction:column;gap:14px;min-height:0}
-.hud{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;min-height:240px}
-.big{font:800 clamp(28px,7.5vw,42px)/1.1 var(--display);letter-spacing:-.02em;text-wrap:balance;margin:0}
-.record{width:min(52vw,210px);aspect-ratio:1;max-width:100%;border-radius:50%;
-  background:radial-gradient(circle,var(--pink) 0 14%,var(--ink) 14.5% 16%,transparent 16.5%),
-  repeating-radial-gradient(circle,#0c0a13 0 2px,#1d1830 2px 4px);
-  box-shadow:0 0 0 6px var(--surface),0 18px 50px -10px rgba(255,61,139,.35)}
-.spin{animation:spin 1.8s linear infinite}
-.paused .spin{animation-play-state:paused}
-@keyframes spin{to{transform:rotate(360deg)}}
-.timer{font:800 18px var(--display);font-variant-numeric:tabular-nums;color:var(--muted)}
-.bar{width:min(70vw,300px);height:6px;border-radius:3px;background:var(--surface);overflow:hidden}
-.bar i{display:block;height:100%;width:0;background:var(--cyan)}
+/* ---------- game ---------- */
+.game{display:grid;grid-template-columns:330px 1fr;gap:24px;padding:4px 28px 28px;max-width:1700px;margin:0 auto}
+.rank{display:flex;flex-direction:column;gap:6px}
+.rank h4{margin:6px 10px 6px;font-size:12.5px;color:var(--mute);font-weight:500;letter-spacing:.1em}
+.rrow{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1px solid transparent;transition:background .3s}
+.rrow .n{font:600 13px var(--num);color:var(--mute);width:26px}
+.rrow .av{width:36px;height:36px}
+.rrow .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.rrow .you{font:600 10.5px var(--num);border:1px solid rgba(95,214,210,.5);color:var(--teal);border-radius:999px;padding:1px 7px;margin-left:6px}
+.rrow .st{font-size:12px;border:1px solid var(--line2);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.rrow .st.ok{border-color:rgba(63,207,142,.5);color:var(--good)}
+.rrow .st.no{border-color:rgba(255,107,107,.45);color:var(--bad)}
+.rrow .st.hot{border-color:var(--c,var(--sun));color:var(--c,var(--sun))}
+.rrow .sc{font:700 16px var(--num);color:var(--good);min-width:52px;text-align:right}
+.rrow .sc i{font-style:normal;color:var(--sun);font-size:13px;margin-left:4px}
+.rrow.me{background:linear-gradient(90deg,rgba(95,214,210,.1),rgba(255,255,255,.02));border-color:rgba(95,214,210,.25)}
+.rrow.ghost{opacity:.55}
+.rrow.ghost .sc{color:#cfd8df}
+.rrow.lead{background:linear-gradient(90deg,rgba(241,210,122,.1),rgba(255,255,255,.02));border-color:rgba(241,210,122,.25)}
+.rrow.lock{opacity:.4}
+.arena{min-width:0;display:flex;flex-direction:column;gap:18px}
+.ahead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ahead h1{margin:0;flex:1;min-width:200px;font:700 34px/1.2 var(--num)}
+.ahead h1 small{display:block;font:500 14px "Noto Sans TC";color:var(--mute)}
+.stage{position:relative;border-radius:22px;overflow:hidden;background:#000;border:1px solid var(--line);height:clamp(260px,46vh,600px)}
+.ytwrap{position:absolute;inset:0;pointer-events:none}
+.ytwrap iframe,#yt{width:100%;height:100%;display:block;border:0}
+.thumbL{position:absolute;inset:0;background:#000 center/contain no-repeat;opacity:0;transition:opacity .3s}
+.thumbL.on{opacity:1}
+.cover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center;background:radial-gradient(600px 300px at 50% 45%,#0f1a24,#060a0e);transition:opacity .45s}
+.cover.off{opacity:0;pointer-events:none}
+.pill{font:700 17px var(--num);padding:6px 18px;border:1px solid rgba(241,210,122,.45);border-radius:999px;color:#fff;background:rgba(241,210,122,.06)}
+.ringw{position:relative;width:190px;height:190px;display:grid;place-items:center}
+.ring{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:9}
+.ring .trk{stroke:rgba(255,255,255,.07)}
+.ring{filter:drop-shadow(0 0 9px rgba(95,214,210,.5))}
+.ring .arc{stroke:var(--teal);stroke-linecap:round;stroke-dasharray:100;transition:stroke .3s}
+.ringw.hot .ring{filter:drop-shadow(0 0 9px rgba(255,107,107,.55))}
+.ringw.hot .arc{stroke:var(--bad)}
+.ringw b{font:800 76px/1 var(--num)}
+.ringw.spin .ring{animation:spin 1.1s linear infinite}
+.ringw.spin .arc{stroke-dashoffset:72!important}
+@keyframes spin{to{transform:rotate(270deg)}}
+.cnt{font:600 16px var(--num);padding:6px 18px;border:1px solid var(--line2);border-radius:999px}
+.singT{font:900 clamp(34px,6vw,72px)/1.15 "Noto Sans TC";letter-spacing:.02em;max-width:92%;text-wrap:balance}
+.singA{font-size:clamp(17px,2.2vw,24px);color:#c9d4dc;margin-top:-6px}
+.singH{color:var(--mute);font-size:14px}
+.buzzN{font:900 clamp(30px,5vw,56px)/1.15 "Noto Sans TC";color:var(--c)}
+.cover .mini{transform:scale(.62);margin:-34px 0}
+.vinfo{position:absolute;left:0;right:0;top:0;padding:18px 22px 40px;background:linear-gradient(180deg,rgba(0,0,0,.75),transparent);opacity:0;transition:opacity .4s;pointer-events:none}
+.vinfo.on{opacity:1}
+.vinfo b{display:block;font-size:20px;text-shadow:0 2px 8px #000}
+.vinfo small{color:#cfd8df}
+.sctl{position:absolute;bottom:16px;display:flex;align-items:center;gap:6px;z-index:3}
+.sctl.l{left:16px;padding:4px;border-radius:999px;background:rgba(10,15,20,.75);border:1px solid var(--line2)}
+.sctl.l button{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--mute)}
+.sctl.l button.on{background:var(--panel3);color:#fff}
+.sctl.r{right:18px;gap:10px;font:600 15px var(--num);padding:6px 12px;border-radius:999px;background:rgba(10,15,20,.6)}
+.sctl.r input{width:150px}
+.tap{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);z-index:4}
+.pop{position:absolute;left:5%;top:50%;transform:translateY(-50%);z-index:5;padding:22px 30px;border-radius:20px;background:linear-gradient(135deg,rgba(40,34,18,.92),rgba(14,18,24,.92));border:1px solid rgba(241,210,122,.3);box-shadow:0 20px 60px rgba(0,0,0,.6);animation:popin .45s cubic-bezier(.2,1.4,.4,1);min-width:240px}
+.pop.no{background:linear-gradient(135deg,rgba(50,18,20,.92),rgba(14,18,24,.92));border-color:rgba(255,107,107,.35)}
+.pop .big{font:800 72px/1 var(--num);color:var(--sun);text-shadow:0 0 30px rgba(241,210,122,.35)}
+.pop .big i{font:700 26px var(--num);font-style:normal;color:#fff;margin-left:8px}
+.pop .sub{font-size:20px;font-weight:700;margin-top:8px}
+.pop .ans{font-size:14px;color:#cfd8df;margin-top:6px;max-width:380px}
+.pop .parts{display:flex;gap:12px;margin-top:10px;font:600 13px var(--num);color:var(--mute)}
+@keyframes popin{from{opacity:0;transform:translateY(-50%) scale(.7)}}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.opt{position:relative;display:flex;align-items:center;gap:14px;min-height:104px;padding:18px 26px 18px 34px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(180deg,#0d141b,#0a1016);text-align:left;font-size:clamp(16px,1.6vw,24px);font-weight:500;line-height:1.35;transition:transform .12s,border-color .2s,background .3s}
+.opt .ot{flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.opt:hover:not(:disabled){border-color:rgba(95,214,210,.4);transform:translateY(-2px)}
+.opt:active:not(:disabled){transform:scale(.985)}
+.opt:disabled{opacity:1;cursor:default}
+.opt.wait .ot{opacity:.55}
+.opt.pick{border-color:rgba(95,214,210,.6);background:linear-gradient(180deg,#123236,#0c1c20)}
+.opt.right{border-color:rgba(63,207,142,.65);background:linear-gradient(180deg,#14402f,#0d241c)}
+.opt.wrong{border-color:rgba(255,107,107,.55);background:linear-gradient(180deg,#3f1719,#200d0f)}
+.opt.fade{opacity:.4}
+.opt .mk{position:absolute;right:16px;bottom:12px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px}
+.opt.right .mk{background:var(--good);color:#04130c}
+.opt.wrong .mk{background:var(--bad);color:#200}
+.judge{display:flex;gap:14px;justify-content:center;align-items:stretch;flex-wrap:wrap;padding:6px 0}
+.judge .btn{height:66px;font-size:18px;padding:0 30px;border-radius:18px;flex:1;max-width:330px}
+.judge .ok{background:linear-gradient(180deg,#1d5a41,#123b2b);border-color:rgba(63,207,142,.6);color:#d7ffe9}
+.judge .ng{background:linear-gradient(180deg,#5a1d22,#3b1215);border-color:rgba(255,107,107,.55);color:#ffe0e0}
+.judge .hint{flex-basis:100%;text-align:center;color:var(--mute);font-size:14px}
 
-.buzzed{font:800 clamp(30px,9vw,48px)/1.1 var(--display)}
-.answer{display:flex;gap:14px;align-items:center;text-align:left;background:var(--surface);border-radius:18px;padding:14px;max-width:100%}
-.answer img{width:84px;height:84px;border-radius:12px;flex:none;background:var(--line)}
-.answer > div{min-width:0}
-.answer .y{font:800 36px/1 var(--display);color:var(--sun);font-variant-numeric:tabular-nums}
-.answer .t{font-weight:700;font-size:18px;line-height:1.3}
+/* sing pads */
+.game.sing{grid-template-columns:200px minmax(0,1fr) 200px}
+.game.sing .rank{display:none}
+.pads{display:flex;flex-direction:column;gap:14px;justify-content:center}
+.game:not(.sing) .pads{display:none}
+.pad{position:relative;flex:1;max-height:190px;min-height:84px;border-radius:22px;border:2px solid var(--c);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 26%,#0b1117),#0a0f14 75%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px;transition:transform .08s,opacity .2s;box-shadow:0 0 0 0 var(--c)}
+.pad b{font-size:19px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pad .ps{font:800 34px/1 var(--num);color:var(--c)}
+.pad kbd{position:absolute;top:10px;right:10px}
+.pad:active:not(:disabled){transform:scale(.96)}
+.pad.lock{opacity:.3;filter:grayscale(.8)}
+.pad.buzz{animation:buzz .6s ease-out;box-shadow:0 0 40px var(--c)}
+.pad.idle{opacity:.6}
+@keyframes buzz{0%{transform:scale(1.08)}100%{transform:scale(1)}}
+.pad .lk{position:absolute;bottom:8px;font-size:12px;color:var(--mute)}
 
-.pads{display:grid;gap:8px;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr))}
-.pad{border:0;border-radius:18px;min-height:clamp(70px,13vh,120px);font:800 20px var(--display);color:#14111f;background:var(--c);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;user-select:none;-webkit-user-select:none;transition:transform .08s,opacity .2s}
-.pad:active{transform:scale(.97)}
-.pad small{font:500 12px var(--body);opacity:.75}
-.pad.out{opacity:.22}
-.pad.win{outline:4px solid var(--fg);outline-offset:2px}
+/* result */
+.result{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(3,5,8,.82);backdrop-filter:blur(6px);padding:20px;animation:fade .3s;overflow:auto}
+.rcard{width:min(760px,100%);border-radius:26px;border:1px solid var(--line2);background:linear-gradient(180deg,#0f1922,#0a1016);padding:30px;max-height:100%;overflow:auto}
+.rcard h2{margin:0 0 4px;font-size:15px;color:var(--mute);font-weight:500;letter-spacing:.15em}
+.rbig{font:800 84px/1 var(--num);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}
+.rgrid div{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.rgrid small{display:block;color:var(--mute);font-size:12px}
+.rgrid b{font:700 22px var(--num)}
+.rlist{list-style:none;padding:0;margin:0 0 20px;max-height:300px;overflow:auto}
+.rlist li{display:flex;align-items:center;gap:12px;padding:8px 4px;border-bottom:1px solid var(--line);font-size:14px}
+.rlist .mk{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;flex:none}
+.rlist .ok{background:var(--goodbg);color:var(--good)}
+.rlist .no{background:var(--badbg);color:var(--bad)}
+.rlist .tt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rlist a{color:var(--mute);font-size:12px}
+.rlist .g{font:600 13px var(--num);color:var(--sun)}
+.ract{display:flex;gap:12px;flex-wrap:wrap}
+.ract .btn{flex:1}
+.podium .lrow .sc{color:var(--c)}
 
-.board{display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px}
-.score{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border-radius:12px;padding:8px 14px;text-align:left}
-.score i{width:12px;height:12px;border-radius:50%}
-.score b{font:800 20px var(--display);font-variant-numeric:tabular-nums}
-.score.lead{box-shadow:inset 0 0 0 2px var(--sun)}
-.adj{display:flex;gap:4px}
-.adj button{width:30px;height:30px;border-radius:8px;border:0;background:var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(30px + var(--safeB));transform:translateX(-50%);z-index:90;background:#1a2530;border:1px solid var(--line2);padding:12px 20px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:fade .2s;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:95}
+.flashL{position:fixed;inset:0;pointer-events:none;z-index:30;background:radial-gradient(circle at center,transparent 40%,var(--c));opacity:0}
+.flashL.go{animation:flash .7s ease-out}
+@keyframes flash{0%{opacity:.55}100%{opacity:0}}
 
-/* ---------- motion ---------- */
-.stage:not([hidden]){animation:enter .38s cubic-bezier(.2,.9,.25,1) both}
-@keyframes enter{from{opacity:0;transform:translateY(14px) scale(.98)}}
-.disc{position:relative;display:grid;place-items:center}
-.disc::before,.disc::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--pink);animation:ripple 2.4s ease-out infinite;pointer-events:none}
-.disc::after{animation-delay:1.2s;border-color:var(--cyan)}
-.paused .disc::before,.paused .disc::after{animation-play-state:paused;opacity:0}
-@keyframes ripple{from{transform:scale(1);opacity:.7}to{transform:scale(1.65);opacity:0}}
-.bar i{transition:width .25s linear,background .3s}
-.bar.hot i{background:var(--pink)}
-.timer.hot{color:var(--pink);animation:tick 1s ease-in-out infinite}
-@keyframes tick{50%{transform:scale(1.15)}}
-.flash{position:fixed;inset:0;pointer-events:none;z-index:30;background:var(--flash,var(--pink));opacity:0}
-.flash.go{animation:flash .6s ease-out}
-@keyframes flash{0%{opacity:.85}100%{opacity:0}}
-.slam{animation:slam .55s cubic-bezier(.2,1.6,.4,1) both}
-@keyframes slam{from{transform:scale(2.4) rotate(-6deg);opacity:0}}
-.shake{animation:shake .42s}
-@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
-.answer.flipin{animation:flipin .65s cubic-bezier(.2,.9,.3,1.2) both}
-@keyframes flipin{from{transform:perspective(700px) rotateY(-95deg);opacity:0}}
-.answer.flipin .t,.answer.flipin .note{animation:enter .4s .5s both}
-.pad.win{animation:lit .6s}
-@keyframes lit{0%{transform:scale(1.08);filter:brightness(1.35)}}
-.pad.pop small{display:inline-block;animation:pop .55s cubic-bezier(.2,1.8,.4,1)}
-@keyframes pop{40%{transform:scale(2)}}
-.pad.justout{animation:shake .4s}
-.score{animation:enter .35s both;animation-delay:calc(var(--i,0) * 70ms)}
-.btn{transition:transform .1s,opacity .2s}
-.btn:active:not(:disabled){transform:scale(.96)}
-.list{transition:transform .18s,box-shadow .2s}
-.list[aria-pressed="true"]{transform:translateY(-3px)}
-.sheet:not([hidden]) .panel{animation:sheetup .35s cubic-bezier(.2,.9,.25,1) both}
-@keyframes sheetup{from{transform:translateY(100%)}}
-#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:31}
-.setup > .block:last-child{position:sticky;bottom:0;z-index:5;margin-top:-10px;padding:20px 0 calc(4px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--ink) 34%)}
-
-/* ---------- modes ---------- */
-.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.mode{position:relative;overflow:hidden;text-align:left;border:0;border-radius:18px;padding:16px;min-height:112px;background:var(--surface);display:flex;flex-direction:column;gap:6px;box-shadow:inset 0 0 0 2px transparent;transition:transform .3s cubic-bezier(.2,.9,.25,1),box-shadow .2s}
-.mode b{position:relative;font:800 18px/1.2 var(--display)}
-.mode span{position:relative;font-size:13px;color:var(--muted);line-height:1.45}
-.mode::before{content:"";position:absolute;right:-34px;top:-34px;width:110px;height:110px;border-radius:50%;background:var(--c);opacity:.13;transition:transform .6s cubic-bezier(.2,.9,.25,1),opacity .3s}
-.mode[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--c);transform:translateY(-3px)}
-.mode[aria-pressed="true"]::before{transform:scale(2.2);opacity:.2}
-.mode:disabled{opacity:.45;cursor:default}
-@media (max-width:540px){.modes{grid-template-columns:1fr}.mode{min-height:0}}
-
-/* ---------- practice ---------- */
-.practice{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
-.phud{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.clock{font:800 34px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:inline-block}
-.clock.hot{color:var(--pink);animation:tick 1s ease-in-out infinite}
-.tally{display:flex;align-items:baseline;gap:8px}
-.count{font:800 34px/1 var(--display);color:var(--lime);font-variant-numeric:tabular-nums;display:inline-block}
-.count.bump{animation:bump .5s cubic-bezier(.2,1.8,.4,1)}
-@keyframes bump{40%{transform:scale(1.7)}}
-.streak{align-self:center;font:700 13px/1.6 var(--body);color:var(--ink);background:var(--sun);border-radius:999px;padding:1px 10px}
-.streak.on{animation:pop .5s cubic-bezier(.2,1.8,.4,1)}
-.tbar{height:8px;border-radius:4px;background:var(--surface);overflow:hidden}
-.tbar i{display:block;height:100%;transform-origin:left;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink),var(--cyan));background-size:300% 100%;animation:flow 4s linear infinite}
-@keyframes flow{to{background-position:300% 0}}
-.practice.done .phud,.practice.done .tbar{display:none}
-
-.pstage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;min-height:320px}
-.cd{font:800 clamp(120px,38vw,200px)/1 var(--display);letter-spacing:-.04em}
-.cd.word{font-size:clamp(56px,16vw,96px);color:var(--sun)}
-.cd.go{animation:cdin .75s cubic-bezier(.2,.9,.25,1) both}
-@keyframes cdin{0%{transform:scale(2.6);opacity:0;filter:blur(8px)}30%{transform:scale(1);opacity:1;filter:blur(0)}80%{transform:scale(.92);opacity:1}100%{transform:scale(.7);opacity:0}}
-
-.orbwrap{position:relative;width:min(60vw,260px);aspect-ratio:1;display:grid;place-items:center;margin:32px 0}
-.orbwrap.in{animation:orbin .5s cubic-bezier(.2,1.5,.4,1) both}
-@keyframes orbin{from{transform:scale(.55);opacity:0}}
-.orbwrap.out{animation:orbout .28s cubic-bezier(.5,0,.75,0) both}
-@keyframes orbout{to{transform:translateX(-45%) scale(.7) rotate(-8deg);opacity:0}}
-.viz{position:absolute;left:-30%;top:-30%;width:160%;height:160%;pointer-events:none}
-.prog{position:absolute;inset:-12px;border-radius:50%;background:conic-gradient(var(--fg) calc(var(--p,0) * 1turn),rgba(255,255,255,.08) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px))}
-.orb{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;border:0;color:#fff;
-  background:radial-gradient(circle at 34% 28%,#ff8cbb 0,var(--pink) 42%,#a3268c 100%);
-  box-shadow:0 24px 70px -14px rgba(255,61,139,.65),inset 0 -14px 34px rgba(40,0,40,.3);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;-webkit-user-select:none;
-  animation:breathe 1.8s ease-in-out infinite;transition:transform .12s}
-@keyframes breathe{50%{transform:scale(1.035)}}
-.orb:active{transform:scale(.93);animation-play-state:paused}
-.orbwrap .record{position:relative;z-index:1;width:100%;max-width:none}
-.orb b{font:800 clamp(24px,6.5vw,32px)/1.1 var(--display)}
-.orb small{font-size:13px;opacity:.85}
-
-.card{width:min(100%,380px);background:var(--surface);border-radius:24px;padding:18px 18px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
-.card img{width:min(44vw,176px);aspect-ratio:1;border-radius:16px;background:var(--line);box-shadow:0 16px 36px -14px rgba(0,0,0,.8)}
-.card .y{font:800 40px/1 var(--display);color:var(--sun);font-variant-numeric:tabular-nums}
-.card .t{font:800 22px/1.25 var(--display);text-wrap:balance}
-.card .rt{margin:0;font-weight:700;font-size:13px;color:var(--cyan)}
-.card .ask{margin-top:4px}
-.card.morph{animation:morph .6s cubic-bezier(.2,.9,.25,1.12) both}
-@keyframes morph{from{transform:scale(.3);border-radius:50%;opacity:0;filter:blur(6px)}55%{opacity:1;filter:blur(0)}}
-.card.goR{animation:goR .4s cubic-bezier(.5,0,.75,0) both}
-@keyframes goR{to{transform:translateX(130%) rotate(16deg);opacity:0}}
-.card.goL{animation:goL .4s cubic-bezier(.5,0,.75,0) both}
-@keyframes goL{20%{transform:translateX(12px)}to{transform:translate(-40%,60%) rotate(-12deg) scale(.8);opacity:0}}
-.judge{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(100%,380px)}
-.jbtn{min-height:64px;border:0;border-radius:18px;font:800 19px var(--display);transition:transform .1s}
-.jbtn:active{transform:scale(.95)}
-.jbtn.ok{background:var(--lime);color:var(--ink)}
-.jbtn.no{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 2px var(--line)}
-.kbd{display:none;margin-left:8px;font:500 12px var(--body);opacity:.6;border:1px solid currentColor;border-radius:5px;padding:0 5px;vertical-align:2px}
-@media (hover:hover) and (pointer:fine){.kbd{display:inline-block}}
-
-.plast{min-height:50px;display:flex;justify-content:center}
-.ptoast{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:14px;padding:6px 14px 6px 6px;max-width:100%;font-size:13px}
-.ptoast img{width:38px;height:38px;border-radius:8px;flex:none;background:var(--line)}
-.ptoast .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ptoast.in{animation:toastin .45s cubic-bezier(.2,1.3,.4,1) both}
-@keyframes toastin{from{transform:translateY(16px) scale(.9);opacity:0}}
-.m{font-weight:900;flex:none}
-.m.right{color:var(--lime)} .m.wrong{color:var(--pink)} .m.skip,.m.timeout{color:var(--muted);font-weight:500}
-
-.result{justify-content:flex-start;gap:16px;padding-top:8px}
-.res-n{font:800 clamp(96px,30vw,150px)/.9 var(--display);color:var(--lime);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
-.res-l{margin:0;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
-.pb{display:inline-block;background:var(--sun);color:var(--ink);font-weight:900;border-radius:8px;padding:2px 10px;transform:rotate(-6deg)}
-.pb.stamp{animation:stamp .55s .9s cubic-bezier(.2,1.6,.4,1) both}
-@keyframes stamp{from{transform:scale(3) rotate(-24deg);opacity:0}}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:420px}
-.stat{background:var(--surface);border-radius:14px;padding:10px 6px;animation:enter .4s both;animation-delay:calc(.6s + var(--i) * 90ms)}
-.stat b{display:block;font:800 22px/1.2 var(--display);font-variant-numeric:tabular-nums}
-.stat span{font-size:12px;color:var(--muted)}
-.hist{list-style:none;margin:0;padding:0;width:100%;max-width:420px;display:flex;flex-direction:column;gap:6px}
-.hist li{display:grid;grid-template-columns:44px 40px minmax(0,1fr) 36px;gap:10px;align-items:center;background:var(--surface);border-radius:12px;padding:6px;text-align:left;animation:enter .35s both;animation-delay:calc(1s + var(--i) * 45ms)}
-.hist .m{text-align:center;font-size:13px}
-.hist img{width:40px;height:40px;border-radius:8px;background:var(--line)}
-.hist .nm{min-width:0;display:flex;flex-direction:column;line-height:1.35}
-.hist .nm b,.hist .nm small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hist .nm small{color:var(--muted)}
-.hist button{border:0;background:var(--line);border-radius:10px;width:36px;height:36px;font-size:12px}
-.hist button.on{background:var(--cyan);color:var(--ink)}
-
-.shock{position:fixed;width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;border:3px solid var(--c);pointer-events:none;z-index:28;animation:shock .75s cubic-bezier(.1,.8,.3,1) forwards}
-@keyframes shock{from{transform:scale(.3);opacity:1}to{transform:scale(6);opacity:0;border-width:1px}}
-.float{position:fixed;z-index:32;font:800 24px var(--display);color:var(--lime);pointer-events:none;animation:floatup .9s cubic-bezier(.2,.8,.3,1) forwards}
-@keyframes floatup{from{transform:translate(-50%,0) scale(.6);opacity:0}20%{opacity:1;transform:translate(-50%,-12px) scale(1.25)}to{transform:translate(-50%,-64px) scale(1);opacity:0}}
-#vig{position:fixed;inset:0;pointer-events:none;z-index:27;box-shadow:inset 0 0 0 0 rgba(255,61,139,0)}
-#vig.on{animation:heart 1s ease-in-out infinite}
-@keyframes heart{0%,100%{box-shadow:inset 0 0 90px 0 rgba(255,61,139,.12)}15%{box-shadow:inset 0 0 120px 24px rgba(255,61,139,.42)}}
-
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .sheet{width:100vw;border-radius:0}
+  .game{grid-template-columns:260px 1fr;padding:4px 18px 24px}
+}
+@media (max-width:860px){
+  .top{padding:14px 16px}
+  .lobby{padding:0 16px 100px}
+  .hero{grid-template-columns:1fr}
+  .lib{grid-template-columns:1fr;padding:12px}
+  .side{border-right:0;padding-right:0;flex-direction:row;overflow-x:auto;gap:6px}
+  .side .nav{white-space:nowrap;padding:10px 14px;flex:none}
+  .side .grow,.side .cta,.side a{display:none}
+  .mb{display:block}
+  .mb>div{overflow:visible}
+  .mf .lbl{display:none}
+  .mf .btn{flex:1;padding:0 12px}
+  .mb>div+div{border-left:0;border-top:1px solid var(--line)}
+  .setup{grid-template-columns:1fr}
+  .setup aside{display:none}
+  .setup .form{padding:18px 16px 30px}
+  .two,.modes{grid-template-columns:1fr}
+  .mh,.mf{padding-left:16px;padding-right:16px}
+  .mb>div{padding:18px 16px}
+  .game{grid-template-columns:1fr;padding:0 12px 18px;gap:12px}
+  .rank{flex-direction:row;overflow-x:auto;gap:6px}
+  .rank h4,.rank .ghost{display:none}
+  .rrow{flex:none;padding:8px 12px}
+  .ahead h1{font-size:22px;min-width:0}
+  .ahead .btn span:not([data-i]){display:none}
+  .ahead .btn{padding:0 11px}
+  .bar{flex-wrap:wrap}
+  .bar .search{flex-basis:100%}
+  .sctl.r{display:none}
+  .sctl.l{top:10px;right:10px;bottom:auto;left:auto}
+  .sctl.l button{padding:7px 10px}
+  .game.sing .singH{display:none}
+  .stage{height:clamp(220px,40vh,420px)}
+  .ringw{width:140px;height:140px}.ringw b{font-size:54px}
+  .opts{gap:10px}
+  .opt{min-height:90px;padding:14px 14px 14px 16px;font-size:15px;border-radius:16px}
+  .opt kbd{display:none}
+  .pop{left:50%;transform:translate(-50%,-50%);padding:16px 20px;min-width:0;width:max-content;max-width:88%}
+  @keyframes popin{from{opacity:0;transform:translate(-50%,-50%) scale(.7)}}
+  .pop .big{font-size:52px}
+  .sctl.l button span:not([data-i]){display:none}
+  .rgrid{grid-template-columns:1fr 1fr}
+  .rbig{font-size:64px}
+  /* sing on a phone: pads on top and bottom; top row faces the other side of the table */
+  .game.sing{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto;min-height:calc(100dvh - 70px)}
+  .game.sing .pads{flex-direction:row;gap:8px}
+  .game.sing #padsA{order:-1}
+  .game.sing #padsA .pad{transform:rotate(180deg)}
+  .game.sing #padsA .pad:active:not(:disabled){transform:rotate(180deg) scale(.96)}
+  .pad{min-height:96px;max-height:none;border-radius:18px}
+  .pad kbd{display:none}
+  .game.sing .stage{height:clamp(200px,34vh,380px)}
+  .judge .btn{height:58px;font-size:16px;padding:0 16px}
+}
+@media (max-width:480px){
+  .grid{grid-template-columns:1fr}
+  .grid.rows .cv{width:120px}
+  .hcard{padding:14px}
+  .stats{gap:12px;font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<div class="app">
-  <header class="top">
-    <div class="logo">HIT<b>STER</b> 搶答</div>
-    <button id="quitBtn" class="linkbtn" hidden>結束這局</button>
-  </header>
 
-  <!-- ================= SETUP ================= -->
-  <section id="setup" class="setup">
-    <div class="block">
-      <h2>怎麼玩</h2>
-      <div id="modes" class="modes">
-        <button class="mode" data-mode="practice" style="--c:var(--cyan)"><b>單人練習</b><span>限時內猜對越多首越好，自己判對錯</span></button>
-        <button class="mode" data-mode="party" style="--c:var(--pink)"><b>同機搶答</b><span>一支手機放桌上，2～6 人各按一個鈕</span></button>
-        <button class="mode" data-mode="online" style="--c:var(--violet)" disabled><b>手機連線</b><span>一台當螢幕，大家用自己的手機搶答（製作中）</span></button>
-      </div>
-    </div>
+<header class="top" id="topbar">
+  <div class="logo"><b>猜歌</b><small>朋友版</small></div>
+  <button class="me" id="meBtn" aria-label="改暱稱"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+</header>
 
-    <div class="block">
-      <h2>選歌單 <small>可以複選</small></h2>
-      <div id="lists" class="lists"></div>
-    </div>
-
-    <div class="block" id="playersBlock">
-      <h2>玩家 <small>每人一個搶答鈕，最多 6 人</small></h2>
-      <div id="players" class="players"></div>
-      <div class="row">
-        <input id="newPlayer" class="input" placeholder="輸入名字後按加入" maxlength="8" enterkeyhint="done">
-        <button id="addPlayer" class="btn small">加入</button>
-      </div>
-    </div>
-
-    <div class="block">
-      <h2>規則</h2>
-      <div class="opts">
-        <label class="opt" data-practice>挑戰時間
-          <select id="optDur" class="input">
-            <option value="60">60 秒</option>
-            <option value="90" selected>90 秒</option>
-            <option value="120">2 分鐘</option>
-            <option value="180">3 分鐘</option>
-          </select>
-        </label>
-        <label class="opt">要猜什麼
-          <select id="optGuess" class="input">
-            <option value="歌名">歌名</option>
-            <option value="歌手">歌手</option>
-            <option value="歌名＋歌手">歌名＋歌手</option>
-            <option value="年份（差 2 年內算對）">年份（差 2 年內）</option>
-          </select>
-        </label>
-        <label class="opt" data-party>答錯怎麼辦
-          <select id="optWrong" class="input">
-            <option value="lock">這首不能再搶</option>
-            <option value="minus">扣 1 分，可再搶</option>
-          </select>
-        </label>
-        <label class="opt" data-party>獲勝分數
-          <select id="optWin" class="input">
-            <option value="5">先到 5 分</option>
-            <option value="10" selected>先到 10 分</option>
-            <option value="0">不設上限</option>
-          </select>
-        </label>
-      </div>
-    </div>
-
-    <div class="block">
-      <button id="startBtn" class="btn pink">開始遊戲</button>
-      <p id="setupMsg" class="note"></p>
-    </div>
-  </section>
-
-  <!-- ================= ROUND ================= -->
-  <section id="round" class="round" hidden>
-    <div class="hud"><span id="hudRound">第 1 首</span><span id="hudGuess">猜歌名</span></div>
-
-    <div id="vReady" class="stage">
-      <div class="record"></div>
-      <p id="readyMsg" class="big">準備好了嗎？</p>
-      <button id="playBtn" class="btn pink" disabled>播放下一首</button>
-    </div>
-
-    <div id="vPlay" class="stage" hidden>
-      <div class="orbwrap"><canvas id="viz2" class="viz" aria-hidden="true"></canvas><div id="prog2" class="prog"></div>
-        <div class="record spin"></div></div>
-      <div class="bar" id="bar"><i id="barFill"></i></div>
-      <div id="timer" class="timer">0:30</div>
-      <div class="row" style="justify-content:center">
-        <button id="replayBtn" class="btn ghost small">重聽</button>
-        <button id="revealBtn" class="btn ghost small">沒人答得出來，看答案</button>
-      </div>
-    </div>
-
-    <div id="vBuzz" class="stage" hidden>
-      <div id="buzzName" class="buzzed">小明 搶答！</div>
-      <p class="note" id="buzzHint">請說出答案</p>
-      <div class="row" style="justify-content:center">
-        <button id="rightBtn" class="btn pink">答對</button>
-        <button id="wrongBtn" class="btn ghost">答錯</button>
-      </div>
-    </div>
-
-    <div id="vReveal" class="stage" hidden>
-      <div id="revealHead" class="note"></div>
-      <div id="answer" class="answer"></div>
-      <div id="board" class="board"></div>
-      <button id="nextBtn" class="btn pink">播放下一首</button>
-    </div>
-
-    <div id="pads" class="pads"></div>
-  </section>
-
-  <!-- ================= PRACTICE ================= -->
-  <section id="practice" class="practice" hidden>
-    <div class="phud">
-      <div id="pClock" class="clock">1:30</div>
-      <div class="tally"><span id="pStreak" class="streak" hidden></span><span id="pCount" class="count">0</span><span class="note">首答對</span></div>
-    </div>
-    <div class="tbar"><i id="pBar"></i></div>
-
-    <div id="pCd" class="pstage">
-      <div id="cdNum" class="cd">3</div>
-      <p class="note">聽出來就按大圓鈕，看答案後自己判對錯</p>
-    </div>
-
-    <div id="pPlay" class="pstage" hidden>
-      <div id="orbwrap" class="orbwrap">
-        <canvas id="viz" class="viz" aria-hidden="true"></canvas>
-        <div id="prog" class="prog"></div>
-        <button id="orb" class="orb"><b id="orbLabel">我知道了！</b><small id="orbSub">聽出來就按</small></button>
-      </div>
-      <button id="skipBtn" class="btn ghost small">跳過這首<span class="kbd">S</span></button>
-    </div>
-
-    <div id="pJudge" class="pstage" hidden>
-      <div id="pCard" class="card"></div>
-      <div class="judge">
-        <button id="noBtn" class="jbtn no">沒猜對<span class="kbd">←</span></button>
-        <button id="okBtn" class="jbtn ok">猜對了<span class="kbd">→</span></button>
-      </div>
-    </div>
-
-    <div id="pResult" class="pstage result" hidden></div>
-    <div id="pLast" class="plast" aria-live="polite"></div>
-  </section>
-</div>
-<div id="vig"></div>
-
-<!-- ================= IMPORT SHEET ================= -->
-<div id="sheet" class="sheet" hidden>
-  <div class="panel" role="dialog" aria-labelledby="sheetTitle">
-    <h2 id="sheetTitle">匯入歌單</h2>
-    <input id="impName" class="input" placeholder="歌單名稱，例如：大學同學" maxlength="20">
-    <textarea id="impText" class="input" placeholder="一行一首，寫「歌名 歌手」就好&#10;小幸運 田馥甄&#10;Dancing Queen ABBA&#10;倔強 五月天&#10;&#10;也可以直接貼 Apple Music 歌曲連結"></textarea>
-    <div class="row">
-      <label class="btn ghost small" style="display:inline-grid;place-items:center">從檔案讀取（.txt / .csv）<input id="impFile" type="file" accept=".txt,.csv,text/plain,text/csv" hidden></label>
-    </div>
-    <p class="note">朋友可以各自把想放的歌傳給你，貼在一起就好。歌曲會在遊戲中才去 Apple Music 曲庫找，找不到的會自動跳過。</p>
-    <div class="row">
-      <button id="impSave" class="btn pink">儲存歌單</button>
-      <button id="impDelete" class="btn ghost" hidden>刪除這份歌單</button>
-      <button id="impCancel" class="btn ghost">取消</button>
-    </div>
+<!-- ================= LOBBY ================= -->
+<main class="lobby" id="lobby">
+  <div class="hero">
+    <button class="hcard on" id="heroCreate"><span class="ic" data-i="plus"></span><div><b>選題庫開始</b><span>點下方任一題庫，選「四選一」或「搶唱派對」</span></div></button>
+    <button class="hcard" id="heroQuick"><span class="ic" data-i="shuffle"></span><div><b>快速開始</b><span id="quickSub">全部歌曲隨機四選一</span></div></button>
   </div>
-</div>
+  <div class="lib">
+    <aside class="side">
+      <button class="nav on" data-tab="builtin"><span data-i="globe"></span>公開題庫</button>
+      <button class="nav" data-tab="mine"><span data-i="bookmark"></span>我的題庫</button>
+      <button class="nav" id="navImport"><span data-i="video"></span>貼上 YouTube 連結</button>
+      <div class="grow"></div>
+      <div class="cta"><b>想加歌？</b>到 GitHub 編輯 <code>songs.txt</code>，一行一首「歌名 | 歌手」，也可以貼整個 YouTube 播放清單網址。存檔幾分鐘後網站會自動更新。</div>
+      <a href="classic.html">舊版（Apple Music 試聽、同機搶答）→</a>
+    </aside>
+    <section>
+      <div class="bar">
+        <label class="search"><span data-i="search" style="color:var(--dim)"></span><input id="q" placeholder="搜尋題庫名稱、歌名或歌手" autocomplete="off"></label>
+        <span class="chip" id="count">共 0 份</span>
+        <div class="seg"><button data-view="grid" aria-label="格狀"><span data-i="grid"></span></button><button data-view="rows" aria-label="清單"><span data-i="list"></span></button></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+  </div>
+</main>
 
-<div id="flashEl" class="flash"></div>
+<!-- ================= GAME ================= -->
+<main class="game" id="game" hidden>
+  <aside class="rank" id="rank"></aside>
+  <div class="pads" id="padsA"></div>
+  <div class="arena">
+    <div class="ahead">
+      <h1 id="gTitle">房間</h1>
+      <button class="btn sm warn" id="extendBtn" hidden><span data-i="clock"></span><span>延長播放</span></button>
+      <button class="btn sm info" id="restartBtn"><span data-i="restart"></span><span>重新開始</span></button>
+      <button class="btn sm danger" id="leaveBtn"><span data-i="exit"></span><span>離開</span></button>
+    </div>
+    <div class="stage" id="stage">
+      <div class="ytwrap"><div id="yt"></div></div>
+      <div class="thumbL" id="thumbL"></div>
+      <div class="vinfo" id="vinfo"><b id="vTitle"></b><small id="vCh"></small></div>
+      <div class="cover" id="cover"></div>
+      <div id="popL"></div>
+      <div class="sctl l"><button data-show="video"><span data-i="video"></span><span>顯示影片</span></button><button data-show="thumb"><span data-i="image"></span><span>顯示縮圖</span></button></div>
+      <div class="sctl r"><span data-i="vol"></span><span id="volN">60%</span><input type="range" id="vol" min="0" max="100" step="5" aria-label="音量"></div>
+      <div class="tap" id="tap" hidden><button class="btn pri" id="tapBtn"><span data-i="play"></span>點一下開始播放</button></div>
+    </div>
+    <div class="opts" id="opts"></div>
+  </div>
+  <div class="pads" id="padsB"></div>
+</main>
+
+<div id="result" class="result" hidden></div>
+<div id="modal" class="modal" hidden></div>
+<div class="flashL" id="flashL"></div>
 <canvas id="fx"></canvas>
-<audio id="player" preload="auto" playsinline></audio>
 
 <script src="songs-data.js"></script>
 <script>
 (() => {
-const $ = s => document.querySelector(s);
+"use strict";
+/* ================= utils ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store = {
-  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch{ return d; } },
-  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 };
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
-
-/* ---------- built-in playlists: looked up ahead of time by build-songs.js ---------- */
-const DATA = window.SONG_DATA || { lists: [] };
-const BUILTIN = DATA.lists.filter(l => l.songs && l.songs.length);
-const linesOf = txt => txt.split(/\r?\n/).map(s => s.replace(/^\s*\d+[.、)）]\s*/, "").replace(/[,，\t;]+/g, " ").trim()).filter(Boolean);
-let custom = store.get("hitsterLists", []);
-let selected = new Set(store.get("hitsterSel", []));
-const countOf = l => Array.isArray(l.songs) ? l.songs.length : linesOf(l.songs).length;
-let players = store.get("hitsterPlayers", ["玩家 1", "玩家 2"]);
-const COLORS = ["--pink","--cyan","--sun","--lime","--violet","--orange"];
-const colorOf = i => `var(${COLORS[i % COLORS.length]})`;
-
-/* ---------- song lookup: Apple Music first, Deezer as backup ---------- */
-let cbN = 0;
-function jsonp(url, param = "callback"){
-  return new Promise((res, rej) => {
-    const name = "hcb" + (++cbN) + "x" + Math.floor(Math.random() * 1e6);
-    const s = document.createElement("script");
-    const t = setTimeout(() => { cleanup(); rej(new Error("timeout")); }, 9000);
-    function cleanup(){ clearTimeout(t); delete window[name]; s.remove(); }
-    window[name] = d => { cleanup(); res(d); };
-    s.onerror = () => { cleanup(); rej(new Error("script")); };
-    s.src = url + (url.includes("?") ? "&" : "?") + param + "=" + name;
-    document.head.appendChild(s);
-  });
-}
-async function getJSON(url, jsonpUrl){
-  try { return await jsonp(jsonpUrl || url); }
-  catch { const r = await fetch(url); if (!r.ok) throw new Error("http " + r.status); return await r.json(); }
-}
-const norm = s => (s || "").toLowerCase().replace(/[\(\[（【].*?[\)\]）】]/g, "").replace(/\s*-\s*(remaster|live|single|version).*$/i, "").replace(/[^\p{L}\p{N}]/gu, "");
-
-/* Apple */
-async function appleSearch(line){
-  let m = line.match(/music\.apple\.com\/([a-z]{2})\/.*?(?:[?&]i=|\/song\/[^/]+\/)(\d+)/i);
-  if (m) {
-    const d = await getJSON(`https://itunes.apple.com/lookup?id=${m[2]}&country=${m[1]}&entity=song`);
-    return (d.results || []).find(r => r.previewUrl) || null;
-  }
-  const d = await getJSON(`https://itunes.apple.com/search?term=${encodeURIComponent(line)}&country=TW&media=music&entity=song&limit=10`);
-  const res = (d.results || []).filter(r => r.previewUrl);
-  if (!res.length) return null;
-  // same song, earliest release → avoids remasters / compilations giving a late year
-  const key = norm(res[0].trackName), artist = res[0].artistName;
-  const same = res.filter(r => norm(r.trackName) === key && r.artistName === artist && r.releaseDate);
-  same.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
-  return same[0] || res[0];
-}
-
-/* Deezer */
-const dz = path => { const u = `https://api.deezer.com/${path}`; return getJSON(u, u + (u.includes("?") ? "&" : "?") + "output=jsonp"); };
-async function deezerSearch(line){
-  if (/music\.apple\.com/i.test(line)) return null;
-  const d = await dz(`search?q=${encodeURIComponent(line)}&limit=10`);
-  if (d && d.error) throw new Error("deezer");
-  const res = (d.data || []).filter(r => r.preview);
-  if (!res.length) return null;
-  const key = norm(res[0].title), artist = res[0].artist && res[0].artist.name;
-  const pick = res.find(r => norm(r.title) === key && r.artist && r.artist.name === artist) || res[0];
-  let date = "";
-  try { const al = await dz(`album/${pick.album.id}`); date = al.release_date || ""; } catch {}
-  return {
-    trackName: pick.title, artistName: pick.artist ? pick.artist.name : "",
-    releaseDate: date && date !== "0000-00-00" ? date : "",
-    previewUrl: pick.preview, artworkUrl100: pick.album ? (pick.album.cover_medium || "") : "", source: "Deezer"
-  };
-}
-
-let appleDown = false, deezerDown = false;
-async function resolve(line){
-  if (!appleDown) {
-    try { return await appleSearch(line); }
-    catch { appleDown = true; console.warn("Apple Music 連不上，改用 Deezer"); }
-  }
-  if (!deezerDown) {
-    try { return await deezerSearch(line); }
-    catch { deezerDown = true; }
-  }
-  const hint = location.protocol.startsWith("http") && window.top === window.self
-    ? "Apple Music 和 Deezer 都連不上。請確認網路正常，並關閉廣告封鎖外掛、Brave 防護或 VPN 後再試。"
-    : "目前是在預覽視窗或本機檔案中開啟，請改用 GitHub Pages 的網址打開。";
-  appleDown = deezerDown = false;   // let "再試一次" try both again
-  const e = new Error(hint); e.network = true; throw e;
-}
-
-/* ================= SETUP ================= */
-function allLists(){ return [...BUILTIN, ...custom]; }
-if (!BUILTIN.length) $("#setupMsg").textContent = "還沒有內建歌單資料（songs-data.js）。請到 GitHub 的 Actions 分頁確認「更新歌單並發布網站」已經跑完。";
-if (![...selected].some(id => [...BUILTIN, ...custom].some(l => l.id === id)) && BUILTIN[0]) selected.add(BUILTIN[0].id);
-function renderLists(){
-  $("#lists").innerHTML = allLists().map(l => {
-    const n = countOf(l), mine = l.id.startsWith("c-");
-    return `<button class="list" data-id="${l.id}" aria-pressed="${selected.has(l.id)}">
-      ${mine ? `<span class="mine">自訂</span>` : ""}
-      <span class="n">${esc(l.name)}</span><span class="c">${n} 首${mine ? " · 長按編輯" : ""}</span></button>`;
-  }).join("") + `<button class="list add" id="addList">＋ 匯入自己的歌單</button>`;
-}
-let pressT = null, longPressed = false;
-$("#lists").addEventListener("pointerdown", e => {
-  const b = e.target.closest(".list[data-id^='c-']"); if (!b) return;
-  longPressed = false;
-  pressT = setTimeout(() => { longPressed = true; openSheet(b.dataset.id); }, 550);
-});
-["pointerup","pointerleave","pointercancel"].forEach(t => $("#lists").addEventListener(t, () => clearTimeout(pressT)));
-$("#lists").addEventListener("contextmenu", e => { if (e.target.closest(".list[data-id^='c-']")) e.preventDefault(); });
-$("#lists").addEventListener("click", e => {
-  if (e.target.closest("#addList")) return openSheet(null);
-  const b = e.target.closest(".list[data-id]"); if (!b || longPressed) return;
-  const id = b.dataset.id;
-  selected.has(id) ? selected.delete(id) : selected.add(id);
-  haptic("tap");
-  store.set("hitsterSel", [...selected]); renderLists();
-});
-
-/* import sheet */
-let editing = null;
-function openSheet(id){
-  editing = id;
-  const l = custom.find(c => c.id === id);
-  $("#sheetTitle").textContent = l ? "編輯歌單" : "匯入歌單";
-  $("#impName").value = l ? l.name : "";
-  $("#impText").value = l ? l.songs : "";
-  $("#impDelete").hidden = !l;
-  $("#impDelete").textContent = "刪除這份歌單";
-  $("#sheet").hidden = false;
-}
-$("#impCancel").onclick = () => $("#sheet").hidden = true;
-$("#sheet").onclick = e => { if (e.target.id === "sheet") $("#sheet").hidden = true; };
-$("#impFile").onchange = async e => {
-  const f = e.target.files[0]; if (!f) return;
-  const t = await f.text();
-  $("#impText").value = ($("#impText").value.trim() + "\n" + t).trim();
-  if (!$("#impName").value) $("#impName").value = f.name.replace(/\.\w+$/, "");
-  e.target.value = "";
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmt = n => Number(n || 0).toLocaleString("en-US");
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+const thumb = (v, q = "mqdefault") => `https://i.ytimg.com/vi/${v}/${q}.jpg`;
+const ICONS = {
+  plus:'<path d="M12 5v14M5 12h14"/>', shuffle:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+  globe:'<circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5a14 14 0 0 1 0 19M12 2.5a14 14 0 0 0 0 19"/>',
+  bookmark:'<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+  video:'<rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  list:'<rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/>',
+  music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  play:'<path d="M7 4v16l13-8z" fill="currentColor" stroke="none"/>',
+  pause:'<path d="M7 4h3v16H7zM14 4h3v16h-3z" fill="currentColor" stroke="none"/>',
+  trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+  mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  vol:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+  restart:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  exit:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>', back:'<path d="m15 18-6-6 6-6"/>', next:'<path d="m9 18 6-6-6-6"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>', edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>', star:'<path d="m12 2 3 6.5 7 .8-5.2 4.7 1.5 7L12 17.3 5.7 21l1.5-7L2 9.3l7-.8z" fill="currentColor" stroke="none"/>',
+  timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>', lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  sofa:'<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3"/><path d="M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/><path d="M5 18v2M19 18v2"/>'
 };
-$("#impSave").onclick = () => {
-  const songs = linesOf($("#impText").value).join("\n");
-  if (!songs) { $("#impText").focus(); return; }
-  const name = $("#impName").value.trim() || `我的歌單 ${custom.length + 1}`;
-  if (editing) Object.assign(custom.find(c => c.id === editing), { name, songs });
-  else { const id = "c-" + Date.now(); custom.push({ id, name, songs }); selected.add(id); }
-  store.set("hitsterLists", custom); store.set("hitsterSel", [...selected]);
-  $("#sheet").hidden = true; renderLists();
-};
-$("#impDelete").onclick = () => {
-  const b = $("#impDelete");
-  if (b.textContent !== "確定刪除？") { b.textContent = "確定刪除？"; return; }
-  custom = custom.filter(c => c.id !== editing); selected.delete(editing);
-  store.set("hitsterLists", custom); store.set("hitsterSel", [...selected]);
-  $("#sheet").hidden = true; renderLists();
-};
+const icon = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+const paintIcons = (root = document) => $$("[data-i]", root).forEach(el => { if (!el.dataset.done) { el.innerHTML = icon(el.dataset.i) + el.innerHTML; el.dataset.done = 1; } });
 
-/* players */
-function renderPlayers(){
-  $("#players").innerHTML = players.length
-    ? players.map((p, i) => `<span class="chip"><i style="background:${colorOf(i)}"></i>${esc(p)}<button data-rm="${i}" aria-label="移除 ${esc(p)}">✕</button></span>`).join("")
-    : `<span class="note">沒有玩家也能玩：只播歌、看答案，不計分。</span>`;
-  $("#addPlayer").disabled = players.length >= 6;
-  store.set("hitsterPlayers", players);
-}
-$("#players").onclick = e => { const b = e.target.closest("[data-rm]"); if (b) { players.splice(+b.dataset.rm, 1); renderPlayers(); } };
-function addPlayer(){
-  const v = $("#newPlayer").value.trim();
-  if (!v || players.length >= 6) return;
-  players.push(v); $("#newPlayer").value = ""; renderPlayers();
-}
-$("#addPlayer").onclick = addPlayer;
-$("#newPlayer").addEventListener("keydown", e => { if (e.key === "Enter") addPlayer(); });
-
-/* ================= HAPTICS ================= */
-// Android: Vibration API with patterns. iPhone (iOS 18+): toggling a hidden switch gives a light tap.
-const hapticLabel = (() => {
-  const l = document.createElement("label"), i = document.createElement("input");
-  i.type = "checkbox"; i.setAttribute("switch", ""); i.tabIndex = -1;
-  l.setAttribute("aria-hidden", "true"); l.style.display = "none";
-  l.appendChild(i); document.body.appendChild(l); return l;
-})();
-const canVibrate = typeof navigator.vibrate === "function";
-const HAPTIC = {
-  tap:     [15],
-  start:   [30],
-  buzz:    [180],
-  wrong:   [70, 60, 70],
-  right:   [40, 40, 40, 40, 120],
-  tick:    [25],
-  win:     [100, 60, 100, 60, 300]
-};
-function haptic(kind){
-  const pat = HAPTIC[kind] || [20];
-  if (canVibrate) { try { navigator.vibrate(pat); } catch {} return; }
-  // iOS: one light tap per pulse in the pattern
-  let t = 0;
-  pat.forEach((ms, k) => {
-    if (k % 2 === 0) setTimeout(() => { try { hapticLabel.click(); } catch {} }, t);
-    t += ms;
-  });
+let toastT;
+function toast(msg, ms = 2600){
+  $$(".toast").forEach(t => t.remove());
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t);
+  clearTimeout(toastT); toastT = setTimeout(() => t.remove(), ms);
 }
 
-/* ================= MOTION ================= */
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const hexOf = i => getComputedStyle(document.documentElement).getPropertyValue(COLORS[i % COLORS.length]).trim();
-function restart(el, cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
-function flash(i){ const f = $("#flashEl"); f.style.setProperty("--flash", hexOf(i)); restart(f, "go"); }
-function rollYear(el, y){
-  const t = +y;
-  if (!t || reduce) { el.textContent = y; return; }
-  const from = t - 35, dur = 1000, t0 = performance.now();
-  (function f(now){
-    const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(from + (t - from) * e);
-    if (p < 1) requestAnimationFrame(f);
-  })(t0);
+/* ---- tiny sound effects (WebAudio, separate from YouTube) ---- */
+let AC = null;
+function beep(kind){
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const seq = { good:[[660,.0],[990,.09]], bad:[[220,0],[160,.12]], buzz:[[520,0],[780,.06],[1040,.12]], tick:[[880,0]], win:[[523,0],[659,.12],[784,.24],[1046,.36]] }[kind] || [[600,0]];
+    seq.forEach(([f, d]) => {
+      const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + d;
+      o.type = kind === "bad" ? "sawtooth" : "triangle"; o.frequency.value = f;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(kind === "tick" ? .05 : .16, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + (kind === "tick" ? .08 : .22));
+      o.connect(g).connect(AC.destination); o.start(t); o.stop(t + .3);
+    });
+  } catch {}
 }
-const fx = $("#fx"), fctx = fx.getContext("2d");
-let parts = [], fxOn = false;
-function confetti(colors, n = 110, ox = .5, oy = .42){
-  if (reduce) return;
-  const dpr = devicePixelRatio || 1;
-  fx.width = innerWidth * dpr; fx.height = innerHeight * dpr; fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  for (let k = 0; k < n; k++) parts.push({
-    x: innerWidth * ox + (Math.random() - .5) * 60, y: innerHeight * oy,
-    vx: (Math.random() - .5) * 15, vy: -Math.random() * 13 - 5,
-    w: Math.random() * 7 + 5, h: Math.random() * 4 + 3, c: colors[k % colors.length],
-    a: Math.random() * 6, va: (Math.random() - .5) * .45, life: 0
-  });
+function vibrate(p){ try { navigator.vibrate && navigator.vibrate(p); } catch {} }
+
+/* ---- confetti ---- */
+const fx = $("#fx"), fctx = fx.getContext("2d"); let parts = [], fxOn = false;
+function confetti(colors, n = 120){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  fx.width = innerWidth * devicePixelRatio; fx.height = innerHeight * devicePixelRatio;
+  for (let i = 0; i < n; i++) parts.push({ x: innerWidth * (.3 + Math.random() * .4), y: innerHeight * .45, vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 4, r: Math.random() * 6 + 3, c: colors[i % colors.length], a: Math.random() * 6, life: 1 });
   if (!fxOn) { fxOn = true; requestAnimationFrame(stepFx); }
 }
 function stepFx(){
-  fctx.clearRect(0, 0, innerWidth, innerHeight);
-  parts = parts.filter(p => p.y < innerHeight + 30 && p.life < 260);
-  for (const p of parts) {
-    p.vy += .42; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.a += p.va; p.life++;
-    fctx.save(); fctx.translate(p.x, p.y); fctx.rotate(p.a);
-    fctx.fillStyle = p.c; fctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.a * 1.7)) + 1);
-    fctx.restore();
-  }
-  if (parts.length) requestAnimationFrame(stepFx); else { fxOn = false; fctx.clearRect(0, 0, innerWidth, innerHeight); }
+  const d = devicePixelRatio; fctx.clearRect(0, 0, fx.width, fx.height);
+  parts = parts.filter(p => p.life > 0);
+  parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += .45; p.vx *= .99; p.a += .2; p.life -= .011;
+    fctx.save(); fctx.globalAlpha = Math.max(0, p.life); fctx.translate(p.x * d, p.y * d); fctx.rotate(p.a); fctx.fillStyle = p.c; fctx.fillRect(-p.r * d / 2, -p.r * d / 4, p.r * d, p.r * d / 2); fctx.restore(); });
+  if (parts.length) requestAnimationFrame(stepFx); else { fxOn = false; fctx.clearRect(0, 0, fx.width, fx.height); }
+}
+function flash(color){ const f = $("#flashL"); f.style.setProperty("--c", color); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go"); }
+
+/* ================= data ================= */
+const DATA = window.SONG_DATA || { lists: [] };
+let bad = new Set(store.get("yt.bad", []));
+const usable = s => s && s.v && !bad.has(s.v);
+const cleanVT = t => String(t || "").replace(/[\(\[（【][^\)\]）】]*(official|mv|music video|lyric|audio|官方|歌詞|完整|高畫質|hd|4k)[^\)\]）】]*[\)\]）】]/gi, "").replace(/\s+/g, " ").trim();
+const nameOf = s => s.title || cleanVT(s.vt) || "（未知歌曲）";
+const label = s => s.title ? (s.artist ? `${s.title} — ${s.artist}` : s.title) : cleanVT(s.vt) || s.v;
+const BUILTIN = (DATA.lists || []).map(l => ({ id: l.id, name: l.name, tags: l.tags || [], songs: (l.songs || []).filter(s => s.v), builtin: true }));
+let MINE = store.get("yt.lists", []);
+const rawCount = (DATA.lists || []).reduce((n, l) => n + (l.songs || []).length, 0);
+function allSongs(){
+  const seen = new Set(), out = [];
+  [...BUILTIN, ...MINE].forEach(l => l.songs.forEach(s => { if (s.v && !seen.has(s.v)) { seen.add(s.v); out.push(s); } }));
+  return out;
+}
+const ALL = () => ({ id: "all", name: "全部歌曲大混戰", tags: ["綜合", "隨機"], songs: allSongs(), builtin: true });
+function findLib(id){ return id === "all" ? ALL() : [...BUILTIN, ...MINE].find(l => l.id === id); }
+
+const PCOL = ["#5fd6d2","#ff7eb6","#f1d27a","#9b8cff","#7fe07a","#ff9f5a","#6fb6ff","#ff6b6b"];
+let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 6, start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"] }, store.get("yt.cfg", {}));
+const saveCfg = () => store.set("yt.cfg", cfg);
+let me = store.get("yt.name", "") || "玩家";
+const recs = () => store.get("yt.rec", {});
+const plays = () => store.get("yt.plays", {});
+function bestOf(id){ const r = recs(); let b = 0; Object.keys(r).forEach(k => { if (k.startsWith(id + "|")) r[k].forEach(x => b = Math.max(b, x.score)); }); return b; }
+function topRecs(id, n){ return (recs()[`${id}|${n}`] || []); }
+function addRec(id, n, rec){
+  const all = recs(), k = `${id}|${n}`, arr = all[k] || [];
+  arr.push(rec); arr.sort((a, b) => b.score - a.score || a.time - b.time);
+  const rank = arr.indexOf(rec); all[k] = arr.slice(0, 20); store.set("yt.rec", all); return rank;
 }
 
-/* ================= GAME ================= */
-const player = $("#player");
-let G = null;
-const VIEWS = ["vReady","vPlay","vBuzz","vReveal"];
-const show = v => { VIEWS.forEach(x => $("#" + x).hidden = x !== v); if (!P) $("#vig").classList.remove("on"); };
-
-function silentWav(){
-  const n = 800, b = new ArrayBuffer(44 + n), v = new DataView(b);
-  const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
-  w(0,"RIFF"); v.setUint32(4,36+n,true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
-  v.setUint32(24,8000,true); v.setUint32(28,8000,true); v.setUint16(32,1,true); v.setUint16(34,8,true); w(36,"data"); v.setUint32(40,n,true);
-  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
-  return URL.createObjectURL(new Blob([b], { type:"audio/wav" }));
-}
-let wakeLock = null;
-async function keepAwake(){ try { if ("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen"); } catch {} }
-document.addEventListener("visibilitychange", () => { if ((G || P) && document.visibilityState === "visible") keepAwake(); });
-
-function buildItems(){
-  const seen = new Set(), items = [];
-  allLists().filter(l => selected.has(l.id)).forEach(l => {
-    if (Array.isArray(l.songs)) l.songs.forEach(x => {
-      const k = x.k || x.u; if (seen.has(k)) return; seen.add(k);
-      items.push({ ready: { trackName: x.title || x.t, artistName: x.artist || x.a, releaseDate: x.y ? String(x.y) : "", previewUrl: x.u, artworkUrl100: x.art } });
-    });
-    else linesOf(l.songs).forEach(line => {
-      const k = "q:" + line.toLowerCase(); if (seen.has(k)) return; seen.add(k);
-      items.push({ line });
-    });
+/* ================= YouTube player ================= */
+const YTP = {
+  p: null, ready: false, failed: false, waiters: [],
+  whenReady(){ return this.ready ? Promise.resolve() : new Promise(r => this.waiters.push(r)); },
+  call(fn, ...a){ try { return this.p && this.p[fn] ? this.p[fn](...a) : undefined; } catch (e) { console.warn(e); } },
+  load(v, s){ this.call("loadVideoById", { videoId: v, startSeconds: s }); },
+  cue(v, s){ this.call("cueVideoById", { videoId: v, startSeconds: s }); },
+  play(){ this.call("playVideo"); }, pause(){ this.call("pauseVideo"); }, stop(){ this.call("stopVideo"); },
+  seek(s){ this.call("seekTo", s, true); },
+  vol(v){ this.call("setVolume", v); v > 0 ? this.call("unMute") : this.call("mute"); },
+  state(){ const s = this.call("getPlayerState"); return s == null ? -1 : s; }
+};
+window.onYouTubeIframeAPIReady = () => {
+  YTP.p = new YT.Player("yt", {
+    host: "https://www.youtube-nocookie.com", width: "100%", height: "100%",
+    playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, iv_load_policy: 3, fs: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady(){ YTP.ready = true; YTP.vol(cfg.vol); YTP.waiters.splice(0).forEach(f => f()); },
+      onStateChange(e){ onYTState(e.data); },
+      onError(e){ onYTError(e.data); }
+    }
   });
-  return items;
+};
+(function loadYT(){
+  const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; s.async = true;
+  s.onerror = () => { YTP.failed = true; toast("YouTube 播放器載入失敗，請檢查網路或關閉廣告封鎖外掛。", 6000); };
+  document.head.appendChild(s);
+})();
+
+/* ================= lobby ================= */
+let tab = "builtin", view = store.get("yt.view", "grid"), query = "";
+function renderMe(){ $("#meName").textContent = me; $("#meAv").textContent = [...me][0] || "玩"; }
+function coverHTML(l){
+  const vs = l.songs.filter(usable).slice(0, 4).map(s => s.v);
+  const cls = vs.length >= 4 ? "cv" : "cv one";
+  const imgs = (vs.length >= 4 ? vs : vs.slice(0, 1)).map(v => `<img loading="lazy" alt="" onerror="this.style.visibility='hidden'" src="${thumb(v)}">`).join("");
+  const tags = (l.tags || []).slice(0, 2).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+  return `<div class="${cls}">${imgs}<div class="tags">${tags}</div></div>`;
+}
+function libsNow(){
+  if (tab === "mine") return MINE.filter(l => l.songs.length);
+  const all = ALL();
+  return [all, ...BUILTIN].filter(l => l.songs.filter(usable).length);
+}
+function renderGrid(){
+  const q = query.trim().toLowerCase();
+  const ls = libsNow().filter(l => !q || [l.name, ...(l.tags || []), ...l.songs.map(s => `${s.title} ${s.artist} ${s.vt || ""}`)].join(" ").toLowerCase().includes(q));
+  $("#count").textContent = `共 ${ls.length} 份`;
+  const g = $("#grid"); g.className = "grid" + (view === "rows" ? " rows" : "");
+  $$(".seg button").forEach(b => b.classList.toggle("on", b.dataset.view === view));
+  if (!ls.length) {
+    g.innerHTML = tab === "mine"
+      ? `<div class="empty"><b>還沒有自己的題庫</b>貼上 YouTube 影片連結就能建立，只存在這台裝置上。<br><br><button class="btn pri sm" id="emptyImport">${icon("plus")}貼上 YouTube 連結</button></div>`
+      : q ? `<div class="empty"><b>找不到「${esc(query)}」</b>換個關鍵字試試看。</div>`
+          : `<div class="empty"><b>${rawCount ? "歌單還在準備 YouTube 影片" : "還沒有歌單"}</b>${rawCount ? "GitHub 正在幫 songs.txt 裡的每首歌找 YouTube 影片，大約幾分鐘後重新整理就好。" : "到 GitHub 編輯 songs.txt 加歌。"}<br>也可以先到「我的題庫」貼 YouTube 連結來玩。</div>`;
+    const e = $("#emptyImport"); if (e) e.onclick = () => openImport();
+    return;
+  }
+  const pl = plays();
+  g.innerHTML = ls.map(l => {
+    const n = l.songs.filter(usable).length, best = bestOf(l.id);
+    return `<button class="card" data-id="${esc(l.id)}">${coverHTML(l)}<div class="cb"><h3>${esc(l.name)}</h3>
+      <div class="meta">${best ? `<span class="star">${icon("star")}</span>最佳 ${fmt(best)} 分` : `<span style="color:var(--dim)">還沒有紀錄</span>`}</div>
+      <div class="stats"><span>${icon("music")}${n}題</span><span>${icon("play")}${pl[l.id] || 0}</span>${l.builtin ? "" : `<span style="color:var(--mute);font:500 12px 'Noto Sans TC'">我的</span>`}</div></div></button>`;
+  }).join("");
+}
+$("#grid").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) openDetail(c.dataset.id); });
+$$(".nav[data-tab]").forEach(b => b.onclick = () => { tab = b.dataset.tab; $$(".nav[data-tab]").forEach(x => x.classList.toggle("on", x === b)); renderGrid(); });
+$$(".seg button").forEach(b => b.onclick = () => { view = b.dataset.view; store.set("yt.view", view); renderGrid(); });
+$("#q").oninput = e => { query = e.target.value; renderGrid(); };
+$("#navImport").onclick = () => openImport();
+$("#heroQuick").onclick = () => { const a = ALL(); if (a.songs.filter(usable).length < 4) return toast("歌曲還不夠，至少要 4 首。"); openSetup("all", "quiz"); };
+$("#heroCreate").onclick = () => $("#grid").scrollIntoView({ behavior: "smooth", block: "start" });
+$("#meBtn").onclick = openName;
+
+/* ================= modals ================= */
+const modal = $("#modal");
+function openModal(html, narrow){
+  modal.innerHTML = `<div class="sheet${narrow ? " narrow" : ""}" role="dialog" aria-modal="true">${html}</div>`;
+  modal.hidden = false; paintIcons(modal);
+  modal.onclick = e => { if (e.target === modal) closeModal(); };
+  $$("[data-close]", modal).forEach(b => b.onclick = closeModal);
+}
+function closeModal(){ modal.hidden = true; modal.innerHTML = ""; }
+const mhead = (title, extra = "", back) => `<div class="mh">${back ? `<button class="x" data-back aria-label="返回">${icon("back")}</button>` : ""}${extra}<h2>${esc(title)}</h2><span class="esc">Esc 關閉</span><button class="x" data-close aria-label="關閉">${icon("x")}</button></div>`;
+
+function openName(){
+  openModal(`${mhead("你的暱稱")}<div style="padding:28px;flex:1"><p style="color:var(--mute);margin-top:0">顯示在排行榜和遊戲裡。</p><input class="field" id="nameIn" maxlength="12" value="${esc(me)}"></div>
+    <div class="mf"><span class="lbl"></span><button class="btn" data-close>取消</button><button class="btn pri" id="nameOk">儲存</button></div>`, true);
+  const i = $("#nameIn"); i.focus(); i.select();
+  const ok = () => { me = i.value.trim() || "玩家"; store.set("yt.name", me); renderMe(); closeModal(); };
+  $("#nameOk").onclick = ok; i.onkeydown = e => { if (e.key === "Enter") ok(); };
 }
 
-$("#startBtn").onclick = async () => {
-  const items = buildItems();
-  if (!items.length) { $("#setupMsg").textContent = "請至少選一份歌單。"; return; }
-  $("#setupMsg").textContent = "";
-  const lines = items;
-  try { player.src = silentWav(); await player.play(); player.pause(); } catch {}
-  keepAwake();
-  if (mode === "practice") return startPractice(items);
-  requestAnimationFrame(gFrame);
-  G = {
-    queue: shuffle(lines), total: lines.length, n: 0, next: null, cur: null,
-    scores: players.map(() => 0), locked: new Set(), buzzer: -1,
-    guess: $("#optGuess").value, wrong: $("#optWrong").value, win: +$("#optWin").value, over: false
+/* ---- library detail ---- */
+let dTab = "list", dCount = 10;
+function openDetail(id){
+  const l = findLib(id); if (!l) return;
+  const songs = l.songs.filter(usable), n = songs.length;
+  const counts = [5, 10, 20, 30].filter(c => c <= n); if (!counts.includes(n) && n <= 100) counts.push(n);
+  if (!counts.includes(dCount)) dCount = counts.includes(10) ? 10 : counts[counts.length - 1];
+  const pl = plays()[l.id] || 0, best = bestOf(l.id);
+  const tags = (l.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+  openModal(`${mhead(l.name, `<span class="badge">${icon(l.builtin ? "globe" : "bookmark")}${l.builtin ? "公開" : "我的"}</span>`)}
+    <div class="mb"><div>
+      <div class="dcover"><img alt="" onerror="this.style.visibility='hidden'" src="${songs[0] ? thumb(songs[0].v, "hqdefault") : ""}"><div class="tags">${tags}</div></div>
+      <div class="dstats"><span>${icon("music")}${n} 題</span><span>${icon("play")}玩過 ${pl} 次</span>${best ? `<span style="color:var(--sun)">${icon("trophy")}${fmt(best)}</span>` : ""}<span class="sp"></span>
+        ${l.builtin ? "" : `<button class="btn sm" id="dEdit">${icon("edit")}編輯</button>`}</div>
+      <div class="tabs"><button data-dt="list">播放清單</button><button data-dt="how">怎麼玩</button></div>
+      <div id="dBody"></div>
+    </div><div>
+      <div class="lbh">${icon("trophy")}<h3>個人排行榜</h3><span class="badge">這台裝置</span></div>
+      <div class="mbox"><div class="t"><b>四選一挑戰</b><small>固定題數，比最高分與連擊表現。</small></div>
+        <select class="sel" id="dCount">${counts.map(c => `<option value="${c}" ${c === dCount ? "selected" : ""}>${c} 題</option>`).join("")}</select></div>
+      <div id="dLb"></div>
+    </div></div>
+    <div class="mf"><div class="lbl"><small>挑戰模式</small><b id="dMode">四選一 · ${dCount} 題</b></div>
+      <button class="btn" id="dSing" ${n < 1 ? "disabled" : ""}>${icon("mic")}搶唱派對</button>
+      <button class="btn pri" id="dQuiz" ${n < 4 ? "disabled" : ""}>${icon("play")}四選一挑戰</button></div>`);
+  const body = () => {
+    $$("[data-dt]").forEach(b => b.classList.toggle("on", b.dataset.dt === dTab));
+    $("#dBody").innerHTML = dTab === "list"
+      ? `<ul class="tracks">${songs.map((s, i) => `<li><img loading="lazy" alt="" onerror="this.style.visibility='hidden'" src="${thumb(s.v, "default")}"><div class="tt"><b>${esc(label(s))}</b><small>${esc(s.ch || s.vt || "")}${s.d ? " · " + mmss(s.d) : ""}</small></div><span class="n">#${i + 1}</span></li>`).join("")}</ul>`
+      : `<div class="howto"><h4>${icon("play")} 四選一挑戰</h4><p>只播音樂、不給看畫面。從四個選項選出正在播的歌，可以按 Q W A S 或 1 2 3 4。答得越快分數越高，連續答對有連擊加成。</p>
+         <h4>${icon("mic")} 搶唱派對</h4><p>畫面直接秀出歌名，會唱的人搶先按自己的按鈕（每人一個按鈕在畫面兩側，電腦可按數字鍵 1–8），然後唱出來。大家聽完後按「唱對了」或「唱錯了」，不確定就按「播原曲核對」。一支手機平放在桌上，上下兩排各坐一邊也可以。</p></div>`;
   };
-  $("#setup").hidden = true; $("#round").hidden = false; $("#quitBtn").hidden = false;
-  $("#hudGuess").textContent = "猜" + G.guess;
-  renderPads();
-  show("vReady");
-  $("#readyMsg").textContent = "準備好了嗎？";
-  prepareNext();
-};
-
-async function prepareNext(){
-  G.next = null;
-  $("#playBtn").disabled = true; $("#nextBtn").disabled = true;
-  $("#playBtn").textContent = $("#nextBtn").textContent = "找歌中…";
-  while (G && G.queue.length) {
-    const line = G.queue.shift();
-    try {
-      const r = line.ready || await resolve(line.line);
-      if (r) { G.next = r; break; }
-    } catch (e) {
-      if (e.network) { G.queue.unshift(line); $("#readyMsg").textContent = e.message; $("#readyMsg").classList.add("err"); show("vReady");
-        $("#playBtn").disabled = false; $("#playBtn").textContent = "再試一次"; $("#playBtn").onclick = () => { $("#readyMsg").classList.remove("err"); $("#playBtn").onclick = playNext; prepareNext(); }; return; }
-    }
-  }
-  if (!G) return;
-  $("#playBtn").onclick = playNext;
-  if (G.over) { $("#playBtn").disabled = $("#nextBtn").disabled = false; $("#nextBtn").textContent = "看最後結果"; return; }
-  $("#playBtn").disabled = $("#nextBtn").disabled = false;
-  $("#playBtn").textContent = $("#nextBtn").textContent = G.next ? "播放下一首" : "看最後結果";
+  const lb = () => {
+    const r = topRecs(l.id, dCount);
+    $("#dLb").innerHTML = r.length ? r.slice(0, 10).map((x, i) => `<div class="lrow ${i < 3 ? "g" + (i + 1) : ""}"><span class="rk">#${i + 1}</span><span class="av">${esc([...x.name][0] || "?")}</span>
+      <div class="who"><b>${esc(x.name)}</b><small>${x.correct}/${x.total} · 正確率 ${Math.round(x.correct / x.total * 100)}% · Combo x${x.maxCombo} / 耗時 ${mmss(x.time)}</small></div><span class="sc">${fmt(x.score)}</span></div>`).join("")
+      : `<div class="note">還沒有 ${dCount} 題的紀錄。完成一次挑戰後，這裡會顯示你的最佳紀錄。</div>`;
+    $("#dMode").textContent = `四選一 · ${dCount} 題`;
+  };
+  $$("[data-dt]").forEach(b => b.onclick = () => { dTab = b.dataset.dt; body(); });
+  $("#dCount").onchange = e => { dCount = +e.target.value; lb(); };
+  $("#dQuiz").onclick = () => { cfg.count = dCount; openSetup(l.id, "quiz"); };
+  $("#dSing").onclick = () => openSetup(l.id, "sing");
+  const ed = $("#dEdit"); if (ed) ed.onclick = () => openImport(l.id);
+  body(); lb();
 }
 
-function playNext(){
-  haptic("start");
-  if (!G.next) return finish();
-  G.cur = G.next; G.n++;
-  G.locked = new Set(); G.buzzer = -1;
-  $("#hudRound").textContent = `第 ${G.n} 首`;
-  player.src = G.cur.previewUrl;
-  player.currentTime = 0;
-  player.play().catch(() => {});
-  show("vPlay");
-  renderPads();
-  prepareNext();
+/* ---- room settings ---- */
+let setupLib = null;
+function openSetup(id, mode){
+  setupLib = findLib(id); cfg.mode = mode;
+  renderSetup();
 }
-$("#nextBtn").onclick = () => playNext();
-$("#replayBtn").onclick = () => { player.currentTime = 0; player.play().catch(()=>{}); };
-$("#revealBtn").onclick = () => reveal(-1);
-
-player.addEventListener("timeupdate", () => {
-  if (!G || !G.cur) return;
-  const d = isFinite(player.duration) && player.duration > 0 ? player.duration : 30;
-  $("#timer").textContent = `0:${String(Math.max(0, Math.ceil(d - player.currentTime))).padStart(2, "0")}`;
-  $("#barFill").style.width = Math.min(100, player.currentTime / d * 100) + "%";
-  const hot = !player.paused && d - player.currentTime <= 5;
-  const sec = Math.ceil(d - player.currentTime);
-  if (hot && sec !== G.lastTick) { G.lastTick = sec; haptic("tick"); }
-  $("#bar").classList.toggle("hot", hot); $("#timer").classList.toggle("hot", hot);
-  $("#prog2").style.setProperty("--p", Math.min(1, player.currentTime / d));
-  if (!P) $("#vig").classList.toggle("on", hot && !$("#vPlay").hidden);
-});
-player.addEventListener("play", () => $("#vPlay").classList.remove("paused"));
-player.addEventListener("pause", () => $("#vPlay").classList.add("paused"));
-player.addEventListener("ended", () => { if (G && !$("#vPlay").hidden) $("#timer").textContent = "時間到，可以按重聽或看答案"; });
-
-/* buzz pads */
-function renderPads(){
-  const pads = $("#pads");
-  if (!players.length) { pads.innerHTML = ""; return; }
-  pads.style.setProperty("--cols", players.length <= 2 ? players.length : players.length <= 4 ? 2 : 3);
-  pads.innerHTML = players.map((p, i) =>
-    `<button class="pad ${G.locked.has(i) ? "out" : ""} ${G.buzzer === i ? "win" : ""} ${G.pop === i ? "pop" : ""} ${G.justOut === i ? "justout" : ""}" data-p="${i}" style="--c:${colorOf(i)}">
-      ${esc(p)}<small>${G.scores[i]} 分</small></button>`).join("");
-  G.pop = G.justOut = -1;
-}
-$("#pads").addEventListener("pointerdown", e => {
-  const b = e.target.closest(".pad"); if (!b || !G) return;
-  e.preventDefault();
-  const i = +b.dataset.p;
-  if ($("#vPlay").hidden || G.locked.has(i) || G.buzzer >= 0) return;
-  G.buzzer = i;
-  player.pause();
-  haptic("buzz");
-  $("#buzzName").textContent = `${players[i]} 搶答！`;
-  $("#buzzName").style.color = colorOf(i);
-  $("#buzzHint").textContent = `請說出${G.guess}`;
-  show("vBuzz"); renderPads();
-  flash(i); restart($("#buzzName"), "slam"); shockAt(b, hexOf(i)); shockAt(b, "#f4effc");
-});
-$("#rightBtn").onclick = () => { const i = G.buzzer; if (i < 0) return; G.scores[i]++; G.pop = i; haptic("right"); { const pd = $(`.pad[data-p="${i}"]`); if (pd) floatAt(pd, "+1"); } reveal(i); confetti([hexOf(i), "#f4effc", hexOf(i + 2)]); };
-$("#wrongBtn").onclick = () => {
-  const i = G.buzzer; if (i < 0 || G.judging) return;
-  G.judging = true;
-  restart($("#buzzName"), "shake");
-  haptic("wrong");
-  setTimeout(() => { G.judging = false; wrongDone(i); }, 450);
-};
-function wrongDone(i){
-  if (!G) return;
-  G.buzzer = -1; G.justOut = i;
-  if (G.wrong === "lock") G.locked.add(i); else G.scores[i]--;
-  if (G.locked.size >= players.length) return reveal(-1);
-  show("vPlay"); renderPads();
-  player.play().catch(() => {});
+function renderSetup(){
+  const l = setupLib, songs = l.songs.filter(usable), n = songs.length;
+  const maxQ = Math.min(100, n), minQ = Math.min(5, n);
+  cfg.count = clamp(cfg.count, minQ, maxQ);
+  const quiz = cfg.mode === "quiz";
+  const qb = [-5, 10, 15, 20, 5].map(v => v === -5 ? `<button data-q="-5">−5</button>` : v === 5 ? `<button data-q="+5">+5</button>` : v <= maxQ ? `<button data-q="${v}" class="${cfg.count === v ? "on" : ""}">${v} 題</button>` : "").join("") + (maxQ > 20 || ![10, 15, 20].includes(maxQ) ? `<button data-q="${maxQ}" class="${cfg.count === maxQ ? "on" : ""}">全部 ${maxQ}</button>` : "");
+  const players = cfg.players.map((p, i) => `<div class="prow" style="--c:${PCOL[i]}"><span class="dot"></span><input data-p="${i}" value="${esc(p)}" maxlength="8" aria-label="玩家 ${i + 1} 名字"><kbd>${i + 1}</kbd>${cfg.players.length > 1 ? `<button class="rm" data-rm="${i}" aria-label="移除">${icon("x")}</button>` : ""}</div>`).join("")
+    + (cfg.players.length < 8 ? `<button class="addp" id="addP">${icon("plus")} 新增玩家</button>` : "");
+  const keep = $(".setup .form") ? $(".setup .form").scrollTop : 0;
+  openModal(`${mhead(quiz ? "四選一設定" : "搶唱派對設定", "", true)}
+    <div class="setup"><aside><img alt="" onerror="this.style.visibility='hidden'" src="${songs[0] ? thumb(songs[0].v, "hqdefault") : ""}"><div style="margin-top:12px"><span class="badge">${icon(l.builtin ? "globe" : "bookmark")}${l.builtin ? "公開題庫" : "我的題庫"}</span></div><b>${esc(l.name)}</b><small>${n} 題</small></aside>
+    <div class="form">
+      <div class="sec"><div class="sh">${icon("sofa")}遊戲模式</div><div class="modes">
+        <button class="mode ${quiz ? "on" : ""}" data-mode="quiz"><span class="ic">${icon("play")}</span><div><b>四選一挑戰</b><span>只聽音樂，四個選項選出歌名。倒數計時、越快越高分、連擊加成。</span></div></button>
+        <button class="mode ${quiz ? "" : "on"}" data-mode="sing"><span class="ic">${icon("mic")}</span><div><b>搶唱派對</b><span>秀出歌名，搶先按鈕唱出來，大家判定唱對就得分。</span></div></button></div></div>
+      <div class="sec two">
+        <div><div class="sh">${icon("music")}題數<small>${minQ}–${maxQ} 題</small></div>
+          <div class="stepper"><button class="rd" data-q="-1" aria-label="少一題">−</button><span class="v">${cfg.count}<small>題</small></span><button class="rd" data-q="+1" aria-label="多一題">+</button></div>
+          <div class="quick">${qb}</div></div>
+        ${quiz ? `<div><div class="sh">${icon("timer")}作答時間<small>10–40 秒</small></div>
+          <div class="stepper"><button class="rd" data-a="-5">−</button><span class="v">${cfg.ansTime}<small>秒</small></span><button class="rd" data-a="+5">+</button></div>
+          <div class="quick">${[10, 15, 20, 30].map(v => `<button data-a="${v}" class="${cfg.ansTime === v ? "on" : ""}">${v} 秒</button>`).join("")}</div></div>`
+        : `<div><div class="sh">${icon("timer")}搶唱時間<small>沒人搶就公布</small></div>
+          <div class="stepper"><button class="rd" data-s="-5">−</button><span class="v">${cfg.singTime}<small>秒</small></span><button class="rd" data-s="+5">+</button></div>
+          <div class="quick">${[15, 25, 40, 60].map(v => `<button data-s="${v}" class="${cfg.singTime === v ? "on" : ""}">${v} 秒</button>`).join("")}</div></div>`}
+      </div>
+      ${quiz ? "" : `<div class="sec"><div class="sh">${icon("users")}玩家<small>每人一個搶答鈕，最多 8 人</small></div><div class="plist">${players}</div></div>
+      <div class="sec"><div class="sh">${icon("trophy")}獲勝條件</div><div class="opts3">
+        ${[[0, "打完全部題數", "最後分數最高的人贏"], [3, "先到 3 分", "快速一局"], [5, "先到 5 分", "標準一局"], [10, "先到 10 分", "長期抗戰"]].map(([v, b, s]) => `<button class="opt3 ${cfg.win === v ? "on" : ""}" data-win="${v}"><b>${b}</b><span>${s}</span></button>`).join("")}</div></div>
+      <div class="sec"><div class="sh">${icon("x")}唱錯了怎麼辦</div><div class="opts3">
+        <button class="opt3 ${cfg.wrong === "lock" ? "on" : ""}" data-wrong="lock"><b>這首不能再搶</b><span>其他人繼續搶</span></button>
+        <button class="opt3 ${cfg.wrong === "minus" ? "on" : ""}" data-wrong="minus"><b>扣 1 分</b><span>還可以再搶一次</span></button></div></div>`}
+      <div class="sec"><div class="sh">${icon("clock")}播放片段</div>
+        <div class="box"><div class="bt">${icon("play")}從哪裡開始播</div><div class="bd">${quiz ? "題目開始播放的位置。" : "按「播原曲核對」時從哪裡播。"}</div>
+          <div class="opts3"><button class="opt3 ${cfg.start === "auto" ? "on" : ""}" data-start="auto"><b>隨機片段</b><span>題庫有指定秒數就照題庫</span></button><button class="opt3 ${cfg.start === "head" ? "on" : ""}" data-start="head"><b>從頭開始</b><span>每首都從 0:00 播</span></button></div></div>
+        ${quiz ? `<div class="box"><div class="bt">${icon("clock")}公布答案</div><div class="bd">答完後保留給大家看答案、聽歌的時間。</div>
+          <div class="rangev" id="revV">${cfg.reveal}s</div><input type="range" id="revR" min="3" max="15" value="${cfg.reveal}"></div>` : ""}
+      </div>
+      <p class="msg" id="setupMsg"></p>
+    </div></div>
+    <div class="mf"><div class="lbl"><small>確認房間</small><b>${quiz ? `四選一 · ${cfg.count} 題 · ${cfg.ansTime} 秒` : `搶唱派對 · ${cfg.players.length} 人 · ${cfg.count} 題`}</b></div>
+      <button class="btn" data-back>${icon("back")}返回</button><button class="btn pri" id="goBtn">${icon("play")}開始遊戲</button></div>`);
+  $(".setup .form").scrollTop = keep;
+  const re = () => { saveCfg(); renderSetup(); };
+  $$("[data-back]", modal).forEach(b => b.onclick = () => openDetail(l.id));
+  $$("[data-mode]", modal).forEach(b => b.onclick = () => { cfg.mode = b.dataset.mode; re(); });
+  $$("[data-q]", modal).forEach(b => b.onclick = () => { const v = b.dataset.q; cfg.count = clamp(/^[+-]/.test(v) ? cfg.count + +v : +v, minQ, maxQ); re(); });
+  $$("[data-a]", modal).forEach(b => b.onclick = () => { const v = b.dataset.a; cfg.ansTime = clamp(/^[+-]/.test(v) ? cfg.ansTime + +v : +v, 10, 40); re(); });
+  $$("[data-s]", modal).forEach(b => b.onclick = () => { const v = b.dataset.s; cfg.singTime = clamp(/^[+-]/.test(v) ? cfg.singTime + +v : +v, 10, 90); re(); });
+  $$("[data-win]", modal).forEach(b => b.onclick = () => { cfg.win = +b.dataset.win; re(); });
+  $$("[data-wrong]", modal).forEach(b => b.onclick = () => { cfg.wrong = b.dataset.wrong; re(); });
+  $$("[data-start]", modal).forEach(b => b.onclick = () => { cfg.start = b.dataset.start; re(); });
+  $$("[data-p]", modal).forEach(i => i.oninput = () => { cfg.players[+i.dataset.p] = i.value; saveCfg(); });
+  $$("[data-rm]", modal).forEach(b => b.onclick = () => { cfg.players.splice(+b.dataset.rm, 1); re(); });
+  const ap = $("#addP"); if (ap) ap.onclick = () => { cfg.players.push("玩家 " + (cfg.players.length + 1)); re(); setTimeout(() => { const ins = $$("[data-p]", modal); ins[ins.length - 1].select(); }, 0); };
+  const rr = $("#revR"); if (rr) rr.oninput = () => { cfg.reveal = +rr.value; $("#revV").textContent = cfg.reveal + "s"; saveCfg(); };
+  $("#goBtn").onclick = () => {
+    if (cfg.mode === "quiz" && n < 4) return $("#setupMsg").textContent = "四選一至少要 4 首歌。";
+    if (cfg.mode === "sing") { cfg.players = cfg.players.map((p, i) => p.trim() || "玩家 " + (i + 1)); if (cfg.players.length < 1) return; }
+    saveCfg(); closeModal(); startGame(l);
+  };
 }
 
-function reveal(winner){
-  const r = G.cur;
-  const y = r.releaseDate ? r.releaseDate.slice(0, 4) : "?";
-  $("#revealHead").textContent = winner >= 0 ? `${players[winner]} 答對，+1 分` : "答案是";
-  $("#revealHead").style.color = winner >= 0 ? colorOf(winner) : "";
-  $("#answer").className = "card";
-  $("#answer").innerHTML = `<img alt="" src="${art(r, 300)}"><div class="y">${esc(y)}</div><div class="t">${esc(r.trackName)}</div><div class="note">${esc(r.artistName)}</div>`;
-  restart($("#answer"), "morph");
-  rollYear($("#answer .y"), y);
-  renderBoard();
-  G.buzzer = -1; G.locked = new Set(players.map((_, i) => i));
-  renderPads();
-  show("vReveal");
-  if (!player.paused && winner >= 0) player.pause();
-  const champ = G.win ? G.scores.findIndex(s => s >= G.win) : -1;
-  if (champ >= 0) { G.over = true; $("#nextBtn").textContent = "看最後結果"; $("#nextBtn").onclick = finish; }
-}
-function renderBoard(final){
-  if (!players.length) { $("#board").innerHTML = ""; return; }
-  const max = Math.max(...G.scores);
-  const order = players.map((p, i) => i).sort((a, b) => G.scores[b] - G.scores[a]);
-  $("#board").innerHTML = order.map((i, k) => `<div class="score ${G.scores[i] === max && max > 0 ? "lead" : ""}" style="--i:${k}">
-    <i style="background:${colorOf(i)}"></i><span>${esc(players[i])}</span>
-    <span class="adj">${final ? "" : `<button data-adj="${i}" data-d="-1" aria-label="${esc(players[i])} 減 1 分">−</button><button data-adj="${i}" data-d="1" aria-label="${esc(players[i])} 加 1 分">＋</button>`}<b>${G.scores[i]}</b></span></div>`).join("");
-}
-$("#board").onclick = e => {
-  const b = e.target.closest("[data-adj]"); if (!b) return;
-  G.scores[+b.dataset.adj] += +b.dataset.d; renderBoard(); renderPads();
-};
-function finish(){
-  player.pause();
-  show("vReveal");
-  const max = players.length ? Math.max(...G.scores) : 0;
-  const winners = players.filter((_, i) => G.scores[i] === max);
-  $("#revealHead").textContent = "";
-  $("#answer").className = "answer";
-  $("#answer").innerHTML = `<div style="text-align:center;width:100%"><div class="big">${players.length ? (max > 0 ? esc(winners.join("、")) + " 獲勝！" : "平手！") : "歌單播完了！"}</div>
-    <div class="note">總共播了 ${G.n} 首</div></div>`;
-  renderBoard(true);
-  $("#pads").innerHTML = "";
-  restart($("#answer"), "flipin");
-  const all = players.length ? players.map((_, i) => hexOf(i)) : COLORS.map((_, i) => hexOf(i));
-  haptic("win");
-  [[.25,.5],[.75,.5],[.5,.35]].forEach(([x, y], k) => setTimeout(() => confetti(all, 90, x, y), k * 350));
-  $("#nextBtn").disabled = false;
-  $("#nextBtn").textContent = "回到設定";
-  $("#nextBtn").onclick = quit;
-}
-function quit(){
-  player.pause(); G = null;
-  try { wakeLock && wakeLock.release(); } catch {}
-  $("#round").hidden = true; $("#setup").hidden = false; $("#quitBtn").hidden = true;
-  $("#quitBtn").textContent = "結束這局";
-  $("#nextBtn").onclick = () => playNext();
-}
-$("#quitBtn").onclick = () => {
-  const b = $("#quitBtn"), label = P ? "結束挑戰" : "結束這局";
-  if (b.textContent !== "確定結束？") { b.textContent = "確定結束？"; setTimeout(() => { if (b.textContent === "確定結束？") b.textContent = label; }, 2500); return; }
-  if (P) return P.phase === "count" ? pQuit() : pEnd("提前結束");
-  finish();
-};
-
-/* ================= MODES ================= */
-let mode = store.get("hitsterMode", "practice");
-function renderMode(){
-  document.querySelectorAll(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
-  const pr = mode === "practice";
-  $("#playersBlock").hidden = pr;
-  document.querySelectorAll("[data-party]").forEach(e => e.hidden = pr);
-  document.querySelectorAll("[data-practice]").forEach(e => e.hidden = !pr);
-  $("#startBtn").textContent = pr ? "開始挑戰" : "開始遊戲";
-  store.set("hitsterMode", mode);
-}
-$("#modes").onclick = e => {
-  const b = e.target.closest(".mode"); if (!b || b.disabled) return;
-  mode = b.dataset.mode; haptic("tap"); renderMode();
-};
-
-/* ================= PRACTICE: timed solo challenge ================= */
-// Flow: 3-2-1 → song plays under the orb → tap "我知道了" → answer card (song keeps playing) → self-judge → next.
-// Clock keeps running the whole time; when it hits zero mid-judge you finish judging that song, then results.
-let P = null;
-const PV = ["pCd", "pPlay", "pJudge", "pResult"];
-const pShow = v => PV.forEach(x => $("#" + x).hidden = x !== v);
-const fmt = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
-const fine = matchMedia("(hover:hover) and (pointer:fine)").matches;
-const ORB_SUB = fine ? "或按空白鍵" : "聽出來就按";
-const MK = { right: "答對", wrong: "答錯", skip: "跳過", timeout: "沒聽出" };
-const art = (r, n) => esc((r.artworkUrl100 || "").replace("100x100", `${n}x${n}`));
-
-function shockAt(el, color){
-  if (reduce || !el) return;
-  const b = el.getBoundingClientRect(), d = document.createElement("div");
-  d.className = "shock"; d.style.left = b.left + b.width / 2 + "px"; d.style.top = b.top + b.height / 2 + "px"; d.style.setProperty("--c", color);
-  d.addEventListener("animationend", () => d.remove()); document.body.appendChild(d);
-}
-function floatAt(el, text){
-  if (reduce) return;
-  const b = el.getBoundingClientRect(), d = document.createElement("div");
-  d.className = "float"; d.textContent = text; d.style.left = b.left + b.width / 2 + "px"; d.style.top = b.top - 6 + "px";
-  d.addEventListener("animationend", () => d.remove()); document.body.appendChild(d);
-}
-function countUp(el, n){
-  if (reduce || !n) { el.textContent = n; return; }
-  const t0 = performance.now(), dur = 900;
-  (function f(now){ const p = Math.min(1, (now - t0) / dur); el.textContent = Math.round(n * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(f); })(t0);
-}
-
-function startPractice(items){
-  P = { items, queue: shuffle(items), durS: +$("#optDur").value, guess: $("#optGuess").value,
-        log: [], streak: 0, best: 0, phase: "count", endAt: 0, cur: null, t0: 0, started: false, timeUp: false };
-  P.nextP = pFetch();
-  $("#setup").hidden = true; $("#practice").hidden = false; $("#practice").classList.remove("done");
-  $("#quitBtn").hidden = false; $("#quitBtn").textContent = "結束挑戰";
-  $("#pCount").textContent = "0"; $("#pStreak").hidden = true; $("#pLast").innerHTML = "";
-  $("#pClock").textContent = fmt(P.durS * 1000); $("#pClock").classList.remove("hot"); $("#pBar").style.transform = "";
-  pShow("pCd");
-  requestAnimationFrame(pFrame);
-  const seq = ["3", "2", "1", "開始！"]; let k = 0;
-  const me = P;
-  (function step(){
-    if (P !== me || P.phase !== "count") return;
-    if (k === seq.length) { P.endAt = performance.now() + P.durS * 1000; return pPlayNext(); }
-    const el = $("#cdNum"); el.textContent = seq[k]; el.classList.toggle("word", k === 3); restart(el, "go");
-    haptic(k === 3 ? "start" : "tick"); shockAt(el, hexOf(k === 3 ? 2 : k));
-    k++; setTimeout(step, k === seq.length ? 550 : 750);
-  })();
-}
-
-async function pFetch(){
-  const me = P;
-  while (P === me && me.queue.length) {
-    const it = me.queue.shift();
-    if (it.ready) return it.ready;
-    try { const r = await resolve(it.line); if (r) return r; }
-    catch (e) { if (e.network) throw e; }
-  }
-  return null;
-}
-
-async function pPlayNext(){
-  if (!P) return;
-  if (P.timeUp) return pEnd("時間到！");
-  P.phase = "load";
-  const me = P;
-  let r;
-  try { r = await P.nextP; } catch (e) { return pEnd(e.message); }
-  if (P !== me || P.phase !== "load") return;
-  if (!r) return pEnd("歌單裡的歌都聽完了！");
-  P.cur = r; P.started = false; P.needTap = false; P.nextP = pFetch();
-  player.src = r.previewUrl; player.currentTime = 0;
-  P.phase = "play";
-  $("#orbLabel").textContent = "我知道了！"; $("#orbSub").textContent = ORB_SUB; $("#prog").style.setProperty("--p", 0);
-  $("#orbwrap").classList.remove("out");
-  pShow("pPlay"); restart($("#orbwrap"), "in");
-  player.play().catch(() => {
-    if (P === me && P.phase === "play") { P.needTap = true; $("#orbLabel").textContent = "點我播放"; $("#orbSub").textContent = "瀏覽器暫停了自動播放"; }
+/* ---- my libraries: paste YouTube links ---- */
+const YT_ID = /(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})(?![\w-])/;
+let cbN = 0;
+function jsonp(url){
+  return new Promise((res, rej) => {
+    const name = "ytcb" + (++cbN) + "_" + (Math.random() * 1e6 | 0);
+    const s = document.createElement("script");
+    const t = setTimeout(() => { done(); rej(new Error("timeout")); }, 8000);
+    function done(){ clearTimeout(t); delete window[name]; s.remove(); }
+    window[name] = d => { done(); res(d); };
+    s.onerror = () => { done(); rej(new Error("script")); };
+    s.src = url + "&callback=" + name; document.head.appendChild(s);
   });
 }
-player.addEventListener("playing", () => { if (P && P.phase === "play" && !P.started) { P.started = true; P.t0 = performance.now(); } });
-player.addEventListener("ended", () => { if (P && P.phase === "play") pSkip("timeout"); });
-player.addEventListener("error", () => { if (P && P.phase === "play" && player.src !== "" && !player.src.startsWith("blob:")) pPlayNext(); });
-
-function pKnow(){
-  if (!P || P.phase !== "play") return;
-  if (P.needTap) {
-    P.needTap = false; player.play().catch(() => {});
-    $("#orbLabel").textContent = "我知道了！"; $("#orbSub").textContent = ORB_SUB; return;
-  }
-  P.curT = P.started ? (performance.now() - P.t0) / 1000 : 0;
-  P.phase = "judge";
-  player.pause();   // no audio after buzzing, so nobody can confirm the answer by listening
-  haptic("buzz"); shockAt($("#orb"), hexOf(0)); shockAt($("#orb"), hexOf(1));
-  const r = P.cur, y = r.releaseDate ? r.releaseDate.slice(0, 4) : "?";
-  $("#pCard").innerHTML = `<p class="rt">${P.curT ? P.curT.toFixed(1) + " 秒就聽出來" : "聽出來了"}</p>
-    <img alt="" src="${art(r, 300)}"><div class="y">${esc(y)}</div>
-    <div class="t">${esc(r.trackName)}</div><div class="note">${esc(r.artistName)}</div>
-    <p class="note ask">${P.timeUp ? "時間到！判完這首就結算" : `你心裡想的${esc(P.guess.replace(/（.*/, ""))}對嗎？`}</p>`;
-  $("#pCard").className = "card";
-  pShow("pJudge"); restart($("#pCard"), "morph");
-  rollYear($("#pCard .y"), y);
+function guessSong(vt, ch){
+  const s = String(vt || "").replace(/[\(\[（【][^\)\]）】]*[\)\]）】]/g, " ").replace(/\s+/g, " ").trim();
+  const chName = String(ch || "").replace(/\s*-\s*Topic$/i, "").replace(/VEVO$/i, "").trim();
+  const q = String(vt || "").match(/[《「『](.+?)[》」』]/);
+  if (q) return { title: q[1].trim(), artist: String(vt).split(/[《「『【]/)[0].replace(/[\s\-–—|｜:：]+$/, "").trim() || chName };
+  const p = s.split(/\s+[-–—|｜]\s+/);
+  if (p.length >= 2) return { artist: p[0].trim(), title: p[1].trim() };
+  return { title: s || vt, artist: chName };
 }
-function pJudge(ok){
-  if (!P || P.phase !== "judge") return;
-  P.phase = "anim";
-  pLog(ok ? "right" : "wrong", P.curT);
-  if (ok) { haptic("right"); restart($("#pCount"), "bump"); floatAt($("#pCount"), "+1"); confetti([hexOf(3), "#f4effc", hexOf(1)], 55, .5, .42); }
-  else haptic("wrong");
-  $("#pCard").classList.remove("morph");
-  restart($("#pCard"), ok ? "goR" : "goL");
-  setTimeout(pPlayNext, reduce ? 0 : 360);
-}
-function pSkip(kind){
-  if (!P || P.phase !== "play") return;
-  P.phase = "anim";
-  pLog(kind, 0); haptic("tap");
-  $("#orbwrap").classList.remove("in");
-  restart($("#orbwrap"), "out");
-  setTimeout(pPlayNext, reduce ? 0 : 260);
-}
-function pLog(res, t){
-  P.log.push({ r: P.cur, res, t });
-  if (res === "right") { P.streak++; P.best = Math.max(P.best, P.streak); } else P.streak = 0;
-  $("#pCount").textContent = P.log.filter(x => x.res === "right").length;
-  const s = $("#pStreak");
-  if (P.streak >= 2) { s.hidden = false; s.textContent = `🔥 ${P.streak} 連對`; restart(s, "on"); } else s.hidden = true;
-  const r = P.cur;
-  $("#pLast").innerHTML = `<div class="ptoast"><img alt="" src="${art(r, 100)}"><span class="m ${res}">${MK[res]}</span><span class="nm"><b>${esc(r.trackName)}</b>　${esc(r.artistName)}</span></div>`;
-  restart($("#pLast .ptoast"), "in");
-}
-
-function pEnd(note){
-  if (!P || P.phase === "done") return;
-  P.phase = "done"; player.pause();
-  $("#vig").classList.remove("on"); $("#practice").classList.add("done"); $("#quitBtn").hidden = true; $("#pLast").innerHTML = "";
-  const L = P.log, n = L.filter(x => x.res === "right").length;
-  const times = L.filter(x => x.res === "right" && x.t).map(x => x.t);
-  const avg = times.length ? times.reduce((a, b) => a + b, 0) / times.length : 0;
-  const key = "hitsterPB:" + P.durS + ":" + [...selected].sort().join("|");
-  const prev = store.get(key, 0), pb = n > prev;
-  if (pb) store.set(key, n);
-  const stat = (v, l, i) => `<div class="stat" style="--i:${i}"><b>${v}</b><span>${l}</span></div>`;
-  $("#pResult").innerHTML = `
-    <p class="note">${esc(note)}</p>
-    <div id="resN" class="res-n">0</div>
-    <p class="res-l">${P.durS} 秒內答對 ${n} 首 ${pb && prev ? `<span class="pb stamp">新紀錄</span>` : prev ? `<span class="note">最佳 ${prev} 首</span>` : ""}</p>
-    <div class="stats">
-      ${stat(avg ? avg.toFixed(1) + " 秒" : "—", "平均聽出來", 0)}
-      ${stat(times.length ? Math.min(...times).toFixed(1) + " 秒" : "—", "最快一次", 1)}
-      ${stat(P.best, "最多連對", 2)}
+function openImport(id){
+  const ed = id ? MINE.find(l => l.id === id) : null;
+  const text = ed ? ed.songs.map(s => [s.title, s.artist, "https://youtu.be/" + s.v].filter(Boolean).join(" | ")).join("\n") : "";
+  openModal(`${mhead(ed ? "編輯題庫" : "貼上 YouTube 連結")}
+    <div style="padding:24px 28px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:14px">
+      <input class="field" id="impName" placeholder="題庫名稱，例如：大學同學 KTV" maxlength="24" value="${esc(ed ? ed.name : "")}">
+      <textarea class="field" id="impText" placeholder="一行一首，貼 YouTube 影片連結就好：&#10;https://www.youtube.com/watch?v=…&#10;https://youtu.be/…&#10;&#10;想自己寫歌名歌手也可以：&#10;小幸運 | 田馥甄 | https://youtu.be/…">${esc(text)}</textarea>
+      <p style="margin:0;color:var(--mute);font-size:13px">沒寫歌名的話，會從影片標題自動猜。整個 YouTube 播放清單請加到 GitHub 的 songs.txt，會自動展開。這份題庫只存在這台裝置。</p>
+      <p class="msg" id="impMsg"></p>
     </div>
-    ${L.length ? `<ol class="hist">${L.map((x, k) => `<li style="--i:${k}"><span class="m ${x.res}">${MK[x.res]}</span><img alt="" src="${art(x.r, 100)}">
-      <span class="nm"><b>${esc(x.r.trackName)}</b><small>${esc(x.r.artistName)}${x.t ? `，${x.t.toFixed(1)} 秒` : ""}</small></span>
-      <button data-u="${esc(x.r.previewUrl)}" aria-label="再聽一次 ${esc(x.r.trackName)}">▶</button></li>`).join("")}</ol>` : ""}
-    <div class="row" style="justify-content:center">
-      <button id="againBtn" class="btn pink">再挑戰一次</button>
-      <button id="backBtn" class="btn ghost">回到設定</button>
-    </div>`;
-  pShow("pResult");
-  countUp($("#resN"), n);
-  if (n) haptic("win");
-  if (pb && n) setTimeout(() => confetti(COLORS.map((_, i) => hexOf(i)), 150, .5, .3), 900);
+    <div class="mf"><span class="lbl"></span>${ed ? `<button class="btn danger" id="impDel">${icon("trash")}刪除</button>` : ""}<button class="btn" data-close>取消</button><button class="btn pri" id="impSave">${icon("check")}儲存</button></div>`, true);
+  $("#impName").focus();
+  if (ed) $("#impDel").onclick = () => { MINE = MINE.filter(l => l.id !== id); store.set("yt.lists", MINE); closeModal(); renderGrid(); toast("已刪除題庫"); };
+  $("#impSave").onclick = async () => {
+    const msg = $("#impMsg"), btn = $("#impSave");
+    const lines = $("#impText").value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    const items = [], seen = new Set(); let skipped = 0, playlist = false;
+    lines.forEach(line => {
+      const m = line.match(YT_ID);
+      if (!m) { if (/[?&]list=/.test(line)) playlist = true; skipped++; return; }
+      if (seen.has(m[1])) return; seen.add(m[1]);
+      const rest = line.split("|").map(s => s.trim()).filter(p => p && !YT_ID.test(p));
+      items.push({ v: m[1], title: rest[0] || "", artist: rest[1] || "" });
+    });
+    if (!items.length) { msg.textContent = playlist ? "播放清單網址請加到 GitHub 的 songs.txt；這裡請貼單支影片的連結。" : "沒有找到 YouTube 影片連結。"; return; }
+    btn.disabled = true;
+    let done = 0;
+    const need = items.filter(s => !s.title);
+    const worker = async () => { while (need.length) { const s = need.shift();
+      try { const d = await jsonp(`https://noembed.com/embed?url=${encodeURIComponent("https://www.youtube.com/watch?v=" + s.v)}`);
+        if (d && d.title) { s.vt = d.title; s.ch = d.author_name || ""; const g = guessSong(s.vt, s.ch); s.title = g.title; s.artist = g.artist; } } catch {}
+      if (!s.title) s.title = "影片 " + s.v;
+      msg.textContent = `讀取影片標題… ${++done}`; } };
+    await Promise.all([worker(), worker(), worker(), worker()]);
+    const name = $("#impName").value.trim() || "我的題庫";
+    if (ed) { ed.name = name; ed.songs = items; }
+    else MINE.push({ id: "m-" + Date.now().toString(36), name, tags: ["自訂"], songs: items });
+    store.set("yt.lists", MINE);
+    closeModal(); tab = "mine"; $$(".nav[data-tab]").forEach(x => x.classList.toggle("on", x.dataset.tab === "mine")); renderGrid();
+    toast(`已儲存 ${items.length} 首` + (skipped ? `，${skipped} 行沒有影片連結被略過` : ""));
+  };
 }
-$("#pResult").addEventListener("click", e => {
-  if (e.target.closest("#againBtn")) return startPractice(P.items);
-  if (e.target.closest("#backBtn")) return pQuit();
-  const b = e.target.closest("[data-u]"); if (!b) return;
-  const on = b.classList.contains("on");
-  $("#pResult").querySelectorAll("[data-u]").forEach(x => { x.classList.remove("on"); x.textContent = "▶"; });
-  if (on) { player.pause(); return; }
-  player.src = b.dataset.u; player.play().catch(() => {});
-  b.classList.add("on"); b.textContent = "❚❚";
-});
-player.addEventListener("ended", () => { if (P && P.phase === "done") $("#pResult").querySelectorAll("[data-u]").forEach(x => { x.classList.remove("on"); x.textContent = "▶"; }); });
-function pQuit(){
-  player.pause(); P = null;
-  try { wakeLock && wakeLock.release(); } catch {}
-  $("#vig").classList.remove("on");
-  $("#practice").hidden = true; $("#setup").hidden = false; $("#quitBtn").hidden = true; $("#quitBtn").textContent = "結束這局";
-}
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
 
-$("#orb").addEventListener("pointerdown", e => { e.preventDefault(); pKnow(); });
-$("#skipBtn").onclick = () => pSkip("skip");
-$("#okBtn").onclick = () => pJudge(true);
-$("#noBtn").onclick = () => pJudge(false);
-document.addEventListener("keydown", e => {
-  if (!P || e.repeat || e.target.closest("input,textarea,select")) return;
-  const k = e.key;
-  if (P.phase === "play") {
-    if (k === " " || k === "Enter") { e.preventDefault(); pKnow(); }
-    else if (k === "s" || k === "S" || k === "ArrowDown") pSkip("skip");
-  } else if (P.phase === "judge") {
-    if (k === "ArrowRight" || k === "y" || k === "Y") { e.preventDefault(); pJudge(true); }
-    else if (k === "ArrowLeft" || k === "n" || k === "N") { e.preventDefault(); pJudge(false); }
-  }
-});
-
-/* per-frame: game clock, song progress ring, and the radial "listening" visualizer */
-const viz = $("#viz"), vctx = viz.getContext("2d"), viz2 = $("#viz2"), v2ctx = viz2.getContext("2d");
-let energy = 0;
-function pFrame(now){
-  if (!P) return;
-  if (P.endAt && P.phase !== "done") {
-    const rem = P.endAt - now, txt = fmt(rem);
-    if (txt !== P.lastClock) { P.lastClock = txt; $("#pClock").textContent = txt; if (rem > 0 && rem <= 10000) haptic("tick"); }
-    $("#pBar").style.transform = `scaleX(${Math.max(0, rem / (P.durS * 1000))})`;
-    const hot = rem <= 10000 && rem > 0;
-    $("#pClock").classList.toggle("hot", hot); $("#vig").classList.toggle("on", hot);
-    if (rem <= 0 && !P.timeUp) {
-      P.timeUp = true; $("#vig").classList.remove("on");
-      if (P.phase === "judge") { const a = $("#pCard .ask"); if (a) a.textContent = "時間到！判完這首就結算"; }
-      else if (P.phase !== "anim") pEnd("時間到！");
-    }
-  }
-  if (P.phase === "play" || P.phase === "anim") {
-    const d = isFinite(player.duration) && player.duration > 0 ? player.duration : 30;
-    $("#prog").style.setProperty("--p", Math.min(1, player.currentTime / d));
-  }
-  if (!$("#pPlay").hidden && !reduce) drawViz(now, viz, vctx, P.phase === "play" && !player.paused && !P.needTap);
-  requestAnimationFrame(pFrame);
+/* ================= game ================= */
+let G = null, raf = 0;
+const stage = $("#stage"), cover = $("#cover");
+function startOf(song){
+  if (cfg.start === "head") return 0;
+  if (song.s != null) return song.s;
+  if (song.d > 70) return Math.round(song.d * (.22 + Math.random() * .33));
+  return 25 + Math.round(Math.random() * 35);
 }
-function drawViz(now, viz, vctx, live){
-  const s = viz.clientWidth, dpr = devicePixelRatio || 1;
-  if (!s) return;
-  if (viz.width !== Math.round(s * dpr)) { viz.width = viz.height = Math.round(s * dpr); }
-  vctx.setTransform(dpr, 0, 0, dpr, 0, 0); vctx.clearRect(0, 0, s, s);
-  energy += ((live ? 1 : .12) - energy) * .07;
-  const c = s / 2, r0 = s * .3125 + 20, N = 72, t = now / 1000;
-  const beat = Math.pow(Math.max(0, Math.sin(t * Math.PI * 2.1)), 8);
-  vctx.lineCap = "round"; vctx.lineWidth = Math.max(2, s * .011);
-  for (let k = 0; k < N; k++) {
-    const a = k / N * Math.PI * 2 - Math.PI / 2;
-    const n = (Math.sin(t * 3.1 + k * .55) + Math.sin(t * 5.3 - k * .9) + Math.sin(t * 1.7 + k * 1.9)) / 3;
-    const len = 3 + s * .085 * energy * (.5 + .45 * n + .55 * beat);
-    const hue = 330 - 140 * (.5 + .5 * Math.sin(a * 2 + t * .8));
-    vctx.strokeStyle = `hsla(${hue},95%,66%,${.35 + .6 * energy})`;
-    vctx.beginPath();
-    vctx.moveTo(c + Math.cos(a) * r0, c + Math.sin(a) * r0);
-    vctx.lineTo(c + Math.cos(a) * (r0 + len), c + Math.sin(a) * (r0 + len));
-    vctx.stroke();
-  }
+function startGame(lib){
+  const pool = lib.songs.filter(usable);
+  const total = Math.min(cfg.count, pool.length);
+  const p = plays(); p[lib.id] = (p[lib.id] || 0) + 1; store.set("yt.plays", p);
+  G = { mode: cfg.mode, lib, pool, queue: shuffle(pool), total, n: 0, t0: Date.now(), log: [], timers: [] };
+  if (G.mode === "quiz") Object.assign(G, { score: 0, combo: 0, maxCombo: 0, correct: 0, recs: topRecs(lib.id, total) });
+  else Object.assign(G, { players: cfg.players.map((name, i) => ({ name, score: 0, color: PCOL[i] })), win: cfg.win });
+  $("#lobby").hidden = true; $("#game").hidden = false; $("#result").hidden = true;
+  $("#game").classList.toggle("sing", G.mode === "sing");
+  $("#gTitle").innerHTML = `${esc(lib.name)}<small>${G.mode === "quiz" ? "四選一挑戰" : "搶唱派對"} · ${total} 題</small>`;
+  document.title = `${lib.name} · 猜歌`;
+  $("#vol").value = cfg.vol; $("#volN").textContent = cfg.vol + "%";
+  renderShow();
+  renderPads();
+  window.scrollTo(0, 0);
+  if (!YTP.ready) {
+    cover.classList.remove("off");
+    cover.innerHTML = `<div class="ringw spin"><svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" pathLength="100"/></svg></div><div class="singH">${YTP.failed ? "YouTube 播放器載入失敗，請重新整理。" : "YouTube 播放器載入中…"}</div>`;
+    YTP.whenReady().then(() => { if (G) nextQ(); });
+  } else nextQ();
 }
+function clearTimers(){ if (!G) return; G.timers.forEach(clearTimeout); G.timers = []; }
+const later = (fn, ms) => { G.timers.push(setTimeout(fn, ms)); };
 
-function gFrame(now){
+function nextQ(){
   if (!G) return;
-  if (!$("#vPlay").hidden && !reduce) drawViz(now, viz2, v2ctx, !player.paused);
-  requestAnimationFrame(gFrame);
+  clearTimers();
+  $("#popL").innerHTML = ""; $("#tap").hidden = true;
+  if (G.over || G.n >= G.total || !G.queue.length) return finish();
+  const song = G.queue.shift();
+  G.n++;
+  const c = G.cur = { song, start: startOf(song), playing: false };
+  if (G.mode === "quiz") {
+    c.phase = "load"; c.opts = makeOpts(song); c.answer = c.opts.indexOf(song); c.pick = -1;
+    c.loadAt = performance.now();
+    YTP.load(song.v, c.start);
+    later(checkLoad, 1500);
+  } else {
+    YTP.stop(); YTP.cue(song.v, c.start);
+    c.phase = "show"; c.dur = cfg.singTime * 1000; c.t0 = performance.now(); c.locked = new Set(); c.buzzer = -1;
+  }
+  renderAll(); loop();
+}
+function checkLoad(){
+  const c = G && G.cur; if (!c || c.phase !== "load") return;
+  const st = YTP.state(), el = performance.now() - c.loadAt;
+  if ((st === -1 || st === 5 || st === 2) && el > 2500) $("#tap").hidden = false;     // autoplay blocked: needs a tap
+  if (st === 3 && el > 16000) return skipBad(c, "載入太久");
+  later(checkLoad, 1500);
+}
+$("#tapBtn").onclick = () => { YTP.play(); $("#tap").hidden = true; if (G && G.cur && G.cur.phase !== "load") G.cur.wantPlay = true; };
+
+function makeOpts(song){
+  const key = s => label(s).toLowerCase();
+  const others = shuffle(G.pool.filter(s => s.v !== song.v && key(s) !== key(song)));
+  const picks = [], seen = new Set([key(song)]);
+  for (const s of others) { if (!seen.has(key(s))) { seen.add(key(s)); picks.push(s); } if (picks.length === 3) break; }
+  if (picks.length < 3) for (const s of shuffle(allSongs())) { if (!seen.has(key(s)) && s.v !== song.v) { seen.add(key(s)); picks.push(s); } if (picks.length === 3) break; }
+  return shuffle([song, ...picks]);
+}
+function onYTState(s){
+  if (!G || !G.cur) return;
+  const c = G.cur;
+  if (s === 1) { c.playing = true; $("#tap").hidden = true; if (c.phase === "load") beginAnswer(); }
+  if (s === 2 || s === 0 || s === 5) c.playing = false;
+  if (s === 0 && G.mode === "quiz" && (c.phase === "answer" || c.phase === "load")) { YTP.seek(Math.max(0, c.start - 20)); YTP.play(); }
+  if (G.mode === "sing") renderOpts();
+  renderThumb();
+}
+function onYTError(code){
+  if (!G || !G.cur) return;
+  const c = G.cur;
+  if (G.mode === "quiz" && (c.phase === "load" || c.phase === "answer")) return skipBad(c, code === 101 || code === 150 ? "不允許嵌入播放" : "無法播放");
+  if (G.mode === "sing") { markBad(c.song); toast("這首的原曲影片無法播放，請自行判斷。"); }
+}
+function markBad(song){ bad.add(song.v); store.set("yt.bad", [...bad]); }
+function skipBad(c, why){
+  if (!G || G.cur !== c) return;
+  markBad(c.song); G.pool = G.pool.filter(s => s.v !== c.song.v);
+  toast(`「${nameOf(c.song)}」${why}，換下一首`);
+  G.n--; c.phase = "skip"; nextQ();
+}
+function beginAnswer(){
+  const c = G.cur; c.phase = "answer"; c.t0 = performance.now(); c.dur = cfg.ansTime * 1000;
+  renderAll(); loop();
+}
+function loop(){
+  cancelAnimationFrame(raf);
+  const tick = () => {
+    if (!G || !G.cur) return;
+    const c = G.cur;
+    const timed = (G.mode === "quiz" && c.phase === "answer") || (G.mode === "sing" && c.phase === "show");
+    if (!timed) return;
+    const left = Math.max(0, c.dur - (performance.now() - c.t0)), sec = Math.ceil(left / 1000);
+    const arc = $("#arc"), num = $("#ringN"), rw = $(".ringw");
+    if (arc) arc.style.strokeDashoffset = 100 - left / c.dur * 100;
+    if (num && num.textContent !== String(sec)) { num.textContent = sec; if (sec <= 5 && sec > 0) beep("tick"); }
+    if (rw) rw.classList.toggle("hot", sec <= 5);
+    if (left <= 0) return G.mode === "quiz" ? resolveQ(-1) : noOne();
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
 }
 
-renderMode(); renderLists(); renderPlayers();
+/* ---- quiz ---- */
+function pick(i){
+  if (!G || G.mode !== "quiz") return;
+  const c = G.cur; if (!c || c.phase !== "answer") return;
+  resolveQ(i);
+}
+function resolveQ(i){
+  const c = G.cur; c.pick = i; c.phase = "reveal";
+  const used = Math.min(c.dur, performance.now() - c.t0);
+  const ok = i === c.answer;
+  if (ok) {
+    G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo); G.correct++;
+    const base = 60, speed = Math.round(60 * (1 - used / c.dur)), combo = Math.min(G.combo - 1, 10) * 8;
+    c.gain = base + speed + combo; c.parts = [["基礎", base], ["速度", speed], ["連擊", combo]];
+    G.score += c.gain; beep("good"); vibrate(30);
+  } else { G.combo = 0; c.gain = 0; beep("bad"); vibrate([40, 60, 40]); }
+  G.log.push({ song: c.song, ok, gain: c.gain, timeout: i < 0 });
+  renderAll(); renderPop();
+  c.revealUntil = Date.now() + cfg.reveal * 1000;
+  later(nextQ, cfg.reveal * 1000);
+}
+function renderPop(){
+  const c = G.cur;
+  if (G.mode === "quiz") {
+    const place = 1 + G.recs.filter(r => r.score > G.score).length;
+    $("#popL").innerHTML = c.gain
+      ? `<div class="pop"><div class="big">+${c.gain}<i>x${G.combo}</i></div><div class="sub">${G.recs.length ? `暫居第 ${place} 名` : "答對了！"}</div><div class="parts">${c.parts.filter(p => p[1]).map(p => `<span>+${p[1]} ${p[0]}</span>`).join("")}</div></div>`
+      : `<div class="pop no"><div class="sub">${c.pick < 0 ? "時間到！" : "答錯了"}</div><div class="ans">答案是 <b>${esc(label(c.song))}</b></div></div>`;
+  } else {
+    const w = c.winner >= 0 ? G.players[c.winner] : null;
+    $("#popL").innerHTML = w
+      ? `<div class="pop" style="border-color:${w.color}"><div class="big" style="color:${w.color}">+1</div><div class="sub">${esc(w.name)} 唱對了！</div><div class="ans">現在 ${w.score} 分</div></div>`
+      : `<div class="pop no"><div class="sub">沒人唱出來</div><div class="ans">按「播原曲」聽聽看</div></div>`;
+    later(() => { const p = $(".pop"); if (p) p.style.opacity = ".0", p.style.transition = "opacity .5s"; }, 3500);
+  }
+}
+
+/* ---- sing ---- */
+function buzz(i){
+  if (!G || G.mode !== "sing") return;
+  const c = G.cur; if (!c || c.phase !== "show" || c.locked.has(i) || !G.players[i]) return;
+  c.left = c.dur - (performance.now() - c.t0);
+  c.phase = "buzz"; c.buzzer = i;
+  beep("buzz"); vibrate(60); flash(G.players[i].color);
+  renderAll();
+  const pad = $(`.pad[data-p="${i}"]`); if (pad) pad.classList.add("buzz");
+}
+function judge(ok){
+  const c = G && G.cur; if (!c || c.phase !== "buzz") return;
+  const p = G.players[c.buzzer];
+  if (ok) {
+    p.score++; c.winner = c.buzzer; c.phase = "reveal";
+    G.log.push({ song: c.song, winner: c.buzzer });
+    beep("win"); confetti([p.color, "#ffffff", "#f1d27a"], 90);
+    if (!c.playing) playOriginal();
+    if (G.win && p.score >= G.win) G.over = true;
+    renderAll(); renderPop();
+  } else {
+    beep("bad"); vibrate([40, 60, 40]);
+    if (cfg.wrong === "minus") p.score--; else c.locked.add(c.buzzer);
+    YTP.pause(); c.buzzer = -1;
+    if (cfg.wrong === "lock" && c.locked.size >= G.players.length) return noOne();
+    c.phase = "show"; c.t0 = performance.now() - (c.dur - c.left);
+    renderAll(); loop();
+  }
+}
+function noOne(){
+  const c = G.cur; c.phase = "reveal"; c.winner = -1; c.buzzer = -1;
+  G.log.push({ song: c.song, winner: -1 });
+  beep("bad"); renderAll(); renderPop();
+}
+function playOriginal(){
+  const c = G.cur;
+  if (c.playing) { YTP.pause(); return; }
+  const st = YTP.state();
+  if (st === 2) YTP.play(); else YTP.load(c.song.v, c.start);
+}
+
+/* ---- rendering ---- */
+function renderAll(){ renderCover(); renderOpts(); renderRank(); renderPads(); renderThumb(); renderShow();
+  $("#extendBtn").hidden = !(G.mode === "quiz" && G.cur && G.cur.phase === "reveal"); }
+const ringHTML = (n, spin) => `<div class="ringw${spin ? " spin" : ""}"><svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" id="arc" cx="60" cy="60" r="52" pathLength="100" style="stroke-dashoffset:0"/></svg><b id="ringN">${spin ? "" : n}</b></div>`;
+function renderCover(){
+  const c = G.cur; if (!c) return;
+  const pill = `<div class="pill">題目 ${G.n}/${G.total}</div>`;
+  if (G.mode === "quiz") {
+    cover.classList.toggle("off", c.phase === "reveal");
+    if (c.phase === "load") cover.innerHTML = `${pill}${ringHTML("", true)}<div class="cnt">載入歌曲中…</div>`;
+    else if (c.phase === "answer") cover.innerHTML = `${pill}${ringHTML(cfg.ansTime)}<div class="cnt">已答 0/1</div>`;
+    else if (c.phase === "reveal") cover.innerHTML = "";
+  } else {
+    const s = c.song;
+    cover.classList.toggle("off", c.phase === "reveal" && c.playing && cfg.show === "video");
+    const title = `<div class="singT">${esc(nameOf(s))}</div>${s.artist ? `<div class="singA">${esc(s.artist)}</div>` : ""}`;
+    if (c.phase === "show") cover.innerHTML = `${pill}${title}<div class="mini">${ringHTML(Math.ceil((c.dur - (performance.now() - c.t0)) / 1000))}</div><div class="singH">會唱的人搶先按自己的按鈕，然後唱出來！</div>`;
+    else if (c.phase === "buzz") { const p = G.players[c.buzzer]; cover.innerHTML = `${pill}<div class="buzzN" style="--c:${p.color}">${icon("mic")} ${esc(p.name)} 搶唱！</div>${title}<div class="singH">唱完後大家判定，不確定就按「播原曲核對」</div>`; }
+    else { const w = c.winner >= 0 ? G.players[c.winner] : null; cover.innerHTML = `${pill}${title}<div class="singH">${w ? `${esc(w.name)} 得分！` : "這首沒人唱出來"}</div>`; }
+  }
+}
+function renderThumb(){
+  const c = G && G.cur; const t = $("#thumbL");
+  const showThumb = c && c.phase === "reveal" && (cfg.show === "thumb" || !c.playing);
+  t.classList.toggle("on", !!showThumb);
+  if (c) t.style.backgroundImage = `url(${thumb(c.song.v, "hqdefault")})`;
+  const vi = $("#vinfo"); vi.classList.toggle("on", !!(c && c.phase === "reveal"));
+  if (c) { $("#vTitle").textContent = label(c.song); $("#vCh").textContent = [c.song.ch, c.song.vt && c.song.vt !== label(c.song) ? c.song.vt : ""].filter(Boolean).join(" · "); }
+  if (G && G.mode === "sing" && c) cover.classList.toggle("off", c.phase === "reveal" && c.playing && cfg.show === "video");
+}
+function renderShow(){ $$("[data-show]").forEach(b => b.classList.toggle("on", b.dataset.show === cfg.show)); }
+const KEYS = ["Q", "W", "A", "S"];
+function renderOpts(){
+  const c = G.cur, el = $("#opts"); if (!c) return;
+  if (G.mode === "quiz") {
+    el.className = "opts";
+    el.innerHTML = c.opts.map((s, i) => {
+      let cls = "opt";
+      if (c.phase === "load") cls += " wait";
+      if (c.phase === "reveal") cls += i === c.answer ? " right" : i === c.pick ? " wrong" : " fade";
+      const mk = c.phase === "reveal" && (i === c.answer || i === c.pick) ? `<span class="mk">${i === c.answer ? "✓" : "✕"}</span>` : "";
+      return `<button class="${cls}" data-o="${i}" ${c.phase !== "answer" ? "disabled" : ""} title="${esc(s.vt || label(s))}"><span class="ot">${esc(label(s))}</span><kbd>${KEYS[i]}</kbd>${mk}</button>`;
+    }).join("");
+  } else {
+    el.className = "judge";
+    const orig = `<button class="btn" data-j="orig">${icon(c.playing ? "pause" : "play")}${c.playing ? "暫停原曲" : c.phase === "buzz" ? "播原曲核對" : "播原曲"}<kbd>P</kbd></button>`;
+    if (c.phase === "show") el.innerHTML = `<div class="hint">等待搶唱… ${G.players.length > 1 ? `按自己的按鈕（鍵盤 1–${G.players.length}）` : "按按鈕或鍵盤 1"}</div><button class="btn" data-j="skip">${icon("next")}跳過這首</button>`;
+    else if (c.phase === "buzz") el.innerHTML = `<button class="btn ng" data-j="no">${icon("x")}唱錯了<kbd>X</kbd></button>${orig}<button class="btn ok" data-j="ok">${icon("check")}唱對了<kbd>Enter</kbd></button>`;
+    else el.innerHTML = `${orig}<button class="btn pri" data-j="next">${G.over || G.n >= G.total ? icon("trophy") + "看結果" : icon("next") + "下一題"}<kbd style="color:#08201f;border-color:rgba(0,0,0,.25)">Enter</kbd></button>`;
+  }
+}
+$("#opts").addEventListener("click", e => {
+  const o = e.target.closest("[data-o]"); if (o) return pick(+o.dataset.o);
+  const j = e.target.closest("[data-j]"); if (!j || !G) return;
+  const a = j.dataset.j;
+  if (a === "ok") judge(true); else if (a === "no") judge(false);
+  else if (a === "orig") playOriginal();
+  else if (a === "next") nextQ();
+  else if (a === "skip") noOne();
+});
+function renderRank(){
+  const el = $("#rank");
+  if (G.mode === "quiz") {
+    const c = G.cur, st = !c ? "" : c.phase === "reveal" ? (c.gain ? `<span class="st ok">答對</span>` : `<span class="st no">${c.pick < 0 ? "超時" : "答錯"}</span>`) : `<span class="st">待答</span>`;
+    const place = 1 + G.recs.filter(r => r.score > G.score).length;
+    el.innerHTML = `<h4>這一局</h4><div class="rrow me"><span class="n">#${place}</span><span class="av">${esc([...me][0] || "玩")}</span><span class="nm">${esc(me)}<span class="you">YOU</span></span>${st}<span class="sc">${fmt(G.score)}<i>x${G.combo}</i></span></div>`
+      + (G.recs.length ? `<h4>個人紀錄 · ${G.total} 題</h4>` + G.recs.slice(0, 8).map((r, i) => `<div class="rrow ghost"><span class="n">#${i + 1}</span><span class="av">${esc([...r.name][0] || "?")}</span><span class="nm">${esc(r.name)}</span><span class="sc">${fmt(r.score)}</span></div>`).join("") : `<h4>第一次挑戰這個題數，加油！</h4>`);
+  } else {
+    const c = G.cur, max = Math.max(...G.players.map(p => p.score));
+    el.innerHTML = `<h4>玩家</h4>` + G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
+      const st = c && c.buzzer === i ? `<span class="st hot" style="--c:${p.color}">搶唱中</span>` : c && c.locked && c.locked.has(i) ? `<span class="st no">已鎖定</span>` : "";
+      return `<div class="rrow ${p.score === max && max > 0 ? "lead" : ""} ${c && c.locked && c.locked.has(i) ? "lock" : ""}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}</span>${st}<span class="sc" style="color:${p.color}">${p.score}</span></div>`;
+    }).join("");
+  }
+}
+function renderPads(){
+  const A = $("#padsA"), B = $("#padsB");
+  if (!G || G.mode !== "sing") { A.innerHTML = B.innerHTML = ""; return; }
+  const c = G.cur, n = G.players.length, half = Math.ceil(n / 2);
+  const pad = (p, i) => {
+    const lock = c && c.locked && c.locked.has(i), buzzing = c && c.buzzer === i;
+    const idle = c && c.phase !== "show" && !buzzing;
+    return `<button class="pad ${lock ? "lock" : ""} ${idle ? "idle" : ""} ${buzzing ? "buzz" : ""}" data-p="${i}" style="--c:${p.color}" ${!c || c.phase !== "show" || lock ? "disabled" : ""} aria-label="${esc(p.name)} 搶答"><kbd>${i + 1}</kbd><b>${esc(p.name)}</b><span class="ps">${p.score}</span>${lock ? `<span class="lk">${icon("lock")} 這首鎖定</span>` : ""}</button>`;
+  };
+  // pointerdown so a tap registers instantly
+  A.innerHTML = G.players.slice(0, half).map((p, i) => pad(p, i)).join("");
+  B.innerHTML = G.players.slice(half).map((p, i) => pad(p, i + half)).join("");
+}
+["#padsA", "#padsB"].forEach(s => $(s).addEventListener("pointerdown", e => { const p = e.target.closest(".pad"); if (p && !p.disabled) { e.preventDefault(); buzz(+p.dataset.p); } }));
+
+$$("[data-show]").forEach(b => b.onclick = () => { cfg.show = b.dataset.show; saveCfg(); renderShow(); if (G) { renderThumb(); } });
+$("#vol").oninput = e => { cfg.vol = +e.target.value; $("#volN").textContent = cfg.vol + "%"; YTP.vol(cfg.vol); saveCfg(); };
+$("#extendBtn").onclick = () => { if (!G || !G.cur || G.cur.phase !== "reveal") return; clearTimers(); G.cur.revealUntil += 10000; later(nextQ, Math.max(0, G.cur.revealUntil - Date.now())); toast("多聽 10 秒"); };
+$("#restartBtn").onclick = () => { if (!G) return; const lib = G.lib; clearTimers(); YTP.stop(); startGame(lib); };
+$("#leaveBtn").onclick = leave;
+function leave(){
+  if (G) clearTimers(); cancelAnimationFrame(raf); YTP.stop(); G = null;
+  $("#game").hidden = true; $("#result").hidden = true; $("#lobby").hidden = false; $("#popL").innerHTML = "";
+  document.title = "朋友版猜歌"; renderGrid();
+}
+
+/* keyboard */
+document.addEventListener("keydown", e => {
+  if (!G || !modal.hidden || e.target.matches("input,textarea,select") || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (!$("#result").hidden) { if (k === "enter") $("#againBtn") && $("#againBtn").click(); return; }
+  const c = G.cur; if (!c) return;
+  if (G.mode === "quiz") {
+    const i = { q: 0, w: 1, a: 2, s: 3, "1": 0, "2": 1, "3": 2, "4": 3 }[k];
+    if (i != null && c.phase === "answer") { e.preventDefault(); pick(i); }
+    else if (k === "enter" && c.phase === "reveal") nextQ();
+  } else {
+    if (/^[1-8]$/.test(k) && c.phase === "show") { e.preventDefault(); buzz(+k - 1); }
+    else if (c.phase === "buzz" && k === "enter") judge(true);
+    else if (c.phase === "buzz" && (k === "x" || k === "backspace")) judge(false);
+    else if (k === "p" && c.phase !== "show") playOriginal();
+    else if ((k === "enter" || k === " ") && c.phase === "reveal") { e.preventDefault(); nextQ(); }
+  }
+});
+
+/* ---- results ---- */
+function finish(){
+  clearTimers(); cancelAnimationFrame(raf);
+  const r = $("#result"), time = Math.round((Date.now() - G.t0) / 1000);
+  if (G.mode === "quiz") {
+    YTP.pause();
+    const rec = { name: me, score: G.score, correct: G.correct, total: G.n, maxCombo: G.maxCombo, time, date: Date.now() };
+    const rank = G.n ? addRec(G.lib.id, G.total, rec) : -1;
+    const acc = G.n ? Math.round(G.correct / G.n * 100) : 0;
+    r.innerHTML = `<div class="rcard"><h2>挑戰結束 · ${esc(G.lib.name)} · ${G.total} 題</h2><div class="rbig">${fmt(G.score)}</div>
+      <div style="color:var(--mute);margin-top:6px">${rank === 0 ? "🏆 新的個人最佳紀錄！" : rank > 0 ? `這台裝置排第 ${rank + 1} 名` : ""}</div>
+      <div class="rgrid"><div><small>答對</small><b>${G.correct}/${G.n}</b></div><div><small>正確率</small><b>${acc}%</b></div><div><small>最高連擊</small><b>x${G.maxCombo}</b></div><div><small>耗時</small><b>${mmss(time)}</b></div></div>
+      <ol class="rlist">${G.log.map(x => `<li><span class="mk ${x.ok ? "ok" : "no"}">${x.ok ? "✓" : "✕"}</span><span class="tt">${esc(label(x.song))}</span>${x.ok ? `<span class="g">+${x.gain}</span>` : ""}<a href="https://youtu.be/${x.song.v}" target="_blank" rel="noopener">YouTube ↗</a></li>`).join("")}</ol>
+      <div class="ract"><button class="btn" id="backBtn">${icon("back")}回大廳</button><button class="btn pri" id="againBtn">${icon("restart")}再挑戰一次</button></div></div>`;
+    if (rank === 0 || acc >= 80) confetti(["#5fd6d2", "#f1d27a", "#ffffff", "#9b8cff"]);
+  } else {
+    const order = G.players.map((p, i) => ({ ...p, i })).sort((a, b) => b.score - a.score);
+    const top = order[0], tie = order.filter(p => p.score === top.score).length > 1;
+    r.innerHTML = `<div class="rcard podium"><h2>搶唱派對結束 · 唱了 ${G.log.length} 首</h2>
+      <div class="rbig" style="font-size:56px;background:none;color:${tie ? "#fff" : top.color}">${tie ? "平手！" : `🏆 ${esc(top.name)}`}</div>
+      <div style="height:18px"></div>
+      ${order.map((p, k) => `<div class="lrow ${k < 3 ? "g" + (k + 1) : ""}" style="--c:${p.color}"><span class="rk">#${k + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><div class="who"><b>${esc(p.name)}</b><small>唱對 ${G.log.filter(x => x.winner === p.i).length} 首</small></div><span class="sc">${p.score} 分</span></div>`).join("")}
+      <ol class="rlist" style="margin-top:16px">${G.log.map(x => { const w = x.winner >= 0 ? G.players[x.winner] : null; return `<li><span class="mk ${w ? "ok" : "no"}">${w ? "✓" : "–"}</span><span class="tt">${esc(label(x.song))}</span><span class="g" style="color:${w ? w.color : "var(--dim)"}">${w ? esc(w.name) : "沒人"}</span><a href="https://youtu.be/${x.song.v}" target="_blank" rel="noopener">YouTube ↗</a></li>`; }).join("")}</ol>
+      <div class="ract"><button class="btn" id="backBtn">${icon("back")}回大廳</button><button class="btn pri" id="againBtn">${icon("restart")}再玩一局</button></div></div>`;
+    confetti([top.color, "#ffffff", "#f1d27a"]);
+    beep("win");
+  }
+  r.hidden = false;
+  $("#backBtn").onclick = leave;
+  $("#againBtn").onclick = () => { const lib = G.lib; r.hidden = true; startGame(lib); };
+}
+
+/* ================= boot ================= */
+paintIcons(); renderMe(); renderGrid();
+$("#quickSub").textContent = `全部 ${allSongs().filter(usable).length} 首隨機四選一`;
+window.__game = { get G(){ return G; }, YTP, cfg };   // for debugging in the console
 })();
 </script>
 </body>

@@ -4,13 +4,17 @@
 #  [歌單名稱]           開始一份新歌單
 #  歌名 | 歌手          一行一首
 #  歌名 | 歌手 | 年份   年份抓錯時，可以在第三欄自己寫
+#  歌名 | 歌手 | https://youtu.be/影片ID    指定要用哪支影片
+#  歌名 | 歌手 | @1:05                     指定從第幾秒開始播
+#  https://www.youtube.com/playlist?list=…   整個播放清單直接展開
+#  [歌單名稱 | 標籤1, 標籤2]                  歌單可以加標籤
 #  # 開頭的行           註解，不會被讀取
 #
-#  存檔後 GitHub 會自動去 Apple Music 查好每首歌，
+#  存檔後 GitHub 會自動幫每首歌找 YouTube 影片，
 #  大約幾分鐘後網站就會更新。
 # ─────────────────────────────────────────────
 
-[華語金曲 90–00 年代]
+[華語金曲 90–00 年代 | 華語, 懷舊]
 晴天 | 周杰倫
 七里香 | 周杰倫
 倔強 | 五月天
@@ -40,7 +44,7 @@ Super Star | S.H.E
 童年 | 羅大佑
 小情歌 | 蘇打綠
 
-[華語近年 2010 之後]
+[華語近年 2010 之後 | 華語, 流行]
 小幸運 | 田馥甄
 愛人錯過 | 告五人
 披星戴月的想你 | 告五人
@@ -62,7 +66,7 @@ Super Star | S.H.E
 想見你想見你想見你 | 八三夭
 突然好想你 | 五月天
 
-[西洋流行經典]
+[西洋流行經典 | 西洋, 英文]
 Bohemian Rhapsody | Queen
 Dancing Queen | ABBA
 Billie Jean | Michael Jackson
@@ -94,7 +98,7 @@ Stayin' Alive | Bee Gees
 Hotel California | Eagles
 Like a Prayer | Madonna
 
-[日韓流行]
+[日韓流行 | 日文, 韓文]
 First Love | 宇多田ヒカル
 夜に駆ける | YOASOBI
 アイドル | YOASOBI
