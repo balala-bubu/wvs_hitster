@@ -142,6 +142,115 @@ textarea.input{min-height:150px;resize:vertical;width:100%}
 .sheet:not([hidden]) .panel{animation:sheetup .35s cubic-bezier(.2,.9,.25,1) both}
 @keyframes sheetup{from{transform:translateY(100%)}}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:31}
+.setup > .block:last-child{position:sticky;bottom:0;z-index:5;margin-top:-10px;padding:20px 0 calc(4px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--ink) 34%)}
+
+/* ---------- modes ---------- */
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mode{position:relative;overflow:hidden;text-align:left;border:0;border-radius:18px;padding:16px;min-height:112px;background:var(--surface);display:flex;flex-direction:column;gap:6px;box-shadow:inset 0 0 0 2px transparent;transition:transform .3s cubic-bezier(.2,.9,.25,1),box-shadow .2s}
+.mode b{position:relative;font:800 18px/1.2 var(--display)}
+.mode span{position:relative;font-size:13px;color:var(--muted);line-height:1.45}
+.mode::before{content:"";position:absolute;right:-34px;top:-34px;width:110px;height:110px;border-radius:50%;background:var(--c);opacity:.13;transition:transform .6s cubic-bezier(.2,.9,.25,1),opacity .3s}
+.mode[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--c);transform:translateY(-3px)}
+.mode[aria-pressed="true"]::before{transform:scale(2.2);opacity:.2}
+.mode:disabled{opacity:.45;cursor:default}
+@media (max-width:540px){.modes{grid-template-columns:1fr}.mode{min-height:0}}
+
+/* ---------- practice ---------- */
+.practice{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+.phud{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.clock{font:800 34px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:inline-block}
+.clock.hot{color:var(--pink);animation:tick 1s ease-in-out infinite}
+.tally{display:flex;align-items:baseline;gap:8px}
+.count{font:800 34px/1 var(--display);color:var(--lime);font-variant-numeric:tabular-nums;display:inline-block}
+.count.bump{animation:bump .5s cubic-bezier(.2,1.8,.4,1)}
+@keyframes bump{40%{transform:scale(1.7)}}
+.streak{align-self:center;font:700 13px/1.6 var(--body);color:var(--ink);background:var(--sun);border-radius:999px;padding:1px 10px}
+.streak.on{animation:pop .5s cubic-bezier(.2,1.8,.4,1)}
+.tbar{height:8px;border-radius:4px;background:var(--surface);overflow:hidden}
+.tbar i{display:block;height:100%;transform-origin:left;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink),var(--cyan));background-size:300% 100%;animation:flow 4s linear infinite}
+@keyframes flow{to{background-position:300% 0}}
+.practice.done .phud,.practice.done .tbar{display:none}
+
+.pstage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;min-height:320px}
+.cd{font:800 clamp(120px,38vw,200px)/1 var(--display);letter-spacing:-.04em}
+.cd.word{font-size:clamp(56px,16vw,96px);color:var(--sun)}
+.cd.go{animation:cdin .75s cubic-bezier(.2,.9,.25,1) both}
+@keyframes cdin{0%{transform:scale(2.6);opacity:0;filter:blur(8px)}30%{transform:scale(1);opacity:1;filter:blur(0)}80%{transform:scale(.92);opacity:1}100%{transform:scale(.7);opacity:0}}
+
+.orbwrap{position:relative;width:min(60vw,260px);aspect-ratio:1;display:grid;place-items:center;margin:32px 0}
+.orbwrap.in{animation:orbin .5s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes orbin{from{transform:scale(.55);opacity:0}}
+.orbwrap.out{animation:orbout .28s cubic-bezier(.5,0,.75,0) both}
+@keyframes orbout{to{transform:translateX(-45%) scale(.7) rotate(-8deg);opacity:0}}
+#viz{position:absolute;left:-30%;top:-30%;width:160%;height:160%;pointer-events:none}
+.prog{position:absolute;inset:-12px;border-radius:50%;background:conic-gradient(var(--fg) calc(var(--p,0) * 1turn),rgba(255,255,255,.08) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px))}
+.orb{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;border:0;color:#fff;
+  background:radial-gradient(circle at 34% 28%,#ff8cbb 0,var(--pink) 42%,#a3268c 100%);
+  box-shadow:0 24px 70px -14px rgba(255,61,139,.65),inset 0 -14px 34px rgba(40,0,40,.3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;user-select:none;-webkit-user-select:none;
+  animation:breathe 1.8s ease-in-out infinite;transition:transform .12s}
+@keyframes breathe{50%{transform:scale(1.035)}}
+.orb:active{transform:scale(.93);animation-play-state:paused}
+.orb b{font:800 clamp(24px,6.5vw,32px)/1.1 var(--display)}
+.orb small{font-size:13px;opacity:.85}
+
+.card{width:min(100%,380px);background:var(--surface);border-radius:24px;padding:18px 18px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
+.card img{width:min(44vw,176px);aspect-ratio:1;border-radius:16px;background:var(--line);box-shadow:0 16px 36px -14px rgba(0,0,0,.8)}
+.card .y{font:800 40px/1 var(--display);color:var(--sun);font-variant-numeric:tabular-nums}
+.card .t{font:800 22px/1.25 var(--display);text-wrap:balance}
+.card .rt{margin:0;font-weight:700;font-size:13px;color:var(--cyan)}
+.card .ask{margin-top:4px}
+.card.morph{animation:morph .6s cubic-bezier(.2,.9,.25,1.12) both}
+@keyframes morph{from{transform:scale(.3);border-radius:50%;opacity:0;filter:blur(6px)}55%{opacity:1;filter:blur(0)}}
+.card.goR{animation:goR .4s cubic-bezier(.5,0,.75,0) both}
+@keyframes goR{to{transform:translateX(130%) rotate(16deg);opacity:0}}
+.card.goL{animation:goL .4s cubic-bezier(.5,0,.75,0) both}
+@keyframes goL{20%{transform:translateX(12px)}to{transform:translate(-40%,60%) rotate(-12deg) scale(.8);opacity:0}}
+.judge{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(100%,380px)}
+.jbtn{min-height:64px;border:0;border-radius:18px;font:800 19px var(--display);transition:transform .1s}
+.jbtn:active{transform:scale(.95)}
+.jbtn.ok{background:var(--lime);color:var(--ink)}
+.jbtn.no{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 2px var(--line)}
+.kbd{display:none;margin-left:8px;font:500 12px var(--body);opacity:.6;border:1px solid currentColor;border-radius:5px;padding:0 5px;vertical-align:2px}
+@media (hover:hover) and (pointer:fine){.kbd{display:inline-block}}
+
+.plast{min-height:50px;display:flex;justify-content:center}
+.ptoast{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:14px;padding:6px 14px 6px 6px;max-width:100%;font-size:13px}
+.ptoast img{width:38px;height:38px;border-radius:8px;flex:none;background:var(--line)}
+.ptoast .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptoast.in{animation:toastin .45s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes toastin{from{transform:translateY(16px) scale(.9);opacity:0}}
+.m{font-weight:900;flex:none}
+.m.right{color:var(--lime)} .m.wrong{color:var(--pink)} .m.skip,.m.timeout{color:var(--muted);font-weight:500}
+
+.result{justify-content:flex-start;gap:16px;padding-top:8px}
+.res-n{font:800 clamp(96px,30vw,150px)/.9 var(--display);color:var(--lime);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.res-l{margin:0;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.pb{display:inline-block;background:var(--sun);color:var(--ink);font-weight:900;border-radius:8px;padding:2px 10px;transform:rotate(-6deg)}
+.pb.stamp{animation:stamp .55s .9s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stamp{from{transform:scale(3) rotate(-24deg);opacity:0}}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:420px}
+.stat{background:var(--surface);border-radius:14px;padding:10px 6px;animation:enter .4s both;animation-delay:calc(.6s + var(--i) * 90ms)}
+.stat b{display:block;font:800 22px/1.2 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.hist{list-style:none;margin:0;padding:0;width:100%;max-width:420px;display:flex;flex-direction:column;gap:6px}
+.hist li{display:grid;grid-template-columns:44px 40px minmax(0,1fr) 36px;gap:10px;align-items:center;background:var(--surface);border-radius:12px;padding:6px;text-align:left;animation:enter .35s both;animation-delay:calc(1s + var(--i) * 45ms)}
+.hist .m{text-align:center;font-size:13px}
+.hist img{width:40px;height:40px;border-radius:8px;background:var(--line)}
+.hist .nm{min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.hist .nm b,.hist .nm small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist .nm small{color:var(--muted)}
+.hist button{border:0;background:var(--line);border-radius:10px;width:36px;height:36px;font-size:12px}
+.hist button.on{background:var(--cyan);color:var(--ink)}
+
+.shock{position:fixed;width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;border:3px solid var(--c);pointer-events:none;z-index:28;animation:shock .75s cubic-bezier(.1,.8,.3,1) forwards}
+@keyframes shock{from{transform:scale(.3);opacity:1}to{transform:scale(6);opacity:0;border-width:1px}}
+.float{position:fixed;z-index:32;font:800 24px var(--display);color:var(--lime);pointer-events:none;animation:floatup .9s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes floatup{from{transform:translate(-50%,0) scale(.6);opacity:0}20%{opacity:1;transform:translate(-50%,-12px) scale(1.25)}to{transform:translate(-50%,-64px) scale(1);opacity:0}}
+#vig{position:fixed;inset:0;pointer-events:none;z-index:27;box-shadow:inset 0 0 0 0 rgba(255,61,139,0)}
+#vig.on{animation:heart 1s ease-in-out infinite}
+@keyframes heart{0%,100%{box-shadow:inset 0 0 90px 0 rgba(255,61,139,.12)}15%{box-shadow:inset 0 0 120px 24px rgba(255,61,139,.42)}}
+
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -155,11 +264,20 @@ textarea.input{min-height:150px;resize:vertical;width:100%}
   <!-- ================= SETUP ================= -->
   <section id="setup" class="setup">
     <div class="block">
+      <h2>怎麼玩</h2>
+      <div id="modes" class="modes">
+        <button class="mode" data-mode="practice" style="--c:var(--cyan)"><b>單人練習</b><span>限時內猜對越多首越好，自己判對錯</span></button>
+        <button class="mode" data-mode="party" style="--c:var(--pink)"><b>同機搶答</b><span>一支手機放桌上，2～6 人各按一個鈕</span></button>
+        <button class="mode" data-mode="online" style="--c:var(--violet)" disabled><b>手機連線</b><span>一台當螢幕，大家用自己的手機搶答（製作中）</span></button>
+      </div>
+    </div>
+
+    <div class="block">
       <h2>選歌單 <small>可以複選</small></h2>
       <div id="lists" class="lists"></div>
     </div>
 
-    <div class="block">
+    <div class="block" id="playersBlock">
       <h2>玩家 <small>每人一個搶答鈕，最多 6 人</small></h2>
       <div id="players" class="players"></div>
       <div class="row">
@@ -171,6 +289,14 @@ textarea.input{min-height:150px;resize:vertical;width:100%}
     <div class="block">
       <h2>規則</h2>
       <div class="opts">
+        <label class="opt" data-practice>挑戰時間
+          <select id="optDur" class="input">
+            <option value="60">60 秒</option>
+            <option value="90" selected>90 秒</option>
+            <option value="120">2 分鐘</option>
+            <option value="180">3 分鐘</option>
+          </select>
+        </label>
         <label class="opt">要猜什麼
           <select id="optGuess" class="input">
             <option value="歌名">歌名</option>
@@ -179,13 +305,13 @@ textarea.input{min-height:150px;resize:vertical;width:100%}
             <option value="年份（差 2 年內算對）">年份（差 2 年內）</option>
           </select>
         </label>
-        <label class="opt">答錯怎麼辦
+        <label class="opt" data-party>答錯怎麼辦
           <select id="optWrong" class="input">
             <option value="lock">這首不能再搶</option>
             <option value="minus">扣 1 分，可再搶</option>
           </select>
         </label>
-        <label class="opt">獲勝分數
+        <label class="opt" data-party>獲勝分數
           <select id="optWin" class="input">
             <option value="5">先到 5 分</option>
             <option value="10" selected>先到 10 分</option>
@@ -239,7 +365,42 @@ textarea.input{min-height:150px;resize:vertical;width:100%}
 
     <div id="pads" class="pads"></div>
   </section>
+
+  <!-- ================= PRACTICE ================= -->
+  <section id="practice" class="practice" hidden>
+    <div class="phud">
+      <div id="pClock" class="clock">1:30</div>
+      <div class="tally"><span id="pStreak" class="streak" hidden></span><span id="pCount" class="count">0</span><span class="note">首答對</span></div>
+    </div>
+    <div class="tbar"><i id="pBar"></i></div>
+
+    <div id="pCd" class="pstage">
+      <div id="cdNum" class="cd">3</div>
+      <p class="note">聽出來就按大圓鈕，看答案後自己判對錯</p>
+    </div>
+
+    <div id="pPlay" class="pstage" hidden>
+      <div id="orbwrap" class="orbwrap">
+        <canvas id="viz" aria-hidden="true"></canvas>
+        <div id="prog" class="prog"></div>
+        <button id="orb" class="orb"><b id="orbLabel">我知道了！</b><small id="orbSub">聽出來就按</small></button>
+      </div>
+      <button id="skipBtn" class="btn ghost small">跳過這首<span class="kbd">S</span></button>
+    </div>
+
+    <div id="pJudge" class="pstage" hidden>
+      <div id="pCard" class="card"></div>
+      <div class="judge">
+        <button id="noBtn" class="jbtn no">沒猜對<span class="kbd">←</span></button>
+        <button id="okBtn" class="jbtn ok">猜對了<span class="kbd">→</span></button>
+      </div>
+    </div>
+
+    <div id="pResult" class="pstage result" hidden></div>
+    <div id="pLast" class="plast" aria-live="polite"></div>
+  </section>
 </div>
+<div id="vig"></div>
 
 <!-- ================= IMPORT SHEET ================= -->
 <div id="sheet" class="sheet" hidden>
@@ -528,9 +689,9 @@ function silentWav(){
 }
 let wakeLock = null;
 async function keepAwake(){ try { if ("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen"); } catch {} }
-document.addEventListener("visibilitychange", () => { if (G && document.visibilityState === "visible") keepAwake(); });
+document.addEventListener("visibilitychange", () => { if ((G || P) && document.visibilityState === "visible") keepAwake(); });
 
-$("#startBtn").onclick = async () => {
+function buildItems(){
   const seen = new Set(), items = [];
   allLists().filter(l => selected.has(l.id)).forEach(l => {
     if (Array.isArray(l.songs)) l.songs.forEach(x => {
@@ -542,10 +703,17 @@ $("#startBtn").onclick = async () => {
       items.push({ line });
     });
   });
+  return items;
+}
+
+$("#startBtn").onclick = async () => {
+  const items = buildItems();
   if (!items.length) { $("#setupMsg").textContent = "請至少選一份歌單。"; return; }
+  $("#setupMsg").textContent = "";
   const lines = items;
   try { player.src = silentWav(); await player.play(); player.pause(); } catch {}
   keepAwake();
+  if (mode === "practice") return startPractice(items);
   G = {
     queue: shuffle(lines), total: lines.length, n: 0, next: null, cur: null,
     scores: players.map(() => 0), locked: new Set(), buzzer: -1,
@@ -707,12 +875,274 @@ function quit(){
   $("#nextBtn").onclick = () => playNext();
 }
 $("#quitBtn").onclick = () => {
-  const b = $("#quitBtn");
-  if (b.textContent !== "確定結束？") { b.textContent = "確定結束？"; setTimeout(() => b.textContent = "結束這局", 2500); return; }
+  const b = $("#quitBtn"), label = P ? "結束挑戰" : "結束這局";
+  if (b.textContent !== "確定結束？") { b.textContent = "確定結束？"; setTimeout(() => { if (b.textContent === "確定結束？") b.textContent = label; }, 2500); return; }
+  if (P) return P.phase === "count" ? pQuit() : pEnd("提前結束");
   finish();
 };
 
-renderLists(); renderPlayers();
+/* ================= MODES ================= */
+let mode = store.get("hitsterMode", "practice");
+function renderMode(){
+  document.querySelectorAll(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
+  const pr = mode === "practice";
+  $("#playersBlock").hidden = pr;
+  document.querySelectorAll("[data-party]").forEach(e => e.hidden = pr);
+  document.querySelectorAll("[data-practice]").forEach(e => e.hidden = !pr);
+  $("#startBtn").textContent = pr ? "開始挑戰" : "開始遊戲";
+  store.set("hitsterMode", mode);
+}
+$("#modes").onclick = e => {
+  const b = e.target.closest(".mode"); if (!b || b.disabled) return;
+  mode = b.dataset.mode; haptic("tap"); renderMode();
+};
+
+/* ================= PRACTICE: timed solo challenge ================= */
+// Flow: 3-2-1 → song plays under the orb → tap "我知道了" → answer card (song keeps playing) → self-judge → next.
+// Clock keeps running the whole time; when it hits zero mid-judge you finish judging that song, then results.
+let P = null;
+const PV = ["pCd", "pPlay", "pJudge", "pResult"];
+const pShow = v => PV.forEach(x => $("#" + x).hidden = x !== v);
+const fmt = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+const fine = matchMedia("(hover:hover) and (pointer:fine)").matches;
+const ORB_SUB = fine ? "或按空白鍵" : "聽出來就按";
+const MK = { right: "答對", wrong: "答錯", skip: "跳過", timeout: "沒聽出" };
+const art = (r, n) => esc((r.artworkUrl100 || "").replace("100x100", `${n}x${n}`));
+
+function shockAt(el, color){
+  if (reduce || !el) return;
+  const b = el.getBoundingClientRect(), d = document.createElement("div");
+  d.className = "shock"; d.style.left = b.left + b.width / 2 + "px"; d.style.top = b.top + b.height / 2 + "px"; d.style.setProperty("--c", color);
+  d.addEventListener("animationend", () => d.remove()); document.body.appendChild(d);
+}
+function floatAt(el, text){
+  if (reduce) return;
+  const b = el.getBoundingClientRect(), d = document.createElement("div");
+  d.className = "float"; d.textContent = text; d.style.left = b.left + b.width / 2 + "px"; d.style.top = b.top - 6 + "px";
+  d.addEventListener("animationend", () => d.remove()); document.body.appendChild(d);
+}
+function countUp(el, n){
+  if (reduce || !n) { el.textContent = n; return; }
+  const t0 = performance.now(), dur = 900;
+  (function f(now){ const p = Math.min(1, (now - t0) / dur); el.textContent = Math.round(n * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(f); })(t0);
+}
+
+function startPractice(items){
+  P = { items, queue: shuffle(items), durS: +$("#optDur").value, guess: $("#optGuess").value,
+        log: [], streak: 0, best: 0, phase: "count", endAt: 0, cur: null, t0: 0, started: false, timeUp: false };
+  P.nextP = pFetch();
+  $("#setup").hidden = true; $("#practice").hidden = false; $("#practice").classList.remove("done");
+  $("#quitBtn").hidden = false; $("#quitBtn").textContent = "結束挑戰";
+  $("#pCount").textContent = "0"; $("#pStreak").hidden = true; $("#pLast").innerHTML = "";
+  $("#pClock").textContent = fmt(P.durS * 1000); $("#pClock").classList.remove("hot"); $("#pBar").style.transform = "";
+  pShow("pCd");
+  requestAnimationFrame(pFrame);
+  const seq = ["3", "2", "1", "開始！"]; let k = 0;
+  const me = P;
+  (function step(){
+    if (P !== me || P.phase !== "count") return;
+    if (k === seq.length) { P.endAt = performance.now() + P.durS * 1000; return pPlayNext(); }
+    const el = $("#cdNum"); el.textContent = seq[k]; el.classList.toggle("word", k === 3); restart(el, "go");
+    haptic(k === 3 ? "start" : "tick"); shockAt(el, hexOf(k === 3 ? 2 : k));
+    k++; setTimeout(step, k === seq.length ? 550 : 750);
+  })();
+}
+
+async function pFetch(){
+  const me = P;
+  while (P === me && me.queue.length) {
+    const it = me.queue.shift();
+    if (it.ready) return it.ready;
+    try { const r = await resolve(it.line); if (r) return r; }
+    catch (e) { if (e.network) throw e; }
+  }
+  return null;
+}
+
+async function pPlayNext(){
+  if (!P) return;
+  if (P.timeUp) return pEnd("時間到！");
+  P.phase = "load";
+  const me = P;
+  let r;
+  try { r = await P.nextP; } catch (e) { return pEnd(e.message); }
+  if (P !== me || P.phase !== "load") return;
+  if (!r) return pEnd("歌單裡的歌都聽完了！");
+  P.cur = r; P.started = false; P.needTap = false; P.nextP = pFetch();
+  player.src = r.previewUrl; player.currentTime = 0;
+  P.phase = "play";
+  $("#orbLabel").textContent = "我知道了！"; $("#orbSub").textContent = ORB_SUB; $("#prog").style.setProperty("--p", 0);
+  $("#orbwrap").classList.remove("out");
+  pShow("pPlay"); restart($("#orbwrap"), "in");
+  player.play().catch(() => {
+    if (P === me && P.phase === "play") { P.needTap = true; $("#orbLabel").textContent = "點我播放"; $("#orbSub").textContent = "瀏覽器暫停了自動播放"; }
+  });
+}
+player.addEventListener("playing", () => { if (P && P.phase === "play" && !P.started) { P.started = true; P.t0 = performance.now(); } });
+player.addEventListener("ended", () => { if (P && P.phase === "play") pSkip("timeout"); });
+player.addEventListener("error", () => { if (P && P.phase === "play" && player.src !== "" && !player.src.startsWith("blob:")) pPlayNext(); });
+
+function pKnow(){
+  if (!P || P.phase !== "play") return;
+  if (P.needTap) {
+    P.needTap = false; player.play().catch(() => {});
+    $("#orbLabel").textContent = "我知道了！"; $("#orbSub").textContent = ORB_SUB; return;
+  }
+  P.curT = P.started ? (performance.now() - P.t0) / 1000 : 0;
+  P.phase = "judge";
+  haptic("buzz"); shockAt($("#orb"), hexOf(0)); shockAt($("#orb"), hexOf(1));
+  const r = P.cur, y = r.releaseDate ? r.releaseDate.slice(0, 4) : "?";
+  $("#pCard").innerHTML = `<p class="rt">${P.curT ? P.curT.toFixed(1) + " 秒就聽出來" : "聽出來了"}</p>
+    <img alt="" src="${art(r, 300)}"><div class="y">${esc(y)}</div>
+    <div class="t">${esc(r.trackName)}</div><div class="note">${esc(r.artistName)}</div>
+    <p class="note ask">${P.timeUp ? "時間到！判完這首就結算" : `你心裡想的${esc(P.guess.replace(/（.*/, ""))}對嗎？`}</p>`;
+  $("#pCard").className = "card";
+  pShow("pJudge"); restart($("#pCard"), "morph");
+  rollYear($("#pCard .y"), y);
+}
+function pJudge(ok){
+  if (!P || P.phase !== "judge") return;
+  P.phase = "anim";
+  pLog(ok ? "right" : "wrong", P.curT);
+  if (ok) { haptic("right"); restart($("#pCount"), "bump"); floatAt($("#pCount"), "+1"); confetti([hexOf(3), "#f4effc", hexOf(1)], 55, .5, .42); }
+  else haptic("wrong");
+  $("#pCard").classList.remove("morph");
+  restart($("#pCard"), ok ? "goR" : "goL");
+  setTimeout(pPlayNext, reduce ? 0 : 360);
+}
+function pSkip(kind){
+  if (!P || P.phase !== "play") return;
+  P.phase = "anim";
+  pLog(kind, 0); haptic("tap");
+  $("#orbwrap").classList.remove("in");
+  restart($("#orbwrap"), "out");
+  setTimeout(pPlayNext, reduce ? 0 : 260);
+}
+function pLog(res, t){
+  P.log.push({ r: P.cur, res, t });
+  if (res === "right") { P.streak++; P.best = Math.max(P.best, P.streak); } else P.streak = 0;
+  $("#pCount").textContent = P.log.filter(x => x.res === "right").length;
+  const s = $("#pStreak");
+  if (P.streak >= 2) { s.hidden = false; s.textContent = `🔥 ${P.streak} 連對`; restart(s, "on"); } else s.hidden = true;
+  const r = P.cur;
+  $("#pLast").innerHTML = `<div class="ptoast"><img alt="" src="${art(r, 100)}"><span class="m ${res}">${MK[res]}</span><span class="nm"><b>${esc(r.trackName)}</b>　${esc(r.artistName)}</span></div>`;
+  restart($("#pLast .ptoast"), "in");
+}
+
+function pEnd(note){
+  if (!P || P.phase === "done") return;
+  P.phase = "done"; player.pause();
+  $("#vig").classList.remove("on"); $("#practice").classList.add("done"); $("#quitBtn").hidden = true; $("#pLast").innerHTML = "";
+  const L = P.log, n = L.filter(x => x.res === "right").length;
+  const times = L.filter(x => x.res === "right" && x.t).map(x => x.t);
+  const avg = times.length ? times.reduce((a, b) => a + b, 0) / times.length : 0;
+  const key = "hitsterPB:" + P.durS + ":" + [...selected].sort().join("|");
+  const prev = store.get(key, 0), pb = n > prev;
+  if (pb) store.set(key, n);
+  const stat = (v, l, i) => `<div class="stat" style="--i:${i}"><b>${v}</b><span>${l}</span></div>`;
+  $("#pResult").innerHTML = `
+    <p class="note">${esc(note)}</p>
+    <div id="resN" class="res-n">0</div>
+    <p class="res-l">${P.durS} 秒內答對 ${n} 首 ${pb && prev ? `<span class="pb stamp">新紀錄</span>` : prev ? `<span class="note">最佳 ${prev} 首</span>` : ""}</p>
+    <div class="stats">
+      ${stat(avg ? avg.toFixed(1) + " 秒" : "—", "平均聽出來", 0)}
+      ${stat(times.length ? Math.min(...times).toFixed(1) + " 秒" : "—", "最快一次", 1)}
+      ${stat(P.best, "最多連對", 2)}
+    </div>
+    ${L.length ? `<ol class="hist">${L.map((x, k) => `<li style="--i:${k}"><span class="m ${x.res}">${MK[x.res]}</span><img alt="" src="${art(x.r, 100)}">
+      <span class="nm"><b>${esc(x.r.trackName)}</b><small>${esc(x.r.artistName)}${x.t ? `，${x.t.toFixed(1)} 秒` : ""}</small></span>
+      <button data-u="${esc(x.r.previewUrl)}" aria-label="再聽一次 ${esc(x.r.trackName)}">▶</button></li>`).join("")}</ol>` : ""}
+    <div class="row" style="justify-content:center">
+      <button id="againBtn" class="btn pink">再挑戰一次</button>
+      <button id="backBtn" class="btn ghost">回到設定</button>
+    </div>`;
+  pShow("pResult");
+  countUp($("#resN"), n);
+  if (n) haptic("win");
+  if (pb && n) setTimeout(() => confetti(COLORS.map((_, i) => hexOf(i)), 150, .5, .3), 900);
+}
+$("#pResult").addEventListener("click", e => {
+  if (e.target.closest("#againBtn")) return startPractice(P.items);
+  if (e.target.closest("#backBtn")) return pQuit();
+  const b = e.target.closest("[data-u]"); if (!b) return;
+  const on = b.classList.contains("on");
+  $("#pResult").querySelectorAll("[data-u]").forEach(x => { x.classList.remove("on"); x.textContent = "▶"; });
+  if (on) { player.pause(); return; }
+  player.src = b.dataset.u; player.play().catch(() => {});
+  b.classList.add("on"); b.textContent = "❚❚";
+});
+player.addEventListener("ended", () => { if (P && P.phase === "done") $("#pResult").querySelectorAll("[data-u]").forEach(x => { x.classList.remove("on"); x.textContent = "▶"; }); });
+function pQuit(){
+  player.pause(); P = null;
+  try { wakeLock && wakeLock.release(); } catch {}
+  $("#vig").classList.remove("on");
+  $("#practice").hidden = true; $("#setup").hidden = false; $("#quitBtn").hidden = true; $("#quitBtn").textContent = "結束這局";
+}
+
+$("#orb").addEventListener("pointerdown", e => { e.preventDefault(); pKnow(); });
+$("#skipBtn").onclick = () => pSkip("skip");
+$("#okBtn").onclick = () => pJudge(true);
+$("#noBtn").onclick = () => pJudge(false);
+document.addEventListener("keydown", e => {
+  if (!P || e.repeat || e.target.closest("input,textarea,select")) return;
+  const k = e.key;
+  if (P.phase === "play") {
+    if (k === " " || k === "Enter") { e.preventDefault(); pKnow(); }
+    else if (k === "s" || k === "S" || k === "ArrowDown") pSkip("skip");
+  } else if (P.phase === "judge") {
+    if (k === "ArrowRight" || k === "y" || k === "Y") { e.preventDefault(); pJudge(true); }
+    else if (k === "ArrowLeft" || k === "n" || k === "N") { e.preventDefault(); pJudge(false); }
+  }
+});
+
+/* per-frame: game clock, song progress ring, and the radial "listening" visualizer */
+const viz = $("#viz"), vctx = viz.getContext("2d");
+let energy = 0;
+function pFrame(now){
+  if (!P) return;
+  if (P.endAt && P.phase !== "done") {
+    const rem = P.endAt - now, txt = fmt(rem);
+    if (txt !== P.lastClock) { P.lastClock = txt; $("#pClock").textContent = txt; if (rem > 0 && rem <= 10000) haptic("tick"); }
+    $("#pBar").style.transform = `scaleX(${Math.max(0, rem / (P.durS * 1000))})`;
+    const hot = rem <= 10000 && rem > 0;
+    $("#pClock").classList.toggle("hot", hot); $("#vig").classList.toggle("on", hot);
+    if (rem <= 0 && !P.timeUp) {
+      P.timeUp = true; $("#vig").classList.remove("on");
+      if (P.phase === "judge") { const a = $("#pCard .ask"); if (a) a.textContent = "時間到！判完這首就結算"; }
+      else if (P.phase !== "anim") pEnd("時間到！");
+    }
+  }
+  if (P.phase === "play" || P.phase === "anim") {
+    const d = isFinite(player.duration) && player.duration > 0 ? player.duration : 30;
+    $("#prog").style.setProperty("--p", Math.min(1, player.currentTime / d));
+  }
+  if (!$("#pPlay").hidden && !reduce) drawViz(now);
+  requestAnimationFrame(pFrame);
+}
+function drawViz(now){
+  const s = viz.clientWidth, dpr = devicePixelRatio || 1;
+  if (!s) return;
+  if (viz.width !== Math.round(s * dpr)) { viz.width = viz.height = Math.round(s * dpr); }
+  vctx.setTransform(dpr, 0, 0, dpr, 0, 0); vctx.clearRect(0, 0, s, s);
+  const live = P.phase === "play" && !player.paused && !P.needTap;
+  energy += ((live ? 1 : .12) - energy) * .07;
+  const c = s / 2, r0 = s * .3125 + 20, N = 72, t = now / 1000;
+  const beat = Math.pow(Math.max(0, Math.sin(t * Math.PI * 2.1)), 8);
+  vctx.lineCap = "round"; vctx.lineWidth = Math.max(2, s * .011);
+  for (let k = 0; k < N; k++) {
+    const a = k / N * Math.PI * 2 - Math.PI / 2;
+    const n = (Math.sin(t * 3.1 + k * .55) + Math.sin(t * 5.3 - k * .9) + Math.sin(t * 1.7 + k * 1.9)) / 3;
+    const len = 3 + s * .085 * energy * (.5 + .45 * n + .55 * beat);
+    const hue = 330 - 140 * (.5 + .5 * Math.sin(a * 2 + t * .8));
+    vctx.strokeStyle = `hsla(${hue},95%,66%,${.35 + .6 * energy})`;
+    vctx.beginPath();
+    vctx.moveTo(c + Math.cos(a) * r0, c + Math.sin(a) * r0);
+    vctx.lineTo(c + Math.cos(a) * (r0 + len), c + Math.sin(a) * (r0 + len));
+    vctx.stroke();
+  }
+}
+
+renderMode(); renderLists(); renderPlayers();
 })();
 </script>
 </body>
