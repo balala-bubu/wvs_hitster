@@ -367,7 +367,7 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
 /* stage cover: fades in quickly (so the next song's picture never shows), fades out gently */
 .cover{transition:opacity .12s}
 .cover.off{transition:opacity .45s}
-.cover.snap,.cover.snap.off{transition:none!important}
+.cover.snap,.cover.snap.off,.thumbL.snap,.vinfo.snap{transition:none!important}
 .cover.swapin>*{animation:fade .2s}
 .cover.peek{justify-content:flex-start;gap:6px;padding-top:14px;background:linear-gradient(180deg,rgba(5,8,10,.9),rgba(5,8,10,.55) 34%,rgba(5,8,10,0) 60%)}
 .cover.peek .pill,.cover.peek .singH{display:none}
@@ -1119,7 +1119,8 @@ function nextQ(){
   if (!G) return;
   clearTimers(); leavePop(); stopBar();
   /* put the question cover back instantly, before the next video is swapped in, so no frame of it ever shows */
-  cover.classList.add("snap"); cover.classList.remove("off");
+  const snapEls = [cover, $("#thumbL"), $("#vinfo")];
+  snapEls.forEach(e => e.classList.add("snap")); cover.classList.remove("off"); $("#thumbL").classList.remove("on"); $("#vinfo").classList.remove("on");
   $("#tap").hidden = true;
   if (G.over || G.n >= G.total || !G.queue.length) return finish();
   const song = G.queue.shift();
@@ -1135,7 +1136,7 @@ function nextQ(){
     c.phase = "show"; c.dur = cfg.singTime * 1000; c.t0 = performance.now(); c.locked = new Set(); c.buzzer = -1; c.winner = undefined;
   }
   renderAll(); loop();
-  void cover.offsetWidth; requestAnimationFrame(() => requestAnimationFrame(() => cover.classList.remove("snap")));
+  void cover.offsetWidth; requestAnimationFrame(() => requestAnimationFrame(() => snapEls.forEach(e => e.classList.remove("snap"))));
 }
 function checkLoad(){
   const c = G && G.cur; if (!c || c.phase !== "load") return;
@@ -1393,9 +1394,10 @@ function renderThumb(){
   const c = G && G.cur; const t = $("#thumbL");
   const showThumb = c && (c.phase === "reveal" && (cfg.show === "thumb" || !c.playing) || G.mode === "sing" && c.phase === "buzz" && c.playing && cfg.show === "thumb");
   t.classList.toggle("on", !!showThumb);
-  if (c) t.style.backgroundImage = `url(${thumb(c.song.v, "hqdefault")})`;
+  const may = !!c && (c.phase === "reveal" || G.mode === "sing" && c.phase === "buzz");   // never load the next song's picture or title before it may be shown
+  if (may) t.style.backgroundImage = `url(${thumb(c.song.v, "hqdefault")})`; else if (c) t.style.backgroundImage = "none";
   const vi = $("#vinfo"); vi.classList.toggle("on", !!(c && c.phase === "reveal"));
-  if (c) { $("#vTitle").textContent = label(c.song); $("#vCh").textContent = [c.song.ch, c.song.vt && c.song.vt !== label(c.song) ? c.song.vt : ""].filter(Boolean).join(" · "); }
+  if (may) { $("#vTitle").textContent = label(c.song); $("#vCh").textContent = [c.song.ch, c.song.vt && c.song.vt !== label(c.song) ? c.song.vt : ""].filter(Boolean).join(" · "); }
   if (G && c) coverClasses();
 }
 function renderShow(){ $$("[data-show]").forEach(b => b.classList.toggle("on", b.dataset.show === cfg.show)); }
