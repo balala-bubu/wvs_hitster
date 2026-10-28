@@ -192,6 +192,10 @@ function collectVideos(node, out = []) {
 const normV = s => String(s || "").replace(/[！-～]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
   .toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 const YT_BAD = /live|現場|演唱會|concert|cover|翻唱|karaoke|伴奏|卡拉|instrumental|純音樂|鋼琴|piano|remix|reaction|hour|小時|循環|loop|教學|tutorial|8d|sped ?up|slowed|nightcore|彈唱|舞蹈|dance practice|shorts/i;
+/* 不是原版的來源：電視台／綜藝頻道、搬運號、歌詞號、KTV 伴唱，還有標題上寫著節目或舞台版的 */
+const REPOST_CH = /芒果|mango|湖南衛視|湖南卫视|浙江衛視|浙江卫视|東方衛視|东方卫视|江蘇衛視|江苏卫视|北京衛視|北京卫视|衛視|卫视|央視|央视|cctv|中國好聲音|中国好声音|好聲音|我是歌手|聲生不息|天籟之戰|綜藝|综艺|電視|电视|tv$|抖音|tiktok|ktv|卡拉|伴奏|搬運|搬运|bilibili|嗶哩|歌詞|歌词|lyrics?|翻唱|cover|音樂分享|熱門歌曲|熱門音樂|金曲串燒|經典老歌|懷舊|老歌|playlist|歌單/i;
+const REPOST_VT = /我是歌手|聲生不息|声生不息|蒙面唱將|蒙面歌王|中國好聲音|中国好声音|天籟之戰|歌手當打|歌手2\d{3}|披荊斬棘|乘風破浪|乘风破浪|跨年|晚會|晚会|春晚|舞台純享|舞台纯享|純享版|纯享版|綜藝|综艺|reaction|合唱版|對唱版|串燒|串烧|\bdj\b|dj版|抖音|鈴聲|铃声|動態歌詞|动态歌词|歌詞版|歌词版|lyrics? video|\blyrics?\b|\d+\s*(?:首|曲)|合輯|合集|精選|精选|full album|完整專輯/i;
+const isRepost = r => REPOST_CH.test(r.ch || "") || REPOST_VT.test(r.vt || "");
 function ytScore(song, r) {
   const T = normV(r.vt), C = normV(r.ch), st = normV(song.title), sa = normV(song.artist);
   let s = 0;
@@ -200,6 +204,11 @@ function ytScore(song, r) {
   if (/official|官方|\bmv\b|music video|ミュージックビデオ|뮤직비디오|完整版/i.test(r.vt)) s += 1;
   if (/vevo|official|官方|唱片|records|music/i.test(r.ch)) s += 1;
   if (YT_BAD.test(r.vt) && !YT_BAD.test(song.title)) s -= 4;
+  /* 盡量抓原版：歌手自己的頻道、唱片公司、YouTube 自動產生的「- Topic」加分；電視台、搬運號、綜藝舞台版扣分 */
+  if (sa && C.includes(sa)) s += 2;
+  if (/- topic$/i.test(r.ch || "")) s += 2;
+  if (REPOST_CH.test(r.ch || "") && !(sa && C.includes(sa))) s -= 3;
+  if (REPOST_VT.test(r.vt || "") && !REPOST_VT.test(song.title)) s -= 3;
   if (r.d && (r.d < 60 || r.d > 600)) s -= 5;
   if (r.live) s -= 5;
   return s;
@@ -302,6 +311,15 @@ const pickCache = h => Object.fromEntries(CACHE_FIELDS.filter(f => h[f] !== unde
         hit.v = song.v; hit.yc = "manual"; changed = true;
         const meta = await ytMeta(song.v);
         if (meta) { hit.vt = meta.vt; hit.ch = meta.ch; if (!meta.embeddable) hit.noembed = true; }
+      }
+      /* 以前抓到的如果是電視台／搬運版，重新找一次原版；找不到更好的就維持原樣 */
+      if (!song.v && song.title && hit.v && hit.yc !== "manual" && isRepost(hit)) {
+        process.stdout.write(`  (${i}/${total}) 換原版 ${label}（現在是 ${hit.ch || hit.vt}）… `);
+        try {
+          const r = await ytSearch(song);
+          if (r && r.v !== hit.v && !isRepost(r)) { Object.assign(hit, r); changed = true; delete hit.noembed; console.log(`${r.vt}（${r.ch}）`); }
+          else console.log("沒有更好的，維持原樣");
+        } catch (e) { ytDown++; console.log("失敗：" + e.message); }
       }
       if (!hit.v && song.title) {
         process.stdout.write(`  (${i}/${total}) YouTube 找 ${label} … `);
