@@ -84,12 +84,15 @@ function mood(state, ms) {
 /* 大小和位置：高度約舞台的 80%，站在加分提示右邊；放不下（手機、提示置中）就靠右站 */
 function layout() {
   const st = crew.stage, W = st.clientWidth, H = st.clientHeight;
-  let sc = Math.min(H * .8 / 180, 1.9), left;
+  const LIFT = 56;                                                     // 讓出左下角「顯示影片／縮圖」按鈕列
+  let sc = Math.min(H * .8 / 180, 1.9), lift = 0, left;
   const pop = $("#popL .pop:not(.out)");
-  const side = pop && innerWidth > 860 ? pop.offsetLeft + pop.offsetWidth + 10 : -1;
-  if (side >= 0 && (W - side - 8) / 144 >= .7) { sc = Math.min(sc, (W - side - 8) / 144); left = side; }
-  else { sc = Math.min(sc, H * .5 / 180, .75); left = W - 144 * sc + 10; }                 // 手機：提示置中沒有側邊空位，小一點、站在右下角
-  const r = crew.root.style; r.setProperty("--sc", sc.toFixed(3)); r.left = left + "px"; r.bottom = (8 - 9 * sc) + "px";
+  const GAP = 14, M = 12;                                              // 角色站在加分提示左邊：提示往右挪出空位
+  if (innerWidth > 860) sc = Math.min(sc, (H - LIFT - 6) / 180);
+  const cw = 144 * sc, need = M + cw + GAP + (pop ? pop.offsetWidth : 0) + M;
+  if (pop && innerWidth > 860 && need <= W) left = M, lift = LIFT, pop.style.left = (M + cw + GAP) + "px";
+  else { sc = Math.min(sc, H * .5 / 180, .75); left = W - 144 * sc + 10; }   // 手機／空間不夠：小一點、站在右下角
+  const r = crew.root.style; r.setProperty("--sc", sc.toFixed(3)); r.left = left + "px"; r.bottom = (lift + 8 - 9 * sc) + "px";
 }
 function show() {
   if (!crew) return;
