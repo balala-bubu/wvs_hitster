@@ -475,6 +475,43 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
   .stats{gap:12px;font-size:14px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ---- online room (PeerJS) ---- */
+.roombox{border:1px solid var(--line2);border-radius:var(--r);padding:16px 18px;background:rgba(255,255,255,.015)}
+.roombox .code{font:800 46px/1 var(--num);letter-spacing:.22em;color:var(--teal);margin:6px 0 2px}
+.roombox .url{display:flex;gap:8px;align-items:center;margin-top:10px}
+.roombox .url input{flex:1;min-width:0;height:42px;border-radius:12px;border:1px solid var(--line2);background:var(--bg2);padding:0 12px;color:var(--mute);font-size:13px}
+.roombox .hintp{color:var(--mute);font-size:13px;margin:8px 0 0}
+.guests{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.gchip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border:1px solid var(--line2);border-radius:999px;font-weight:600;font-size:14px}
+.gchip i{width:12px;height:12px;border-radius:50%;background:var(--c,var(--teal));flex:none}
+.gchip.off{opacity:.4}
+.roomchip{font-weight:700}
+.ctl{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;gap:14px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:radial-gradient(900px 500px at 50% -10%,rgba(60,140,150,.16),transparent 60%),var(--bg);overflow:auto}
+.ctl[hidden]{display:none}
+.ctl .ctop{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.ctl .ctop .st{font-size:13px;color:var(--mute)}
+.ctl .ctop .st.ok{color:var(--good)}
+.ctl .ctop .st.bad{color:var(--bad)}
+.ctl .song{text-align:center;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.ctl .song .t{font:800 28px/1.25 "Noto Sans TC",var(--num);word-break:break-word}
+.ctl .song .a{color:var(--mute)}
+.ctl .song .sub{color:var(--mute);font-size:14px}
+.ctl .cnum{font:800 54px/1 var(--num);color:var(--teal);text-align:center}
+.ctl .cnum.hot{color:var(--bad)}
+.ctl .cbuzz{flex:1;min-height:200px;border-radius:32px;border:3px solid var(--c,var(--teal));background:linear-gradient(160deg,color-mix(in srgb,var(--c,var(--teal)) 30%,#0b1117),#0a0f14 78%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:34px;transition:transform .08s,opacity .2s,filter .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
+.ctl .cbuzz small{font:500 14px "Noto Sans TC";color:var(--mute)}
+.ctl .cbuzz:active:not(:disabled){transform:scale(.97)}
+.ctl .cbuzz:disabled{opacity:.35;filter:grayscale(.7)}
+.ctl .cbuzz.mine{animation:buzz .6s ease-out;box-shadow:0 0 50px var(--c,var(--teal))}
+.ctl .crank{display:flex;flex-direction:column;gap:6px}
+.ctl .crow{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px}
+.ctl .crow.me{border-color:var(--c);background:rgba(255,255,255,.03)}
+.ctl .crow .d{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.ctl .crow .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctl .crow .sc{font:800 20px var(--num);color:var(--c)}
+.ctl .jin{margin:auto 0;display:flex;flex-direction:column;gap:12px;max-width:420px;width:100%;align-self:center}
+.ctl .jin input{height:54px;border-radius:14px;border:1px solid var(--line2);background:var(--bg2);padding:0 16px;font-size:18px;color:var(--text)}
 </style>
 </head>
 <body>
@@ -519,6 +556,7 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
       <h1 id="gTitle">房間</h1>
       <button class="btn sm warn" id="extendBtn" hidden><span data-i="clock"></span><span>延長播放</span></button>
       <button class="btn sm pri" id="nextQBtn" hidden><span data-i="next"></span><span>下一題</span></button>
+      <button class="btn sm info roomchip" id="roomBtn" hidden><span data-i="users"></span><span id="roomBtnT">房間</span></button>
       <button class="btn sm info" id="restartBtn"><span data-i="restart"></span><span>重新開始</span></button>
       <button class="btn sm danger" id="leaveBtn"><span data-i="exit"></span><span>離開</span></button>
     </div>
@@ -544,6 +582,9 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
   </div>
   <div class="pads" id="padsB"></div>
 </main>
+
+<!-- ================= PHONE CONTROLLER (opened from a room link) ================= -->
+<main class="ctl" id="ctl" hidden></main>
 
 <div id="result" class="result" hidden></div>
 <div id="modal" class="modal" hidden></div>
@@ -741,7 +782,8 @@ window.onYouTubeIframeAPIReady = () => {
     });
   });
 };
-(function loadYT(){
+const ROOM_Q = (new URLSearchParams(location.search).get("room") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);   // opened from a room link: this device is only a controller
+if (!ROOM_Q) (function loadYT(){
   const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; s.async = true;
   s.onerror = () => { YTP.failed = true; toast("YouTube 播放器載入失敗，請檢查網路或關閉廣告封鎖外掛。", 6000); };
   document.head.appendChild(s);
@@ -910,8 +952,10 @@ function renderSetup(){
   cfg.count = clamp(cfg.count, minQ, maxQ);
   const quiz = cfg.mode === "quiz";
   const qb = [-5, 10, 15, 20, 5].map(v => v === -5 ? `<button data-q="-5">−5</button>` : v === 5 ? `<button data-q="+5">+5</button>` : v <= maxQ ? `<button data-q="${v}" class="${cfg.count === v ? "on" : ""}">${v} 題</button>` : "").join("") + (maxQ > 20 || ![10, 15, 20].includes(maxQ) ? `<button data-q="${maxQ}" class="${cfg.count === maxQ ? "on" : ""}">全部 ${maxQ}</button>` : "");
-  const players = cfg.players.map((p, i) => `<div class="prow" style="--c:${PCOL[i]}"><span class="dot"></span><input data-p="${i}" value="${esc(p)}" maxlength="8" aria-label="玩家 ${i + 1} 名字"><kbd>${i + 1}</kbd>${cfg.players.length > 1 ? `<button class="rm" data-rm="${i}" aria-label="移除">${icon("x")}</button>` : ""}</div>`).join("")
-    + (cfg.players.length < 8 ? `<button class="addp" id="addP">${icon("plus")} 新增玩家</button>` : "");
+  if (!cfg.players.length && !NET.on) cfg.players = ["玩家 1"];
+  const minLocal = NET.on ? 0 : 1;
+  const players = cfg.players.map((p, i) => `<div class="prow" style="--c:${PCOL[i]}"><span class="dot"></span><input data-p="${i}" value="${esc(p)}" maxlength="8" aria-label="玩家 ${i + 1} 名字"><kbd>${i + 1}</kbd>${cfg.players.length > minLocal ? `<button class="rm" data-rm="${i}" aria-label="移除">${icon("x")}</button>` : ""}</div>`).join("")
+    + (cfg.players.length + NET.count() < 8 ? `<button class="addp" id="addP">${icon("plus")} 新增玩家</button>` : "");
   const keep = $(".setup .form") ? $(".setup .form").scrollTop : 0;
   openModal(`${mhead(quiz ? "四選一設定" : "搶唱派對設定", "", true)}
     <div class="setup"><aside><img alt="" onerror="this.style.visibility='hidden'" src="${songs[0] ? thumb(songs[0].v, "hqdefault") : ""}"><div style="margin-top:12px"><span class="badge">${icon(l.builtin ? "globe" : "bookmark")}${l.builtin ? "公開題庫" : "我的題庫"}</span></div><b>${esc(l.name)}</b><small>${n} 題</small></aside>
@@ -932,7 +976,8 @@ function renderSetup(){
       </div>
       ${quiz ? `<div class="sec"><div class="sh">${icon("music")}選項顯示<small>四個選項上寫什麼</small></div><div class="opts3">
         ${[["both", "歌名＋歌手", "最完整"], ["title", "只顯示歌名", "要猜歌手以外的"], ["artist", "只顯示歌手", "猜是誰唱的"]].map(([v, b, d]) => `<button class="opt3 ${cfg.optShow === v ? "on" : ""}" data-os="${v}"><b>${b}</b><span>${d}</span></button>`).join("")}</div></div>` : ""}
-      ${quiz ? "" : `<div class="sec"><div class="sh">${icon("users")}玩家<small>每人一個搶答鈕，最多 8 人</small></div><div class="plist">${players}</div></div>
+      ${quiz ? "" : `<div class="sec"><div class="sh">${icon("globe")}手機連線<small>朋友用自己的手機搶答</small></div><div id="roomSlot">${NET.boxHTML()}</div></div>
+      <div class="sec"><div class="sh">${icon("users")}同螢幕玩家<small>每人一個搶答鈕，連線玩家加起來最多 8 人</small></div><div class="plist">${players}</div></div>
       <div class="sec"><div class="sh">${icon("trophy")}獲勝條件</div><div class="opts3">
         ${[[0, "打完全部題數", "最後分數最高的人贏"], [3, "先到 3 分", "快速一局"], [5, "先到 5 分", "標準一局"], [10, "先到 10 分", "長期抗戰"]].map(([v, b, s]) => `<button class="opt3 ${cfg.win === v ? "on" : ""}" data-win="${v}"><b>${b}</b><span>${s}</span></button>`).join("")}</div></div>
       <div class="sec"><div class="sh">${icon("x")}唱錯了怎麼辦</div><div class="opts3">
@@ -961,11 +1006,15 @@ function renderSetup(){
   $$("[data-start]", modal).forEach(b => b.onclick = () => { cfg.start = b.dataset.start; re(); });
   $$("[data-p]", modal).forEach(i => i.oninput = () => { cfg.players[+i.dataset.p] = i.value; saveCfg(); });
   $$("[data-rm]", modal).forEach(b => b.onclick = () => { cfg.players.splice(+b.dataset.rm, 1); re(); });
+  NET.bindBox(modal);
   const ap = $("#addP"); if (ap) ap.onclick = () => { cfg.players.push("玩家 " + (cfg.players.length + 1)); re(); setTimeout(() => { const ins = $$("[data-p]", modal); ins[ins.length - 1].select(); }, 0); };
   const rr = $("#revR"); if (rr) rr.oninput = () => { cfg.reveal = +rr.value; $("#revV").textContent = cfg.reveal + "s"; saveCfg(); };
   $("#goBtn").onclick = () => {
     if (cfg.mode === "quiz" && n < 4) return $("#setupMsg").textContent = "四選一至少要 4 首歌。";
-    if (cfg.mode === "sing") { cfg.players = cfg.players.map((p, i) => p.trim() || "玩家 " + (i + 1)); if (cfg.players.length < 1) return; }
+    if (cfg.mode === "sing") {
+      cfg.players = cfg.players.map((p, i) => p.trim() || "玩家 " + (i + 1));
+      if (cfg.players.length + NET.count() < 1) return $("#setupMsg").textContent = "至少要有一位玩家，可以新增同螢幕玩家，或等朋友用手機加入。";
+    }
     saveCfg(); closeModal(); startGame(l);
   };
 }
@@ -1120,7 +1169,7 @@ function startGame(lib){
   if (G) cancelAnimationFrame(G.twRaf);
   G = { mode: cfg.mode, lib, pool, queue: shuffle(pool), total, n: 0, t0: Date.now(), log: [], timers: [], starts: new Map(), shown: 0 };
   if (G.mode === "quiz") Object.assign(G, { score: 0, combo: 0, maxCombo: 0, correct: 0, recs: topRecs(lib.id, total) });
-  else Object.assign(G, { players: cfg.players.map((name, i) => ({ name, score: 0, color: PCOL[i] })), win: cfg.win });
+  else Object.assign(G, { players: buildPlayers(), win: cfg.win });
   YTP.stopAll(); stopBar();
   $("#opts").dataset.sig = ""; $("#opts")._h = ""; cover.dataset.key = ""; $("#padsA").dataset.sig = ""; $("#scrub").hidden = true;
   $("#lobby").hidden = true; $("#game").hidden = false; $("#result").hidden = true;
@@ -1387,6 +1436,7 @@ function renderAll(){
   $("#extendBtn").hidden = !rev; $("#nextQBtn").hidden = !rev;
   if (rev) $("#nextQBtn").lastElementChild.textContent = G.n >= G.total || !G.queue.length ? "看結果" : "下一題";
   scrubTick();
+  NET.push(); NET.renderChip();
 }
 const ringHTML = (n, spin) => `<div class="ringw${spin ? " slow" : ""}"><svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" id="arc" cx="60" cy="60" r="52" pathLength="100" style="stroke-dashoffset:0"/></svg><b id="ringN">${n}</b></div>`;
 function coverClasses(){
@@ -1477,7 +1527,7 @@ function renderRank(){
   } else {
     const c = G.cur, max = Math.max(...G.players.map(p => p.score));
     el.innerHTML = `<h4>玩家</h4>` + G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
-      const st = c && c.buzzer === i ? `<span class="st hot" style="--c:${p.color}">搶唱中</span>` : c && c.locked && c.locked.has(i) ? `<span class="st no">已鎖定</span>` : "";
+      const st = c && c.buzzer === i ? `<span class="st hot" style="--c:${p.color}">搶唱中</span>` : c && c.locked && c.locked.has(i) ? `<span class="st no">已鎖定</span>` : p.off ? `<span class="st no">離線</span>` : "";
       return `<div class="rrow ${p.score === max && max > 0 ? "lead" : ""} ${c && c.locked && c.locked.has(i) ? "lock" : ""}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}</span>${st}<span class="sc" style="color:${p.color}">${p.score}</span></div>`;
     }).join("");
   }
@@ -1522,7 +1572,7 @@ $("#leaveBtn").onclick = leave;
 function leave(){
   if (G) { clearTimers(); cancelAnimationFrame(G.twRaf); }
   cancelAnimationFrame(raf); clearInterval(tickT); YTP.stopAll(); releaseWake(); stopBar();
-  G = null; scrub.hidden = true;
+  G = null; scrub.hidden = true; NET.push(); NET.renderChip();
   $("#game").hidden = true; $("#result").hidden = true; $("#lobby").hidden = false; $("#popL").innerHTML = "";
   document.title = "朋友版猜歌"; renderGrid();
 }
@@ -1575,14 +1625,268 @@ function finish(){
     confetti([top.color, "#ffffff", "#f1d27a"]);
     beep("win");
   }
-  r.hidden = false;
+  r.hidden = false; G.done = true; NET.push();
   $("#backBtn").onclick = leave;
   $("#againBtn").onclick = () => { const lib = G.lib; r.hidden = true; startGame(lib); };
 }
 
+/* ================= online room (PeerJS) =================
+   The screen that runs the game is the host and the single source of truth. Phones that open the room
+   link are only controllers: they send "buzz" and receive a small state snapshot after every change. */
+const PEER_SRC = "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
+const RID = "wvshit-";                                            // PeerJS id prefix, so room codes can't clash with other apps
+const loadPeer = () => window.Peer ? Promise.resolve() : new Promise((ok, no) => {
+  const s = document.createElement("script"); s.src = PEER_SRC; s.async = true;
+  s.onload = ok; s.onerror = () => no(new Error("PeerJS 載入失敗")); document.head.appendChild(s);
+});
+const PID = (() => {                                              // per tab, so two tabs on one computer count as two players
+  try { let v = sessionStorage.getItem("yt.pid"); if (!v) { v = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sessionStorage.setItem("yt.pid", v); } return v; }
+  catch { return Math.random().toString(36).slice(2, 12); }
+})();
+const roomCode = () => { const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let s = ""; for (let i = 0; i < 4; i++) s += A[Math.random() * A.length | 0]; return s; };
+
+function buildPlayers(){
+  const loc = cfg.players.map(name => ({ name, score: 0 }));
+  const rem = NET.list().map(g => ({ name: g.name, score: 0, pid: g.pid, remote: true }));
+  return [...loc, ...rem].slice(0, 8).map((p, i) => ({ ...p, color: PCOL[i] }));
+}
+
+const NET = {
+  on: false, status: "off", code: "", peer: null, err: "", guests: new Map(),
+  list(){ return this.on ? [...this.guests.values()].filter(g => g.conn && g.conn.open) : []; },
+  count(){ return this.list().length; },
+  url(){ return location.href.split("#")[0].split("?")[0] + "?room=" + this.code; },
+  async open(){
+    if (this.on || this.status === "opening") return;
+    this.status = "opening"; this.err = ""; this.refresh();
+    try { await loadPeer(); } catch (e) { this.status = "off"; this.err = "PeerJS 載入失敗，請檢查網路或關閉廣告封鎖外掛。"; return this.refresh(); }
+    const attempt = n => {
+      const code = roomCode(), peer = new Peer(RID + code);
+      peer.on("open", () => { this.peer = peer; this.code = code; this.on = true; this.status = "on"; this.refresh(); });
+      peer.on("connection", conn => this.accept(conn));
+      peer.on("disconnected", () => { if (this.peer === peer && !peer.destroyed) { try { peer.reconnect(); } catch {} } });
+      peer.on("error", e => {
+        if (e.type === "unavailable-id" && n < 5) { try { peer.destroy(); } catch {} return attempt(n + 1); }
+        if (this.on && this.peer === peer) { console.warn("peer", e); return; }          // a hiccup after the room is up: keep it
+        try { peer.destroy(); } catch {}
+        this.status = "off"; this.err = ["network", "server-error", "socket-error", "socket-closed"].includes(e.type) ? "連不到 PeerJS 伺服器，請檢查網路。" : "建立房間失敗（" + e.type + "）。";
+        this.refresh();
+      });
+    };
+    attempt(0);
+  },
+  close(){
+    this.guests.forEach(g => { try { g.conn.send({ t: "closed" }); } catch {} });
+    const p = this.peer; setTimeout(() => { try { p && p.destroy(); } catch {} }, 250);
+    if (G && G.mode === "sing") G.players.forEach(pl => { if (pl.remote) pl.off = true; });
+    this.on = false; this.status = "off"; this.peer = null; this.code = ""; this.guests.clear();
+    this.refresh(); if (G && G.mode === "sing") renderRank();
+  },
+  accept(conn){
+    conn.on("data", m => this.onData(conn, m));
+    conn.on("close", () => this.drop(conn));
+    conn.on("error", () => this.drop(conn));
+  },
+  onData(conn, m){
+    if (!m || typeof m !== "object") return;
+    if (m.t === "hello") {
+      const pid = String(m.pid || "").slice(0, 40); if (!pid) return;
+      const name = String(m.name || "").trim().slice(0, 8) || "玩家";
+      const old = this.guests.get(pid), sing = !!(G && G.mode === "sing");
+      const inGame = sing ? G.players.find(p => p.pid === pid) : null;
+      const total = sing ? G.players.length : cfg.players.length + this.count();
+      if (!old && !inGame && total >= 8) { try { conn.send({ t: "full" }); } catch {} setTimeout(() => { try { conn.close(); } catch {} }, 300); return; }
+      if (old && old.conn !== conn) { old.conn.removeAllListeners && old.conn.removeAllListeners("close"); try { old.conn.send({ t: "kicked" }); old.conn.close(); } catch {} }
+      const g = { pid, name: inGame ? inGame.name : name, conn }; this.guests.set(pid, g); conn._g = g;
+      if (sing && inGame) inGame.off = false;
+      else if (sing && !G.done) G.players.push({ name, score: 0, color: PCOL[G.players.length], pid, remote: true });
+      try { conn.send({ t: "welcome" }); } catch {}
+      toast(`${g.name} 加入了房間`);
+      if (sing) { renderPads(); renderRank(); }
+      this.push(); this.refresh();
+    } else if (m.t === "buzz") {
+      const g = conn._g; if (!g || !G || G.mode !== "sing") return;
+      const i = G.players.findIndex(p => p.pid === g.pid);
+      if (i >= 0) buzz(i);
+    }
+  },
+  drop(conn){
+    const g = conn._g; if (!g || g.conn !== conn) return;
+    this.guests.delete(g.pid);
+    if (G && G.mode === "sing") { const p = G.players.find(p => p.pid === g.pid); if (p) p.off = true; renderRank(); }
+    toast(`${g.name} 離線了`); this.push(); this.refresh();
+  },
+  snap(){
+    if (!G) return { phase: "lobby", players: [] };
+    if (G.mode !== "sing") return { phase: "other", players: [] };
+    const c = G.cur;
+    const o = { phase: G.done ? "end" : c ? c.phase : "load", n: G.n, total: G.total, players: G.players.map(p => ({ name: p.name, color: p.color, score: p.score, off: !!p.off })), buzzer: -1, winner: -1 };
+    if (c) {
+      o.title = nameOf(c.song); o.artist = c.song.artist || "";
+      o.left = Math.max(0, Math.round(c.phase === "buzz" ? c.left : c.phase === "show" ? c.dur - (performance.now() - c.t0) : 0));
+      o.buzzer = c.buzzer; o.winner = c.winner == null ? -1 : c.winner;
+    }
+    return o;
+  },
+  push(){
+    if (!this.on || !this.guests.size) return;
+    const s = this.snap(), c = G && G.cur;
+    this.guests.forEach(g => {
+      if (!g.conn || !g.conn.open) return;
+      const me = G && G.mode === "sing" ? G.players.findIndex(p => p.pid === g.pid) : -1;
+      try { g.conn.send({ t: "state", ...s, me, locked: !!(me >= 0 && c && c.locked && c.locked.has(me)) }); } catch {}
+    });
+  },
+  renderChip(){
+    const b = $("#roomBtn"); if (!b) return;
+    b.hidden = !(this.on && G && G.mode === "sing");
+    if (!b.hidden) $("#roomBtnT").textContent = `房號 ${this.code} · ${this.count()} 人`;
+  },
+  boxHTML(){
+    if (this.status === "opening") return `<div class="roombox"><div class="hintp" style="margin:0">正在建立房間…</div></div>`;
+    if (!this.on) return `<div class="roombox"><button class="btn" data-room="open">${icon("globe")}開啟房間</button><p class="hintp">開啟後會產生房號和連結，朋友用手機打開連結就能搶答，不用安裝任何東西。${this.err ? `<br><span style="color:var(--bad)">${esc(this.err)}</span>` : ""}</p></div>`;
+    const chips = [...this.guests.values()].map((g, i) => `<span class="gchip${g.conn && g.conn.open ? "" : " off"}" style="--c:${PCOL[(cfg.players.length + i) % 8]}"><i></i>${esc(g.name)}</span>`).join("")
+      || `<span class="hintp" style="margin:0">還沒有人加入…</span>`;
+    return `<div class="roombox"><small style="color:var(--mute);letter-spacing:.15em">房號</small><div class="code">${this.code}</div>
+      <div class="url"><input readonly value="${esc(this.url())}" aria-label="加入連結" data-room="url"><button class="btn sm" data-room="copy">複製連結</button></div>
+      <div class="guests">${chips}</div>
+      <p class="hintp">朋友用手機打開這個連結，輸入暱稱就能加入，遊戲中途也可以加入。房間會在你關掉這個分頁時結束。</p>
+      <button class="btn sm danger" data-room="close" style="margin-top:10px">${icon("x")}關閉房間</button></div>`;
+  },
+  bindBox(root){
+    $$("[data-room]", root).forEach(b => {
+      const a = b.dataset.room;
+      if (a === "open") b.onclick = () => this.open();
+      else if (a === "close") b.onclick = () => this.close();
+      else if (a === "url") b.onclick = () => b.select();
+      else if (a === "copy") b.onclick = async () => {
+        try { await navigator.clipboard.writeText(this.url()); toast("已複製連結"); }
+        catch { const i = $('[data-room="url"]', root); if (i) { i.select(); toast("請手動複製連結"); } }
+      };
+    });
+  },
+  refresh(){
+    const s = $("#roomSlot");
+    if (s) { s.innerHTML = this.boxHTML(); this.bindBox(s); }
+    this.renderChip();
+  }
+};
+$("#roomBtn").onclick = () => {
+  openModal(`${mhead("手機連線")}<div style="padding:24px 28px;flex:1;overflow:auto"><div id="roomSlot">${NET.boxHTML()}</div></div>`, true);
+  NET.bindBox(modal);
+};
+
+/* ---- phone controller: this page opened with ?room=CODE ---- */
+const CTL = {
+  active: false, peer: null, conn: null, st: null, got: 0, retry: 0, kicked: false, name: "", prev: "", _rt: 0, timer: 0,
+  start(){
+    this.active = true;
+    $("#topbar").hidden = true; $("#lobby").hidden = true; $("#game").hidden = true;
+    document.title = `房間 ${ROOM_Q} · 猜歌`;
+    const el = $("#ctl"); el.hidden = false;
+    el.innerHTML = `<div class="ctop"><div class="logo"><b>猜歌</b><small>房號 ${esc(ROOM_Q)}</small></div><span class="st" id="cSt"></span></div>
+      <div class="jin" id="cBody"><h2 style="margin:0">加入搶唱派對</h2><p style="color:var(--mute);margin:0">輸入暱稱後加入，等房主開始。</p>
+        <input id="cName" maxlength="8" value="${esc(store.get("yt.gname", ""))}" placeholder="暱稱（最多 8 字）" autocomplete="off">
+        <button class="btn pri" id="cGo">${icon("mic")}加入房間</button><p class="msg" id="cMsg" style="color:var(--bad)"></p></div>`;
+    const go = () => {
+      this.name = $("#cName").value.trim() || "玩家"; store.set("yt.gname", this.name);
+      keepAwake(); this.connect();
+      $("#cBody").innerHTML = `<p style="color:var(--mute);text-align:center">連線中…</p>`;
+    };
+    $("#cGo").onclick = go; $("#cName").onkeydown = e => { if (e.key === "Enter") go(); };
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden || !this.name || this.kicked) return;
+      keepAwake();
+      if (!this.conn || !this.conn.open) { this.retry = 0; this.connect(); }
+    });
+    clearInterval(this.timer); this.timer = setInterval(() => this.tick(), 250);
+  },
+  status(t, cls = ""){ const s = $("#cSt"); if (s) { s.textContent = t; s.className = "st " + cls; } },
+  fail(msg){
+    this.kicked = true; clearTimeout(this._rt); this.status(msg, "bad");
+    const b = $("#cBody"); if (!b) return;
+    b.className = "jin"; b.style.display = ""; b.innerHTML = `<p style="text-align:center;color:var(--bad)">${esc(msg)}</p><button class="btn pri" id="cReload">重新整理</button>`;
+    $("#cReload").onclick = () => location.reload();
+  },
+  async connect(){
+    clearTimeout(this._rt); this.status("連線中…");
+    try { await loadPeer(); } catch { return this.fail("PeerJS 載入失敗，請檢查網路後重試。"); }
+    if (this.peer) { try { this.peer.destroy(); } catch {} }
+    const peer = this.peer = new Peer();
+    peer.on("open", () => { if (this.peer === peer) this.dial(); });
+    peer.on("error", e => {
+      if (this.peer !== peer) return;
+      if (e.type === "peer-unavailable") this.fail("找不到這個房間，請確認連結，或請房主重新開房。");
+      else this.again();
+    });
+  },
+  dial(){
+    const conn = this.conn = this.peer.connect(RID + ROOM_Q, { reliable: true });
+    let opened = false;
+    conn.on("open", () => { opened = true; this.retry = 0; conn.send({ t: "hello", pid: PID, name: this.name }); });
+    conn.on("data", m => this.onData(m));
+    const lost = () => { if (this.conn === conn && !this.kicked) { this.status("連線中斷，重連中…", "bad"); this.again(); } };
+    conn.on("close", lost); conn.on("error", lost);
+    setTimeout(() => { if (!opened && this.conn === conn && !this.kicked) this.again(); }, 12000);
+  },
+  again(){
+    clearTimeout(this._rt);
+    if (++this.retry > 8) return this.fail("連不上房間，請確認房主還開著，然後重新整理。");
+    this._rt = setTimeout(() => this.connect(), 1200 + this.retry * 600);
+  },
+  onData(m){
+    if (!m || typeof m !== "object") return;
+    if (m.t === "state") { const p = this.st; m.players = Array.isArray(m.players) ? m.players : []; this.st = m; this.got = performance.now(); this.status(m.me >= 0 ? `已連線 · ${this.name}` : "已連線", "ok"); this.cues(p, m); this.render(); }
+    else if (m.t === "welcome") this.status("已連線", "ok");
+    else if (m.t === "full") this.fail("房間已滿（最多 8 人）。");
+    else if (m.t === "closed") this.fail("房主關閉了房間。");
+    else if (m.t === "kicked") this.fail("你在別的分頁或裝置加入了這個房間。");
+  },
+  cues(p, s){
+    if (!p || s.me < 0) return;
+    if (p.phase !== "buzz" && s.phase === "buzz" && s.buzzer === s.me) { beep("buzz"); vibrate(60); }
+    else if (p.phase !== "reveal" && s.phase === "reveal" && s.winner === s.me) { beep("win"); vibrate([40, 40, 40]); }
+    else if (p.phase === "buzz" && s.phase === "show" && s.locked) { beep("bad"); vibrate([40, 60, 40]); }
+  },
+  buzz(){
+    const s = this.st; if (!s || s.phase !== "show" || s.me < 0 || s.locked || !this.conn || !this.conn.open) return;
+    vibrate(25); try { this.conn.send({ t: "buzz" }); } catch {}
+  },
+  leftSec(){
+    const s = this.st; if (!s) return 0;
+    const ms = s.phase === "show" ? s.left - (performance.now() - this.got) : s.left;
+    return Math.max(0, Math.ceil(ms / 1000));
+  },
+  tick(){
+    const s = this.st, n = $("#cNum"); if (!s || !n || s.phase !== "show") return;
+    const v = this.leftSec(); if (n.textContent !== String(v)) n.textContent = v;
+    n.classList.toggle("hot", v <= 5);
+  },
+  render(){
+    const s = this.st, body = $("#cBody"); if (!s || !body) return;
+    const me = s.me >= 0 ? s.players[s.me] : null, c = me ? me.color : "var(--teal)";
+    const song = s.title ? `<div class="t">${esc(s.title)}</div>${s.artist ? `<div class="a">${esc(s.artist)}</div>` : ""}` : "";
+    let top = "", label = "等待中…", sub = "", can = false;
+    if (s.phase === "lobby" || s.phase === "other") top = `<div class="song"><div class="t">等房主開始遊戲</div><div class="sub">${s.phase === "other" ? "現在是四選一挑戰，下一局搶唱派對再來搶！" : "你已經在房間裡了"}</div></div>`;
+    else if (s.phase === "show") { top = `<div class="song">${song}<div class="sub">第 ${s.n}/${s.total} 題 · 會唱就搶先按！</div></div><div class="cnum" id="cNum">${this.leftSec()}</div>`; label = s.locked ? "這首已鎖定" : "搶唱！"; can = !s.locked; }
+    else if (s.phase === "buzz") { const b = s.players[s.buzzer]; top = `<div class="song">${song}<div class="sub">${b ? esc(b.name) + " 搶唱中…" : ""}</div></div>`; label = s.buzzer === s.me ? "輪到你唱！" : "別人在唱"; }
+    else if (s.phase === "reveal") { const w = s.players[s.winner]; top = `<div class="song">${song}<div class="sub">${w ? esc(w.name) + " 得分！" : "這首沒人唱出來"}</div></div>`; label = "等下一題"; }
+    else if (s.phase === "end") { top = `<div class="song"><div class="t">遊戲結束</div><div class="sub">看房主畫面的結果</div></div>`; label = "已結束"; }
+    else top = `<div class="song"><div class="t">準備中…</div></div>`;
+    if (s.me < 0 && s.phase !== "lobby" && s.phase !== "other") { label = "觀戰中"; can = false; }
+    const rank = s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }) =>
+      `<div class="crow${i === s.me ? " me" : ""}" style="--c:${p.color}"><span class="d"></span><span class="nm">${esc(p.name)}${p.off ? "（離線）" : ""}</span><span class="sc">${p.score}</span></div>`).join("");
+    const mine = s.phase === "buzz" && s.buzzer === s.me;
+    body.className = ""; body.style.display = "contents";
+    body.innerHTML = `${top}<button class="cbuzz${mine ? " mine" : ""}" id="cBtn" style="--c:${c}" ${can ? "" : "disabled"}>${icon("mic")}${esc(label)}${me ? `<small>${esc(me.name)} · ${me.score} 分</small>` : ""}</button>${rank ? `<div class="crank">${rank}</div>` : ""}`;
+    const btn = $("#cBtn"); if (btn) btn.onpointerdown = e => { e.preventDefault(); this.buzz(); };
+  }
+};
+
 /* ================= boot ================= */
-paintIcons(); renderMe(); renderGrid();
-$("#quickSub").textContent = `全部 ${allSongs().filter(usable).length} 首隨機四選一`;
+paintIcons(); renderMe();
+if (ROOM_Q) CTL.start();
+else { renderGrid(); $("#quickSub").textContent = `全部 ${allSongs().filter(usable).length} 首隨機四選一`; }
 window.__game = { get G(){ return G; }, YTP, cfg };   // for debugging in the console
 })();
 </script>
