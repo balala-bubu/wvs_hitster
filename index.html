@@ -813,42 +813,84 @@ input[type=range]{accent-color:var(--lime)}
 }
 /* <<< theme layer */
 
-/* ---- online room (PeerJS) ---- */
-.roombox{border:1px solid var(--line2);border-radius:var(--r);padding:16px 18px;background:rgba(255,255,255,.015)}
-.roombox .code{font:800 46px/1 var(--num);letter-spacing:.22em;color:var(--teal);margin:6px 0 2px}
-.roombox .url{display:flex;gap:8px;align-items:center;margin-top:10px}
-.roombox .url input{flex:1;min-width:0;height:42px;border-radius:12px;border:1px solid var(--line2);background:var(--bg2);padding:0 12px;color:var(--mute);font-size:13px}
-.roombox .hintp{color:var(--mute);font-size:13px;margin:8px 0 0}
-.guests{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.gchip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border:1px solid var(--line2);border-radius:999px;font-weight:600;font-size:14px}
-.gchip i{width:12px;height:12px;border-radius:50%;background:var(--c,var(--teal));flex:none}
+/* ---- online room: lobby entry, host panel, phone controller (built from the theme layer's own pieces) ---- */
+.topr{display:flex;align-items:center;gap:10px;min-width:0}
+.topr .chip{height:44px;display:inline-flex;align-items:center;gap:8px;font-weight:800;border-radius:999px;padding:0 16px;white-space:nowrap;background:var(--g-bg);box-shadow:var(--g-edge);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
+.topr .chip .i{width:18px;height:18px}
+.topr .chip.roomtop{border-color:rgba(140,198,63,.75);background:linear-gradient(135deg,rgba(140,198,63,.34),rgba(255,255,255,.06))}
+@media (max-width:860px){.topr .chip span:not([data-i]):not(#roomTopT){display:none}.topr .chip{padding:0 13px}.topr{gap:8px}}
+
+/* third hero card: "跟朋友玩" (lime, same recipe as the other two) */
+@media (min-width:861px){.hero{grid-template-columns:1.25fr 1.25fr 1fr}}
+#heroParty{--hc:var(--lime);background:linear-gradient(135deg,color-mix(in srgb,var(--hc) 40%,transparent),color-mix(in srgb,var(--hc) 9%,transparent) 62%),var(--g-bg);border-color:color-mix(in srgb,var(--hc) 55%,rgba(255,255,255,.3));box-shadow:var(--g-edge),0 22px 50px -18px color-mix(in srgb,var(--hc) 60%,transparent)}
+#heroParty:hover{transform:translateY(-4px) scale(1.01);background:linear-gradient(135deg,color-mix(in srgb,var(--hc) 52%,transparent),color-mix(in srgb,var(--hc) 14%,transparent) 62%),var(--g-bg)}
+#heroParty:active{transform:scale(.975,.96)}
+#heroParty::after{animation-delay:1.6s}
+
+/* room panel (setup sheet, "跟朋友玩" sheet, room popup) */
+.roombox{position:relative;border:1px solid rgba(255,255,255,.2);border-radius:26px;padding:18px 20px;background:rgba(255,255,255,.055);box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}
+.roombox .rtop{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.roombox .k{font:800 12px var(--num);letter-spacing:.3em;color:var(--sky)}
+.roombox .code{margin-top:2px;font:900 clamp(60px,9vw,88px)/1 var(--num);letter-spacing:.1em;background:var(--grad) 0 0/220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 7s ease-in-out infinite alternate}
+.roombox canvas.qr{width:136px;height:136px;flex:none;border-radius:20px;background:#fff;image-rendering:pixelated;box-shadow:0 16px 36px -14px rgba(0,0,0,.6)}
+.roombox .url{display:flex;gap:8px;margin-top:14px}
+.roombox .url input{flex:1;min-width:0;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);padding:0 14px;color:var(--mute);font-size:13px}
+.roombox .hintp{color:var(--mute);font-size:13px;margin:12px 0 0;line-height:1.6}
+.guests{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.gchip{display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 10px;border:1px solid color-mix(in srgb,var(--c) 70%,#fff 10%);border-radius:999px;font-weight:800;font-size:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--c) 32%,transparent),rgba(255,255,255,.05))}
+.gchip i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
 .gchip.off{opacity:.4}
-.roomchip{font-weight:700}
-.ctl{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;gap:14px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:radial-gradient(900px 500px at 50% -10%,rgba(60,140,150,.16),transparent 60%),var(--bg);overflow:auto}
+@media (max-width:480px){.roombox .rtop{flex-direction:column-reverse;align-items:flex-start}.roombox canvas.qr{width:168px;height:168px}}
+
+/* a phone player's pad on the host screen: an indicator, not a button */
+.pad.remote{pointer-events:none}
+.pad .rt{position:absolute;top:12px;right:14px;display:flex;align-items:center;gap:6px;font:800 11px var(--num);letter-spacing:.08em;color:#fff;opacity:.9}
+.pad .rt::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime)}
+.pad.remote.off{opacity:.38;filter:grayscale(.7)}
+.pad.remote.off .rt::before{background:var(--dim);box-shadow:none}
+.judge .hint{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:8px 14px}
+
+/* phone controller (?room=): the same glass + color blocks as the host screen */
+.ctl{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;gap:14px;width:min(100%,560px);margin:0 auto;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto;--k:var(--sky);--k2:#9ee2ef}
 .ctl[hidden]{display:none}
-.ctl .ctop{display:flex;align-items:center;gap:10px;justify-content:space-between}
-.ctl .ctop .st{font-size:13px;color:var(--mute)}
-.ctl .ctop .st.ok{color:var(--good)}
-.ctl .ctop .st.bad{color:var(--bad)}
-.ctl .song{text-align:center;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
-.ctl .song .t{font:800 28px/1.25 "Noto Sans TC",var(--num);word-break:break-word}
-.ctl .song .a{color:var(--mute)}
-.ctl .song .sub{color:var(--mute);font-size:14px}
-.ctl .cnum{font:800 54px/1 var(--num);color:var(--teal);text-align:center}
-.ctl .cnum.hot{color:var(--bad)}
-.ctl .cbuzz{flex:1;min-height:200px;border-radius:32px;border:3px solid var(--c,var(--teal));background:linear-gradient(160deg,color-mix(in srgb,var(--c,var(--teal)) 30%,#0b1117),#0a0f14 78%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:34px;transition:transform .08s,opacity .2s,filter .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
-.ctl .cbuzz small{font:500 14px "Noto Sans TC";color:var(--mute)}
-.ctl .cbuzz:active:not(:disabled){transform:scale(.97)}
-.ctl .cbuzz:disabled{opacity:.35;filter:grayscale(.7)}
-.ctl .cbuzz.mine{animation:buzz .6s ease-out;box-shadow:0 0 50px var(--c,var(--teal))}
-.ctl .crank{display:flex;flex-direction:column;gap:6px}
-.ctl .crow{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px}
-.ctl .crow.me{border-color:var(--c);background:rgba(255,255,255,.03)}
-.ctl .crow .d{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
-.ctl .crow .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ctl .crow .sc{font:800 20px var(--num);color:var(--c)}
-.ctl .jin{margin:auto 0;display:flex;flex-direction:column;gap:12px;max-width:420px;width:100%;align-self:center}
-.ctl .jin input{height:54px;border-radius:14px;border:1px solid var(--line2);background:var(--bg2);padding:0 16px;font-size:18px;color:var(--text)}
+.ctl .ctop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ctl .logo{font-size:26px}
+.ctl .st{font-size:12.5px;font-weight:800;color:var(--mute);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:5px 12px;background:rgba(255,255,255,.06);white-space:nowrap}
+.ctl .st.ok{color:#d9f3a8;border-color:rgba(140,198,63,.6)}
+.ctl .st.bad{color:#ffb3bd;border-color:rgba(255,107,125,.55)}
+.cjoin{margin:auto 0;display:flex;flex-direction:column;gap:14px;width:100%}
+.cjoin .mega{font-size:clamp(46px,17vw,76px)}
+.cjoin .field{height:56px;font-size:19px;border-radius:18px;padding:0 18px}
+.cjoin #cCode{font:900 30px var(--num);letter-spacing:.3em;text-align:center}
+.cjoin .btn{height:60px;font-size:19px;border-radius:20px}
+.cnote{margin:0;text-align:center;color:var(--mute);font-size:14px;line-height:1.6}
+.cblk{position:relative;overflow:hidden;border-radius:30px;padding:18px 18px 20px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:var(--ink);background:linear-gradient(150deg,var(--k2),var(--k) 72%);border:1px solid rgba(255,255,255,.34);box-shadow:var(--g-edge),0 30px 70px -30px color-mix(in srgb,var(--k) 70%,transparent);transition:background .4s}
+.cblk::before{content:"";position:absolute;right:-18%;bottom:-80%;width:100%;aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle,transparent 0 33%,rgba(255,255,255,.3) 33.5% 46%,transparent 46.5% 53%,rgba(255,255,255,.22) 53.5% 66%,transparent 66.5% 73%,rgba(255,255,255,.14) 73.5% 86%,transparent 86.5%);animation:arcs 18s linear infinite}
+.cblk>*{position:relative;z-index:1}
+.cblk .pill{color:var(--ink);background:rgba(255,255,255,.32);border:2px solid var(--ink);font:900 15px var(--num);letter-spacing:.1em;padding:4px 16px}
+.cblk .t{font:900 clamp(30px,10vw,46px)/1.08 "Noto Sans TC",var(--num);letter-spacing:-.015em;word-break:break-word}
+.cblk .a{color:rgba(7,20,27,.82);font-weight:800}
+.cblk .s{color:rgba(7,20,27,.76);font-weight:700;font-size:14px}
+.cblk .cring .ringw{width:104px;height:104px}
+.cblk .cring .ringw b{font-size:46px}
+.ctl .cpad{flex:1;min-height:200px;max-height:none;gap:6px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;border-radius:34px}
+.ctl .cpad .big{font:900 clamp(40px,13vw,64px)/1.05 "Noto Sans TC",var(--num);color:#fff;letter-spacing:-.02em;text-shadow:0 2px 24px color-mix(in srgb,var(--c) 75%,transparent);position:relative;z-index:1}
+.ctl .cpad small{color:rgba(255,255,255,.88);font-weight:700;position:relative;z-index:1}
+.ctl .cpad:disabled{opacity:.42;filter:grayscale(.55)}
+.ctl .cpad.mine{animation:jelly .6s var(--ease-pop);box-shadow:var(--g-edge),0 0 70px var(--c)}
+.ctl .judge{gap:12px;padding:0;flex-wrap:nowrap}
+.ctl .judge .btn{height:92px;font-size:24px;max-width:none}
+.ctl .judge .btn.on{outline:3px solid #fff;outline-offset:2px}
+.ctl .opts{grid-template-columns:1fr;gap:10px}
+.ctl .opt{min-height:78px;padding:12px 16px 12px 14px;font-size:17px;border-radius:24px}
+.ctl .opt:disabled{cursor:default}
+.pop.board{left:50%;transform:translate(-50%,-50%);width:min(92%,520px);padding:18px 20px;display:flex;flex-direction:column;gap:8px;background:var(--g-bg);border-color:rgba(255,255,255,.3);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
+.pop.board h4{margin:0 0 4px;font:900 15px var(--num);letter-spacing:.2em;color:var(--sky);display:flex;align-items:center;gap:8px}
+.pop.board .rrow{flex:none;padding:10px 14px}
+.mv{font:900 13px var(--num);min-width:34px;text-align:center;color:var(--dim)}
+.mv.up{color:var(--lime)}.mv.dn{color:#ff8f9f}
+.ctl .crank{display:flex;flex-direction:column;gap:8px}
+.ctl .rrow{flex:none;padding:10px 14px}
 </style>
 <link rel="stylesheet" href="decor.css?v=1">
 </head>
@@ -859,7 +901,8 @@ input[type=range]{accent-color:var(--lime)}
 
 <header class="top" id="topbar">
   <div class="logo"><b>猜歌</b><small>朋友版</small></div>
-  <button class="me" id="meBtn" aria-label="改暱稱"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+  <div class="topr"><button class="chip roomtop" id="roomTop" hidden><span data-i="users"></span><span id="roomTopT">房間</span></button><button class="chip" id="joinTop"><span data-i="globe"></span><span>加入房間</span></button>
+  <button class="me" id="meBtn" aria-label="改暱稱"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
 </header>
 
 <!-- ================= LOBBY ================= -->
@@ -871,6 +914,7 @@ input[type=range]{accent-color:var(--lime)}
   </section>
   <div class="hero">
     <button class="hcard on" id="heroCreate"><span class="ic" data-i="plus"></span><div><b>選題庫開始</b><span>點下方任一題庫，選「四選一」或「搶唱派對」</span></div></button>
+    <button class="hcard" id="heroParty"><span class="ic" data-i="users"></span><div><b>跟朋友玩</b><span>開房間，朋友用手機加入</span></div></button>
     <button class="hcard" id="heroQuick"><span class="ic" data-i="shuffle"></span><div><b>快速開始</b><span id="quickSub">全部歌曲隨機四選一</span></div></button>
   </div>
   <div class="lib">
@@ -1049,7 +1093,7 @@ const ALL = () => ({ id: "all", name: "全部歌曲大混戰", tags: ["綜合", 
 function findLib(id){ return id === "all" ? ALL() : [...BUILTIN, ...MINE].find(l => l.id === id); }
 
 const PCOL = ["#6cc5d6","#ff7eb6","#ffb23f","#9b8cff","#8cc63f","#ff8a5c","#5aa9ff","#ff6b7d"];
-let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 4, optShow: "both", start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"] }, store.get("yt.cfg", {}));
+let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 4, optShow: "both", start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"], judge: "host", hostPlays: true, board: true, lt: false }, store.get("yt.cfg", {}));
 const saveCfg = () => store.set("yt.cfg", cfg);
 let me = store.get("yt.name", "") || "玩家";
 const recs = () => store.get("yt.rec", {});
@@ -1128,8 +1172,9 @@ window.onYouTubeIframeAPIReady = () => {
     });
   });
 };
-const ROOM_Q = (new URLSearchParams(location.search).get("room") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);   // opened from a room link: this device is only a controller
-if (!ROOM_Q) (function loadYT(){
+const ROOM_ON = new URLSearchParams(location.search).has("room");            // opened from a room link or the "加入房間" button: this device is only a controller
+const ROOM_Q = (new URLSearchParams(location.search).get("room") || "").replace(/\D/g, "").slice(0, 4);
+if (!ROOM_ON) (function loadYT(){
   const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; s.async = true;
   s.onerror = () => { YTP.failed = true; toast("YouTube 播放器載入失敗，請檢查網路或關閉廣告封鎖外掛。", 6000); };
   document.head.appendChild(s);
@@ -1300,8 +1345,8 @@ function renderSetup(){
   const qb = [-5, 10, 15, 20, 5].map(v => v === -5 ? `<button data-q="-5">−5</button>` : v === 5 ? `<button data-q="+5">+5</button>` : v <= maxQ ? `<button data-q="${v}" class="${cfg.count === v ? "on" : ""}">${v} 題</button>` : "").join("") + (maxQ > 20 || ![10, 15, 20].includes(maxQ) ? `<button data-q="${maxQ}" class="${cfg.count === maxQ ? "on" : ""}">全部 ${maxQ}</button>` : "");
   if (!cfg.players.length && !NET.on) cfg.players = ["玩家 1"];
   const minLocal = NET.on ? 0 : 1;
-  const players = cfg.players.map((p, i) => `<div class="prow" style="--c:${PCOL[i]}"><span class="dot"></span><input data-p="${i}" value="${esc(p)}" maxlength="8" aria-label="玩家 ${i + 1} 名字"><kbd>${i + 1}</kbd>${cfg.players.length > minLocal ? `<button class="rm" data-rm="${i}" aria-label="移除">${icon("x")}</button>` : ""}</div>`).join("")
-    + (cfg.players.length + NET.count() < 8 ? `<button class="addp" id="addP">${icon("plus")} 新增玩家</button>` : "");
+  const players = locals().map((p, i) => `<div class="prow" style="--c:${PCOL[i]}"><span class="dot"></span><input data-p="${i}" value="${esc(p)}" maxlength="8" aria-label="玩家 ${i + 1} 名字"><kbd>${i + 1}</kbd>${locals().length > minLocal ? `<button class="rm" data-rm="${i}" aria-label="移除">${icon("x")}</button>` : ""}</div>`).join("")
+    + (locals().length + NET.count() < 8 ? `<button class="addp" id="addP">${icon("plus")} 新增玩家</button>` : "");
   const keep = $(".setup .form") ? $(".setup .form").scrollTop : 0;
   openModal(`${mhead(quiz ? "四選一設定" : "搶唱派對設定", "", true)}
     <div class="setup"><aside><img alt="" onerror="this.style.visibility='hidden'" src="${songs[0] ? thumb(songs[0].v, "hqdefault") : ""}"><div style="margin-top:12px"><span class="badge">${icon(l.builtin ? "globe" : "bookmark")}${l.builtin ? "公開題庫" : "我的題庫"}</span></div><b>${esc(l.name)}</b><small>${n} 題</small></aside>
@@ -1309,6 +1354,13 @@ function renderSetup(){
       <div class="sec"><div class="sh">${icon("sofa")}遊戲模式</div><div class="modes">
         <button class="mode ${quiz ? "on" : ""}" data-mode="quiz"><span class="ic">${icon("play")}</span><div><b>四選一挑戰</b><span>只聽音樂，四個選項選出歌名。倒數計時、越快越高分、連擊加成。</span></div></button>
         <button class="mode ${quiz ? "" : "on"}" data-mode="sing"><span class="ic">${icon("mic")}</span><div><b>搶唱派對</b><span>秀出歌名，搶先按鈕唱出來，大家判定唱對就得分。</span></div></button></div></div>
+      <div class="sec"><div class="sh">${icon("globe")}手機連線<small>朋友用自己的手機加入</small></div><div id="roomSlot">${NET.boxHTML()}</div></div>
+      ${quiz && NET.on ? `<div class="sec"><div class="sh">${icon("users")}房主<small>手機玩家一起作答</small></div><div class="opts3">
+        <button class="opt3 ${cfg.hostPlays ? "on" : ""}" data-hp="1"><b>房主也一起玩</b><span>用這個畫面的鍵盤或滑鼠作答</span></button>
+        <button class="opt3 ${cfg.hostPlays ? "" : "on"}" data-hp="0"><b>只當大螢幕</b><span>只有手機玩家作答</span></button></div></div>
+      <div class="sec"><div class="sh">${icon("check")}每題結算<small>像 Kahoot 一樣公布名次</small></div><div class="opts3">
+        <button class="opt3 ${cfg.board ? "on" : ""}" data-bd="1"><b>每題排行榜</b><span>公布答案後，秀出名次與升降</span></button>
+        <button class="opt3 ${cfg.board ? "" : "on"}" data-bd="0"><b>只在最後</b><span>全部答完才公布名次</span></button></div></div>` : ""}
       <div class="sec two">
         <div><div class="sh">${icon("music")}題數<small>${minQ}–${maxQ} 題</small></div>
           <div class="stepper"><button class="rd" data-q="-1" aria-label="少一題">−</button><span class="v">${cfg.count}<small>題</small></span><button class="rd" data-q="+1" aria-label="多一題">+</button></div>
@@ -1322,13 +1374,15 @@ function renderSetup(){
       </div>
       ${quiz ? `<div class="sec"><div class="sh">${icon("music")}選項顯示<small>四個選項上寫什麼</small></div><div class="opts3">
         ${[["both", "歌名＋歌手", "最完整"], ["title", "只顯示歌名", "要猜歌手以外的"], ["artist", "只顯示歌手", "猜是誰唱的"]].map(([v, b, d]) => `<button class="opt3 ${cfg.optShow === v ? "on" : ""}" data-os="${v}"><b>${b}</b><span>${d}</span></button>`).join("")}</div></div>` : ""}
-      ${quiz ? "" : `<div class="sec"><div class="sh">${icon("globe")}手機連線<small>朋友用自己的手機搶答</small></div><div id="roomSlot">${NET.boxHTML()}</div></div>
-      <div class="sec"><div class="sh">${icon("users")}同螢幕玩家<small>每人一個搶答鈕，連線玩家加起來最多 8 人</small></div><div class="plist">${players}</div></div>
+      ${quiz ? "" : `<div class="sec"><div class="sh">${icon("users")}同螢幕玩家<small>每人一個搶答鈕，連線玩家加起來最多 8 人</small></div><div class="plist">${players}</div></div>
       <div class="sec"><div class="sh">${icon("trophy")}獲勝條件</div><div class="opts3">
         ${[[0, "打完全部題數", "最後分數最高的人贏"], [3, "先到 3 分", "快速一局"], [5, "先到 5 分", "標準一局"], [10, "先到 10 分", "長期抗戰"]].map(([v, b, s]) => `<button class="opt3 ${cfg.win === v ? "on" : ""}" data-win="${v}"><b>${b}</b><span>${s}</span></button>`).join("")}</div></div>
       <div class="sec"><div class="sh">${icon("x")}唱錯了怎麼辦</div><div class="opts3">
         <button class="opt3 ${cfg.wrong === "lock" ? "on" : ""}" data-wrong="lock"><b>這首不能再搶</b><span>其他人繼續搶</span></button>
-        <button class="opt3 ${cfg.wrong === "minus" ? "on" : ""}" data-wrong="minus"><b>扣 1 分</b><span>還可以再搶一次</span></button></div></div>`}
+        <button class="opt3 ${cfg.wrong === "minus" ? "on" : ""}" data-wrong="minus"><b>扣 1 分</b><span>還可以再搶一次</span></button></div></div>
+      <div class="sec"><div class="sh">${icon("check")}誰來判定唱對唱錯<small>手機玩家才能投票</small></div><div class="opts3">
+        <button class="opt3 ${cfg.judge === "host" ? "on" : ""}" data-judge="host"><b>房主判定</b><span>房主按「唱對／唱錯」</span></button>
+        <button class="opt3 ${cfg.judge === "vote" ? "on" : ""}" data-judge="vote"><b>大家投票</b><span>其他手機過半就定案，房主可直接判定</span></button></div></div>`}
       <div class="sec"><div class="sh">${icon("clock")}播放片段</div>
         <div class="box"><div class="bt">${icon("play")}從哪裡開始播</div><div class="bd">${quiz ? "題目開始播放的位置。" : "按「播原曲核對」時從哪裡播。"}</div>
           <div class="opts3"><button class="opt3 ${cfg.start === "auto" ? "on" : ""}" data-start="auto"><b>隨機片段</b><span>題庫有指定秒數就照題庫</span></button><button class="opt3 ${cfg.start === "head" ? "on" : ""}" data-start="head"><b>從頭開始</b><span>每首都從 0:00 播</span></button></div></div>
@@ -1337,7 +1391,7 @@ function renderSetup(){
       </div>
       <p class="msg" id="setupMsg"></p>
     </div></div>
-    <div class="mf"><div class="lbl"><small>確認房間</small><b>${quiz ? `四選一 · ${cfg.count} 題 · ${cfg.ansTime} 秒` : `搶唱派對 · ${cfg.players.length} 人 · ${cfg.count} 題`}</b></div>
+    <div class="mf"><div class="lbl"><small>確認房間</small><b>${quiz ? (NET.on ? `四選一多人 · ${(cfg.hostPlays ? 1 : 0) + NET.count()} 人 · ${cfg.count} 題` : `四選一 · ${cfg.count} 題 · ${cfg.ansTime} 秒`) : `搶唱派對 · ${locals().length + NET.count()} 人 · ${cfg.count} 題`}</b></div>
       <button class="btn" data-back>${icon("back")}返回</button><button class="btn pri" id="goBtn">${icon("play")}開始遊戲</button></div>`);
   $(".setup .form").scrollTop = keep;
   const re = () => { saveCfg(); quietNext = true; renderSetup(); };
@@ -1350,16 +1404,20 @@ function renderSetup(){
   $$("[data-wrong]", modal).forEach(b => b.onclick = () => { cfg.wrong = b.dataset.wrong; re(); });
   $$("[data-os]", modal).forEach(b => b.onclick = () => { cfg.optShow = b.dataset.os; re(); });
   $$("[data-start]", modal).forEach(b => b.onclick = () => { cfg.start = b.dataset.start; re(); });
+  $$("[data-judge]", modal).forEach(b => b.onclick = () => { cfg.judge = b.dataset.judge; re(); });
+  $$("[data-bd]", modal).forEach(b => b.onclick = () => { cfg.board = b.dataset.bd === "1"; re(); });
+  $$("[data-hp]", modal).forEach(b => b.onclick = () => { cfg.hostPlays = b.dataset.hp === "1"; re(); });
   $$("[data-p]", modal).forEach(i => i.oninput = () => { cfg.players[+i.dataset.p] = i.value; saveCfg(); });
   $$("[data-rm]", modal).forEach(b => b.onclick = () => { cfg.players.splice(+b.dataset.rm, 1); re(); });
   NET.bindBox(modal);
-  const ap = $("#addP"); if (ap) ap.onclick = () => { cfg.players.push("玩家 " + (cfg.players.length + 1)); re(); setTimeout(() => { const ins = $$("[data-p]", modal); ins[ins.length - 1].select(); }, 0); };
+  const ap = $("#addP"); if (ap) ap.onclick = () => { if (NET.on && !cfg.lt) { cfg.lt = true; cfg.players = []; } cfg.players.push("玩家 " + (cfg.players.length + 1)); re(); setTimeout(() => { const ins = $$("[data-p]", modal); ins[ins.length - 1].select(); }, 0); };
   const rr = $("#revR"); if (rr) rr.oninput = () => { cfg.reveal = +rr.value; $("#revV").textContent = cfg.reveal + "s"; saveCfg(); };
   $("#goBtn").onclick = () => {
     if (cfg.mode === "quiz" && n < 4) return $("#setupMsg").textContent = "四選一至少要 4 首歌。";
+    if (cfg.mode === "quiz" && NET.on && !(cfg.hostPlays || NET.count())) return $("#setupMsg").textContent = "至少要有一位玩家：讓房主也一起玩，或等朋友用手機加入。";
     if (cfg.mode === "sing") {
       cfg.players = cfg.players.map((p, i) => p.trim() || "玩家 " + (i + 1));
-      if (cfg.players.length + NET.count() < 1) return $("#setupMsg").textContent = "至少要有一位玩家，可以新增同螢幕玩家，或等朋友用手機加入。";
+      if (locals().length + NET.count() < 1) return $("#setupMsg").textContent = "至少要有一位玩家，可以新增同螢幕玩家，或等朋友用手機加入。";
     }
     saveCfg(); closeModal(); startGame(l);
   };
@@ -1513,14 +1571,14 @@ function startGame(lib){
   const total = Math.min(cfg.count, pool.length);
   const p = plays(); p[lib.id] = (p[lib.id] || 0) + 1; store.set("yt.plays", p);
   if (G) cancelAnimationFrame(G.twRaf);
-  G = { mode: cfg.mode, lib, pool, queue: shuffle(pool), total, n: 0, t0: Date.now(), log: [], timers: [], starts: new Map(), shown: 0 };
-  if (G.mode === "quiz") Object.assign(G, { score: 0, combo: 0, maxCombo: 0, correct: 0, recs: topRecs(lib.id, total) });
-  else Object.assign(G, { players: buildPlayers(), win: cfg.win });
+  G = { mode: cfg.mode, multi: cfg.mode === "quiz" && NET.on, lib, pool, queue: shuffle(pool), total, n: 0, t0: Date.now(), log: [], timers: [], starts: new Map(), shown: 0 };
+  if (G.mode === "quiz" && !G.multi) Object.assign(G, { score: 0, combo: 0, maxCombo: 0, correct: 0, recs: topRecs(lib.id, total) });
+  else Object.assign(G, { players: buildPlayers(), win: G.mode === "sing" ? cfg.win : 0 });
   YTP.stopAll(); stopBar();
   $("#opts").dataset.sig = ""; $("#opts")._h = ""; cover.dataset.key = ""; $("#padsA").dataset.sig = ""; $("#scrub").hidden = true;
   $("#lobby").hidden = true; $("#game").hidden = false; $("#result").hidden = true;
   $("#game").classList.toggle("sing", G.mode === "sing");
-  $("#gTitle").innerHTML = `${esc(lib.name)}<small>${G.mode === "quiz" ? "四選一挑戰" : "搶唱派對"} · ${total} 題</small>`;
+  $("#gTitle").innerHTML = `${esc(lib.name)}<small>${G.mode === "quiz" ? (G.multi ? "四選一多人" : "四選一挑戰") : "搶唱派對"} · ${total} 題</small>`;
   document.title = `${lib.name} · 猜歌`;
   $("#vol").value = cfg.vol; $("#volN").textContent = cfg.vol + "%";
   renderShow(); renderPads();
@@ -1548,7 +1606,7 @@ function nextQ(){
   G.n++;
   const c = G.cur = { song, start: startOf(song), playing: false, phase: "load" };
   if (G.mode === "quiz") {
-    c.opts = makeOpts(song); c.answer = c.opts.indexOf(song); c.pick = -1; c.loadAt = performance.now();
+    c.opts = makeOpts(song); c.answer = c.opts.indexOf(song); c.pick = -1; c.picks = new Map(); c.loadAt = performance.now();
     c.swapped = YTP.take(song.v, c.start);                       // instant when it was buffered during the last reveal
     later(checkLoad, 1200);
     later(() => { if (G && G.cur === c && c.phase === "load") { c.slow = true; coverClasses(); } }, 700);
@@ -1629,7 +1687,7 @@ function loop(){
     if (arc) arc.style.strokeDashoffset = 100 - left / c.dur * 100;
     if (num && num.textContent !== String(sec)) { num.textContent = sec; if (sec <= 5 && sec > 0) beep("tick"); }
     if (rw) rw.classList.toggle("hot", sec <= 5);
-    if (left <= 0) return G.mode === "quiz" ? resolveQ(-1) : noOne();
+    if (left <= 0) return G.mode === "quiz" ? (G.multi ? resolveMulti() : resolveQ(-1)) : noOne();
     raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);
@@ -1661,6 +1719,7 @@ function tweenScore(){
 function pick(i){
   if (!G || G.mode !== "quiz") return;
   const c = G.cur; if (!c || c.phase !== "answer") return;
+  if (G.multi) { const h = G.players.findIndex(p => p.host); if (h >= 0) answerBy(h, i); return; }      // this screen answers as the host player
   resolveQ(i);
 }
 function resolveQ(i){
@@ -1679,11 +1738,25 @@ function resolveQ(i){
   renderAll(); renderPop(); tweenScore(); runBar(c.revealTotal);
   later(nextQ, c.revealTotal);
 }
+function moveHTML(m){
+  if (!m || m.f === m.t) return `<span class="mv">–</span>`;
+  return m.t < m.f ? `<span class="mv up">▲${m.f - m.t}</span>` : `<span class="mv dn">▼${m.t - m.f}</span>`;
+}
+function boardRow(p, r, m, res){
+  return `<div class="rrow ${p.host ? "me" : ""}" style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${res && res.ok ? `<span class="st ok">+${res.gain}</span>` : ""}${moveHTML(m)}<span class="sc" style="color:${p.color}">${fmt(p.score)}</span></div>`;
+}
 function renderPop(){
   const c = G.cur, L = $("#popL");
   leavePop();
   let html;
-  if (G.mode === "quiz") {
+  if (G.multi && c.board) {
+    const top = G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).slice(0, 5);
+    html = `<div class="pop board"><h4>${icon("check")}第 ${G.n} 題結算</h4>${top.map(({ p, i }, r) => boardRow(p, r, c.moves && c.moves[i], (c.results || []).find(x => x.pi === i))).join("")}</div>`;
+  } else if (G.multi) {
+    const rs = (c.results || []).filter(r => r.ok).sort((a, b) => b.gain - a.gain);
+    if (rs.length) { const w = G.players[rs[0].pi]; html = `<div class="pop" style="border-color:${w.color}"><div class="big">+${rs[0].gain}<i>x${w.combo}</i></div><div class="sub">${esc(w.name)} 最快${rs.length > 1 ? `，共 ${rs.length} 人答對` : ""}</div><div class="ans">答案是 <b>${esc(label(c.song))}</b></div></div>`; }
+    else html = `<div class="pop no"><div class="sub">沒人答對</div><div class="ans">答案是 <b>${esc(label(c.song))}</b></div></div>`;
+  } else if (G.mode === "quiz") {
     const place = 1 + G.recs.filter(r => r.score > G.score).length;
     html = c.gain
       ? `<div class="pop"><div class="big">+${c.gain}<i>x${G.combo}</i></div><div class="sub">${G.recs.length ? `暫居第 ${place} 名` : "答對了！"}</div><div class="parts">${c.parts.filter(p => p[1]).map(p => `<span>+${p[1]} ${p[0]}</span>`).join("")}</div></div>`
@@ -1699,11 +1772,12 @@ function renderPop(){
 }
 
 /* ---- sing ---- */
-function buzz(i){
+function buzz(i, fromPhone){
   if (!G || G.mode !== "sing") return;
   const c = G.cur; if (!c || c.phase !== "show" || c.locked.has(i) || !G.players[i]) return;
+  if (G.players[i].remote && !fromPhone) return;          // phone players buzz from their own phone
   c.left = c.dur - (performance.now() - c.t0);
-  c.phase = "buzz"; c.buzzer = i;
+  c.phase = "buzz"; c.buzzer = i; c.votes = new Map();
   beep("buzz"); vibrate(60); flash(G.players[i].color);
   renderAll();
 }
@@ -1780,7 +1854,8 @@ function renderAll(){
   renderCover(); renderOpts(); renderRank(); renderPads(); renderThumb(); renderShow();
   const c = G.cur, rev = !!(c && c.phase === "reveal" && G.mode === "quiz");
   $("#extendBtn").hidden = !rev; $("#nextQBtn").hidden = !rev;
-  if (rev) $("#nextQBtn").lastElementChild.textContent = G.n >= G.total || !G.queue.length ? "看結果" : "下一題";
+  if (rev) $("#nextQBtn").lastElementChild.textContent = G.n >= G.total || !G.queue.length ? "看結果" : boardOn() ? "看排行榜" : "下一題";
+  $("#extendBtn").hidden = !rev || !!(c && c.board);
   scrubTick();
   NET.push(); NET.renderChip();
 }
@@ -1798,14 +1873,14 @@ function renderCover(){
   /* only rebuild when the card actually changes, so the countdown ring never flickers */
   const key = G.mode === "quiz" ? `q${G.n}${c.phase === "reveal" ? "r" : "a"}`
     : [G.n, c.phase, c.buzzer, c.winner, c.phase === "buzz" ? (c.playing ? 1 : 0) : ""].join("|");
-  if (G.mode === "quiz") { const cn = $("#cntT"); if (cn) cn.textContent = c.phase === "load" ? "準備中…" : "已答 0/1"; }
+  if (G.mode === "quiz") { const cn = $("#cntT"); if (cn) cn.textContent = c.phase === "load" ? "準備中…" : ansText(c); }
   if (cover.dataset.key === key) return;
   cover.dataset.key = key;
   $("#game").dataset.k = String(G.n % 3);          // each question flips the accent block: sky, lime, amber
   const pill =`<div class="pill">題目 ${G.n}/${G.total}</div>`;
   let html = "";
   if (G.mode === "quiz") {
-    if (c.phase !== "reveal") html = `${pill}${ringHTML(cfg.ansTime)}<div class="cnt" id="cntT">${c.phase === "load" ? "準備中…" : "已答 0/1"}</div>`;
+    if (c.phase !== "reveal") html = `${pill}${ringHTML(cfg.ansTime)}<div class="cnt" id="cntT">${c.phase === "load" ? "準備中…" : ansText(c)}</div>`;
   } else {
     const s = c.song;
     const title = `<div class="singT">${esc(nameOf(s))}</div>${s.artist ? `<div class="singA">${esc(s.artist)}</div>` : ""}`;
@@ -1828,6 +1903,7 @@ function renderThumb(){
 }
 function renderShow(){ $$("[data-show]").forEach(b => b.classList.toggle("on", b.dataset.show === cfg.show)); }
 const KEYS = ["Q", "W", "A", "S"];
+const ansText = c => G.multi ? `已答 ${c.picks.size}/${G.players.filter(p => !p.off).length}` : "已答 0/1";
 function renderOpts(){
   const c = G.cur, el = $("#opts"); if (!c) return;
   if (G.mode === "quiz") {
@@ -1841,8 +1917,9 @@ function renderOpts(){
       let cls = "opt";
       if (c.phase === "load") cls += " wait";
       if (c.phase === "reveal") cls += i === c.answer ? " right" : i === c.pick ? " wrong" : " fade";
+      else if (c.phase === "answer" && c.pick === i) cls += " pick";
       if (b.className !== cls) b.className = cls;
-      b.disabled = c.phase !== "answer";
+      b.disabled = c.phase !== "answer" || (G.multi && (c.pick >= 0 || !G.players.some(p => p.host)));
       b.querySelector(".mk").textContent = c.phase === "reveal" && i === c.answer ? "✓" : c.phase === "reveal" && i === c.pick ? "✕" : "";
     });
   } else {
@@ -1850,7 +1927,7 @@ function renderOpts(){
     const orig = `<button class="btn" data-j="orig">${icon(c.playing ? "pause" : "play")}${c.playing ? "暫停原曲" : c.phase === "buzz" ? "播原曲核對" : "播原曲"}<kbd>P</kbd></button>`;
     let html;
     if (c.phase === "show") html = `<div class="hint">等待搶唱… ${G.players.length > 1 ? `按自己的按鈕（鍵盤 1–${G.players.length}）` : "按按鈕或鍵盤 1"}</div><button class="btn" data-j="skip">${icon("next")}跳過這首</button>`;
-    else if (c.phase === "buzz") html = `<button class="btn ng" data-j="no">${icon("x")}唱錯了<kbd>X</kbd></button>${orig}<button class="btn ok" data-j="ok">${icon("check")}唱對了<kbd>Enter</kbd></button>`;
+    else if (c.phase === "buzz") html = voteHint() + `<button class="btn ng" data-j="no">${icon("x")}唱錯了<kbd>X</kbd></button>${orig}<button class="btn ok" data-j="ok">${icon("check")}唱對了<kbd>Enter</kbd></button>`;
     else html = `${orig}<button class="btn pri" data-j="next">${G.over || G.n >= G.total ? icon("trophy") + "看結果" : icon("next") + "下一題"}<kbd style="color:#08201f;border-color:rgba(0,0,0,.25)">Enter</kbd></button>`;
     if (el._h !== html) { el._h = html; el.className = "judge"; el.innerHTML = html; }
   }
@@ -1866,7 +1943,14 @@ $("#opts").addEventListener("click", e => {
 });
 function renderRank(){
   const el = $("#rank");
-  if (G.mode === "quiz") {
+  if (G.multi) {
+    const c = G.cur, max = Math.max(0, ...G.players.map(p => p.score));
+    el.innerHTML = `<h4>玩家</h4>` + G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
+      const a = c && c.picks && c.picks.get(i), res = c && c.results && c.results.find(x => x.pi === i);
+      const st = p.off ? `<span class="st no">離線</span>` : !c ? "" : c.phase === "reveal" ? (res && res.ok ? `<span class="st ok">+${res.gain}</span>` : `<span class="st no">${a ? "答錯" : "超時"}</span>`) : c.phase === "answer" ? (a ? `<span class="st ok">已答</span>` : `<span class="st">待答</span>`) : "";
+      return `<div class="rrow ${p.host ? "me" : ""} ${p.score === max && max > 0 ? "lead" : ""}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${st}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
+    }).join("");
+  } else if (G.mode === "quiz") {
     const c = G.cur, st = !c ? "" : c.phase === "reveal" ? (c.gain ? `<span class="st ok">答對</span>` : `<span class="st no">${c.pick < 0 ? "超時" : "答錯"}</span>`) : `<span class="st">待答</span>`;
     const place = 1 + G.recs.filter(r => r.score > G.score).length;
     el.innerHTML = `<h4>這一局</h4><div class="rrow me"><span class="n">#${place}</span><span class="av">${esc([...me][0] || "玩")}</span><span class="nm">${esc(me)}<span class="you">YOU</span></span>${st}<span class="sc"><b id="scN">${fmt(G.shown)}</b><i>x${G.combo}</i></span></div>`
@@ -1883,10 +1967,10 @@ function renderPads(){
   const A = $("#padsA"), B = $("#padsB");
   if (!G || G.mode !== "sing") { A.innerHTML = B.innerHTML = ""; A.dataset.sig = ""; return; }
   const n = G.players.length, half = Math.ceil(n / 2);
-  const sig = G.players.map(p => p.name + p.color).join("|");
+  const sig = G.players.map(p => p.name + p.color + (p.remote ? "r" : "")).join("|");
   if (A.dataset.sig !== sig) {        // build once per game; afterwards only classes and scores change
     A.dataset.sig = sig;
-    const pad = (p, i) => `<button class="pad" data-p="${i}" style="--c:${p.color}" aria-label="${esc(p.name)} 搶答"><kbd>${i + 1}</kbd><b>${esc(p.name)}</b><span class="ps">${p.score}</span><span class="lk">${icon("lock")} 這首鎖定</span></button>`;
+    const pad = (p, i) => `<button class="pad${p.remote ? " remote" : ""}" data-p="${i}" style="--c:${p.color}" aria-label="${esc(p.name)} 搶答">${p.remote ? `<span class="rt">手機</span>` : `<kbd>${i + 1}</kbd>`}<b>${esc(p.name)}</b><span class="ps">${p.score}</span><span class="lk">${icon("lock")} 這首鎖定</span></button>`;
     A.innerHTML = G.players.slice(0, half).map((p, i) => pad(p, i)).join("");
     B.innerHTML = G.players.slice(half).map((p, i) => pad(p, i + half)).join("");
   }
@@ -1895,7 +1979,7 @@ function renderPads(){
     const b = $(`.pad[data-p="${i}"]`); if (!b) return;
     const lock = !!(c && c.locked && c.locked.has(i)), buzzing = !!(c && c.buzzer === i && c.phase === "buzz");
     const idle = !!(c && c.phase !== "show" && !buzzing);
-    const cls = "pad" + (lock ? " lock" : "") + (idle ? " idle" : "") + (buzzing ? " buzz" : "");
+    const cls = "pad" + (p.remote ? " remote" : "") + (p.remote && p.off ? " off" : "") + (lock ? " lock" : "") + (idle ? " idle" : "") + (buzzing ? " buzz" : "");
     if (b.className !== cls) b.className = cls;
     b.disabled = !c || c.phase !== "show" || lock;
     const ps = b.querySelector(".ps");
@@ -1903,7 +1987,7 @@ function renderPads(){
   });
 }
 // pointerdown so a tap registers instantly
-["#padsA", "#padsB"].forEach(s => $(s).addEventListener("pointerdown", e => { const p = e.target.closest(".pad"); if (p && !p.disabled) { e.preventDefault(); buzz(+p.dataset.p); } }));
+["#padsA", "#padsB"].forEach(s => $(s).addEventListener("pointerdown", e => { const p = e.target.closest(".pad"); if (p && !p.disabled && !p.classList.contains("remote")) { e.preventDefault(); buzz(+p.dataset.p); } }));
 
 $$("[data-show]").forEach(b => b.onclick = () => { cfg.show = b.dataset.show; saveCfg(); renderShow(); if (G) renderThumb(); });
 $("#vol").oninput = e => { cfg.vol = +e.target.value; $("#volN").textContent = cfg.vol + "%"; YTP.vol(cfg.vol); saveCfg(); };
@@ -1911,9 +1995,9 @@ $("#extendBtn").onclick = () => {
   const c = G && G.cur; if (!c || c.phase !== "reveal" || G.mode !== "quiz") return;
   clearTimers();
   const el = Date.now() - c.revealStart; c.revealTotal += 10000;
-  runBar(c.revealTotal, el / c.revealTotal); later(nextQ, c.revealTotal - el); toast("多聽 10 秒");
+  runBar(c.revealTotal, el / c.revealTotal); later(c.board ? nextQ : afterReveal, c.revealTotal - el); toast("多聽 10 秒");
 };
-$("#nextQBtn").onclick = () => { if (G && G.cur && G.cur.phase === "reveal" && G.mode === "quiz") nextQ(); };
+$("#nextQBtn").onclick = advance;
 $("#restartBtn").onclick = () => { if (!G) return; const lib = G.lib; clearTimers(); startGame(lib); };
 $("#leaveBtn").onclick = leave;
 function leave(){
@@ -1933,7 +2017,7 @@ document.addEventListener("keydown", e => {
   if (G.mode === "quiz") {
     const i = { q: 0, w: 1, a: 2, s: 3, "1": 0, "2": 1, "3": 2, "4": 3 }[k];
     if (i != null && c.phase === "answer") { e.preventDefault(); pick(i); }
-    else if ((k === "enter" || k === " ") && c.phase === "reveal") { e.preventDefault(); nextQ(); }
+    else if ((k === "enter" || k === " ") && c.phase === "reveal") { e.preventDefault(); advance(); }
   } else {
     if (/^[1-8]$/.test(k) && c.phase === "show") { e.preventDefault(); buzz(+k - 1); }
     else if (c.phase === "buzz" && k === "enter") judge(true);
@@ -1948,7 +2032,7 @@ document.addEventListener("keydown", e => {
 function finish(){
   clearTimers(); cancelAnimationFrame(raf); stopBar();
   const r = $("#result"), time = Math.round((Date.now() - G.t0) / 1000);
-  if (G.mode === "quiz") {
+  if (G.mode === "quiz" && !G.multi) {
     YTP.stopAll();
     const rec = { name: me, score: G.score, correct: G.correct, total: G.n, maxCombo: G.maxCombo, time, date: Date.now() };
     const rank = G.n ? addRec(G.lib.id, G.total, rec) : -1;
@@ -1961,13 +2045,18 @@ function finish(){
     if (rank === 0 || acc >= 80) confetti(["#6cc5d6", "#8cc63f", "#ffb23f", "#ffffff"]);
   } else {
     YTP.stopAll();
-    const order = G.players.map((p, i) => ({ ...p, i })).sort((a, b) => b.score - a.score);
+    const quiz = G.mode === "quiz", order = G.players.map((p, i) => ({ ...p, i })).sort((a, b) => b.score - a.score);
     const top = order[0], tie = order.filter(p => p.score === top.score).length > 1;
-    r.innerHTML = `<div class="rcard podium"><h2>搶唱派對結束 · 唱了 ${G.log.length} 首</h2>
+    const sub = p => quiz ? `答對 ${p.correct}/${G.log.length} 題 · 最高連擊 x${p.maxCombo}` : `唱對 ${G.log.filter(x => x.winner === p.i).length} 首`;
+    const pts = p => quiz ? `${fmt(p.score)} 分` : `${p.score} 分`;
+    const items = quiz
+      ? G.log.map(x => { const w = x.results.filter(q => q.ok).map(q => esc(G.players[q.pi].name)); return `<li><span class="mk ${w.length ? "ok" : "no"}">${w.length ? "✓" : "–"}</span><span class="tt">${esc(label(x.song))}</span><span class="g" style="color:${w.length ? "var(--good)" : "var(--dim)"}">${w.length ? w.join("、") : "沒人"}</span><a href="https://youtu.be/${x.song.v}" target="_blank" rel="noopener">YouTube ↗</a></li>`; }).join("")
+      : G.log.map(x => { const w = x.winner >= 0 ? G.players[x.winner] : null; return `<li><span class="mk ${w ? "ok" : "no"}">${w ? "✓" : "–"}</span><span class="tt">${esc(label(x.song))}</span><span class="g" style="color:${w ? w.color : "var(--dim)"}">${w ? esc(w.name) : "沒人"}</span><a href="https://youtu.be/${x.song.v}" target="_blank" rel="noopener">YouTube ↗</a></li>`; }).join("");
+    r.innerHTML = `<div class="rcard podium"><h2>${quiz ? `四選一多人結束 · 共 ${G.log.length} 題` : `搶唱派對結束 · 唱了 ${G.log.length} 首`}</h2>
       <div class="rbig" style="font-size:56px;background:none;color:${tie ? "#fff" : top.color}">${tie ? "平手！" : `🏆 ${esc(top.name)}`}</div>
       <div style="height:18px"></div>
-      ${order.map((p, k) => `<div class="lrow ${k < 3 ? "g" + (k + 1) : ""}" style="--c:${p.color}"><span class="rk">#${k + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><div class="who"><b>${esc(p.name)}</b><small>唱對 ${G.log.filter(x => x.winner === p.i).length} 首</small></div><span class="sc">${p.score} 分</span></div>`).join("")}
-      <ol class="rlist" style="margin-top:16px">${G.log.map(x => { const w = x.winner >= 0 ? G.players[x.winner] : null; return `<li><span class="mk ${w ? "ok" : "no"}">${w ? "✓" : "–"}</span><span class="tt">${esc(label(x.song))}</span><span class="g" style="color:${w ? w.color : "var(--dim)"}">${w ? esc(w.name) : "沒人"}</span><a href="https://youtu.be/${x.song.v}" target="_blank" rel="noopener">YouTube ↗</a></li>`; }).join("")}</ol>
+      ${order.map((p, k) => `<div class="lrow ${k < 3 ? "g" + (k + 1) : ""}" style="--c:${p.color}"><span class="rk">#${k + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><div class="who"><b>${esc(p.name)}</b><small>${sub(p)}</small></div><span class="sc">${pts(p)}</span></div>`).join("")}
+      <ol class="rlist" style="margin-top:16px">${items}</ol>
       <div class="ract"><button class="btn" id="backBtn">${icon("back")}回大廳</button><button class="btn pri" id="againBtn">${icon("restart")}再玩一局</button></div></div>`;
     confetti([top.color, "#ffffff", "#ffb23f"]);
     beep("win");
@@ -1978,45 +2067,146 @@ function finish(){
 }
 
 /* ================= online room (PeerJS) =================
-   The screen that runs the game is the host and the single source of truth. Phones that open the room
-   link are only controllers: they send "buzz" and receive a small state snapshot after every change. */
-const PEER_SRC = "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
+   The screen running the game is the host and the single source of truth. Phones that open the room
+   link (or type the 4-digit code) are controllers: they send "buzz" / "vote" / "ans" and receive a small
+   state snapshot after every change. PeerJS and the QR generator live in vendor/ so a room never depends on a CDN. */
 const RID = "wvshit-";                                            // PeerJS id prefix, so room codes can't clash with other apps
-const loadPeer = () => window.Peer ? Promise.resolve() : new Promise((ok, no) => {
-  const s = document.createElement("script"); s.src = PEER_SRC; s.async = true;
-  s.onload = ok; s.onerror = () => no(new Error("PeerJS 載入失敗")); document.head.appendChild(s);
+const loadScript = srcs => new Promise((ok, no) => {
+  const list = [].concat(srcs);
+  const next = () => {
+    const src = list.shift(); if (!src) return no(new Error("載入失敗"));
+    const s = document.createElement("script"); s.src = src; s.async = true;
+    s.onload = ok; s.onerror = () => { s.remove(); next(); }; document.head.appendChild(s);
+  };
+  next();
 });
+const loadPeer = () => window.Peer ? Promise.resolve() : loadScript(["vendor/peerjs-1.5.4.min.js", "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"]);
+const loadQR = () => typeof qrcode === "function" ? Promise.resolve() : loadScript("vendor/qrcode.js").catch(() => {});
 const PID = (() => {                                              // per tab, so two tabs on one computer count as two players
   try { let v = sessionStorage.getItem("yt.pid"); if (!v) { v = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sessionStorage.setItem("yt.pid", v); } return v; }
   catch { return Math.random().toString(36).slice(2, 12); }
 })();
-const roomCode = () => { const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let s = ""; for (let i = 0; i < 4; i++) s += A[Math.random() * A.length | 0]; return s; };
-
-function buildPlayers(){
-  const loc = cfg.players.map(name => ({ name, score: 0 }));
-  const rem = NET.list().map(g => ({ name: g.name, score: 0, pid: g.pid, remote: true }));
-  return [...loc, ...rem].slice(0, 8).map((p, i) => ({ ...p, color: PCOL[i] }));
+const roomCode = () => String(1000 + (Math.random() * 9000 | 0));      // 4 digits: a number pad is all a phone needs
+const baseUrl = () => location.href.split("#")[0].split("?")[0];
+function drawQR(cv, text){
+  if (!cv || typeof qrcode !== "function") return false;
+  try {
+    const q = qrcode(0, "M"); q.addData(text); q.make();
+    const n = q.getModuleCount(), px = 6, quiet = 3, size = (n + quiet * 2) * px;
+    cv.width = cv.height = size; const g = cv.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, size, size); g.fillStyle = "#07141b";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) g.fillRect((c + quiet) * px, (r + quiet) * px, px, px);
+    return true;
+  } catch { return false; }
 }
+
+/* on-screen players: with a room open they default to none, so phone players are players 1, 2, 3… */
+const locals = () => (NET.on && !cfg.lt) ? [] : cfg.players;
+const newPlayer = (name, i, extra) => Object.assign({ name, score: 0, combo: 0, maxCombo: 0, correct: 0, color: PCOL[i % 8] }, extra);
+function buildPlayers(){
+  const quiz = cfg.mode === "quiz";
+  const loc = quiz ? (cfg.hostPlays ? [{ name: me, host: true }] : []) : locals().map(name => ({ name }));
+  const rem = NET.list().map(g => ({ name: g.name, pid: g.pid, remote: true }));
+  return [...loc, ...rem].slice(0, 8).map((p, i) => newPlayer(p.name, i, p));
+}
+const gameLive = () => !!(G && !G.done && (G.mode === "sing" || G.multi));
+
+/* ---- sing: voting on a buzz ---- */
+function voters(){                                                // phones other than the singer
+  const c = G.cur; return G.players.map((p, i) => ({ p, i })).filter(({ p, i }) => p.remote && !p.off && i !== c.buzzer);
+}
+function tally(){
+  const c = G.cur, vs = voters(); let yes = 0, no = 0;
+  vs.forEach(({ i }) => { const v = c.votes && c.votes.get(i); if (v === true) yes++; else if (v === false) no++; });
+  return { n: vs.length, yes, no, need: Math.floor(vs.length / 2) + 1 };
+}
+function tallyVote(){
+  const c = G && G.cur; if (!c || G.mode !== "sing" || c.phase !== "buzz" || cfg.judge !== "vote") return;
+  const t = tally(); if (!t.n) return;
+  if (t.yes >= t.need) judge(true);
+  else if (t.no >= t.need) judge(false);
+  else if (t.yes + t.no >= t.n) toast("票數平手，請房主決定");
+}
+function voteHint(){
+  if (cfg.judge !== "vote") return "";
+  const t = tally();
+  return t.n ? `<div class="hint">大家投票中 · 唱對 ${t.yes} ／ 唱錯 ${t.no}（共 ${t.n} 人，過半就定案）。房主也可以直接判定。</div>` : `<div class="hint">沒有其他手機玩家可以投票，由房主判定。</div>`;
+}
+function castVote(pi, v){
+  const c = G && G.cur; if (!c || G.mode !== "sing" || c.phase !== "buzz" || cfg.judge !== "vote" || !c.votes) return;
+  const p = G.players[pi]; if (!p || !p.remote || pi === c.buzzer) return;
+  c.votes.set(pi, !!v); renderAll(); tallyVote();
+}
+
+/* ---- quiz (multi): answers from phones ---- */
+function answerBy(pi, i){
+  const c = G && G.cur; if (!c || !G.multi || c.phase !== "answer" || !(i >= 0 && i < 4) || c.picks.has(pi) || !G.players[pi]) return;
+  c.picks.set(pi, { i, used: Math.min(c.dur, performance.now() - c.t0) });
+  if (G.players[pi].host) { c.pick = i; vibrate(20); }
+  renderAll(); checkAllAnswered();
+}
+function checkAllAnswered(){
+  const c = G && G.cur; if (!c || !G.multi || c.phase !== "answer") return;
+  const alive = G.players.filter(p => !p.off);
+  if (alive.length && alive.every(p => c.picks.has(G.players.indexOf(p)))) resolveMulti();
+}
+function resolveMulti(){
+  const c = G.cur; if (!c || c.phase !== "answer") return;
+  c.phase = "reveal"; c.pick = c.pick == null ? -1 : c.pick;
+  const res = [], rk = () => { const o = G.players.map((p, i) => i).sort((a, b) => G.players[b].score - G.players[a].score || a - b), m = []; o.forEach((pi, r) => m[pi] = r + 1); return m; };
+  const before = rk();
+  G.players.forEach((p, pi) => {
+    const a = c.picks.get(pi), ok = !!a && a.i === c.answer; let gain = 0;
+    if (ok) {
+      p.combo++; p.maxCombo = Math.max(p.maxCombo, p.combo); p.correct++;
+      const base = 60, speed = Math.round(60 * (1 - a.used / c.dur)), combo = Math.min(p.combo - 1, 10) * 8;
+      gain = base + speed + combo; p.score += gain;
+    } else p.combo = 0;
+    res.push({ pi, ok, gain, pick: a ? a.i : -1 });
+  });
+  const after = rk(); c.moves = G.players.map((p, pi) => ({ f: before[pi], t: after[pi] }));
+  c.results = res; G.log.push({ song: c.song, results: res });
+  const h = res.find(r => G.players[r.pi].host);
+  if (h ? h.ok : res.some(r => r.ok)) { beep("good"); vibrate(30); } else { beep("bad"); vibrate([40, 60, 40]); }
+  const nx = G.queue[0]; if (nx && G.n < G.total) YTP.preload(nx.v, startOf(nx));
+  c.revealTotal = cfg.reveal * 1000; c.revealStart = Date.now();
+  renderAll(); renderPop(); runBar(c.revealTotal);
+  later(afterReveal, c.revealTotal);
+}
+const boardOn = () => !!(G && G.multi && cfg.board && G.cur && !G.cur.board && G.n < G.total && G.queue.length);
+const BOARD_MS = 5000;
+function afterReveal(){ if (boardOn()) showBoard(); else nextQ(); }
+function showBoard(){
+  const c = G.cur; if (!c) return;
+  clearTimers(); c.board = true; c.revealTotal = BOARD_MS; c.revealStart = Date.now();
+  beep("good");
+  renderAll(); renderPop(); runBar(BOARD_MS);
+  later(nextQ, BOARD_MS);
+}
+function advance(){ if (!G || !G.cur || G.cur.phase !== "reveal" || G.mode !== "quiz") return; if (G.multi && boardOn()) showBoard(); else nextQ(); }
 
 const NET = {
   on: false, status: "off", code: "", peer: null, err: "", guests: new Map(),
   list(){ return this.on ? [...this.guests.values()].filter(g => g.conn && g.conn.open) : []; },
   count(){ return this.list().length; },
-  url(){ return location.href.split("#")[0].split("?")[0] + "?room=" + this.code; },
+  url(){ return baseUrl() + "?room=" + this.code; },
   async open(){
     if (this.on || this.status === "opening") return;
     this.status = "opening"; this.err = ""; this.refresh();
     try { await loadPeer(); } catch (e) { this.status = "off"; this.err = "PeerJS 載入失敗，請檢查網路或關閉廣告封鎖外掛。"; return this.refresh(); }
+    await loadQR();
     const attempt = n => {
       const code = roomCode(), peer = new Peer(RID + code);
-      peer.on("open", () => { this.peer = peer; this.code = code; this.on = true; this.status = "on"; this.refresh(); });
+      const timer = setTimeout(() => { if (!this.on && this.status === "opening") { try { peer.destroy(); } catch {} this.status = "off"; this.err = "連不上配對服務，請檢查網路後重試。"; this.refresh(); } }, 15000);
+      peer.on("open", () => { clearTimeout(timer); this.peer = peer; this.code = code; this.on = true; this.status = "on"; this.refresh(); this.push(); });
       peer.on("connection", conn => this.accept(conn));
       peer.on("disconnected", () => { if (this.peer === peer && !peer.destroyed) { try { peer.reconnect(); } catch {} } });
       peer.on("error", e => {
-        if (e.type === "unavailable-id" && n < 5) { try { peer.destroy(); } catch {} return attempt(n + 1); }
+        clearTimeout(timer);
+        if (e.type === "unavailable-id" && n < 6) { try { peer.destroy(); } catch {} return attempt(n + 1); }
         if (this.on && this.peer === peer) { console.warn("peer", e); return; }          // a hiccup after the room is up: keep it
         try { peer.destroy(); } catch {}
-        this.status = "off"; this.err = ["network", "server-error", "socket-error", "socket-closed"].includes(e.type) ? "連不到 PeerJS 伺服器，請檢查網路。" : "建立房間失敗（" + e.type + "）。";
+        this.status = "off"; this.err = ["network", "server-error", "socket-error", "socket-closed"].includes(e.type) ? "連不到配對服務，請檢查網路。" : "建立房間失敗（" + e.type + "）。";
         this.refresh();
       });
     };
@@ -2025,53 +2215,76 @@ const NET = {
   close(){
     this.guests.forEach(g => { try { g.conn.send({ t: "closed" }); } catch {} });
     const p = this.peer; setTimeout(() => { try { p && p.destroy(); } catch {} }, 250);
-    if (G && G.mode === "sing") G.players.forEach(pl => { if (pl.remote) pl.off = true; });
+    if (G && gameLive()) G.players.forEach(pl => { if (pl.remote) pl.off = true; });
     this.on = false; this.status = "off"; this.peer = null; this.code = ""; this.guests.clear();
-    this.refresh(); if (G && G.mode === "sing") renderRank();
+    this.refresh(); if (G && G.players) renderRank();
   },
   accept(conn){
     conn.on("data", m => this.onData(conn, m));
     conn.on("close", () => this.drop(conn));
     conn.on("error", () => this.drop(conn));
   },
+  uniqueName(name, pid){
+    const taken = n => [...this.guests.values()].some(g => g.pid !== pid && g.name === n) || (G && G.players && G.players.some(p => p.pid !== pid && p.name === n)) || (G && G.multi ? false : locals().includes(n));
+    let nm = name, k = 2; while (taken(nm)) nm = name.slice(0, 7) + k++;
+    return nm;
+  },
   onData(conn, m){
     if (!m || typeof m !== "object") return;
     if (m.t === "hello") {
       const pid = String(m.pid || "").slice(0, 40); if (!pid) return;
-      const name = String(m.name || "").trim().slice(0, 8) || "玩家";
-      const old = this.guests.get(pid), sing = !!(G && G.mode === "sing");
-      const inGame = sing ? G.players.find(p => p.pid === pid) : null;
-      const total = sing ? G.players.length : cfg.players.length + this.count();
+      const live = !!(G && G.players && !G.done && (G.mode === "sing" || G.multi));
+      const old = this.guests.get(pid), inGame = live ? G.players.find(p => p.pid === pid) : null;
+      const total = live ? G.players.length : locals().length + this.count();
       if (!old && !inGame && total >= 8) { try { conn.send({ t: "full" }); } catch {} setTimeout(() => { try { conn.close(); } catch {} }, 300); return; }
-      if (old && old.conn !== conn) { old.conn.removeAllListeners && old.conn.removeAllListeners("close"); try { old.conn.send({ t: "kicked" }); old.conn.close(); } catch {} }
+      if (old && old.conn !== conn) { try { old.conn.removeAllListeners && old.conn.removeAllListeners("close"); old.conn.send({ t: "kicked" }); old.conn.close(); } catch {} }
+      const name = this.uniqueName(String(m.name || "").trim().slice(0, 8) || "玩家", pid);
       const g = { pid, name: inGame ? inGame.name : name, conn }; this.guests.set(pid, g); conn._g = g;
-      if (sing && inGame) inGame.off = false;
-      else if (sing && !G.done) G.players.push({ name, score: 0, color: PCOL[G.players.length], pid, remote: true });
+      if (live && inGame) inGame.off = false;
+      else if (live) G.players.push(newPlayer(name, G.players.length, { pid, remote: true }));
       try { conn.send({ t: "welcome" }); } catch {}
       toast(`${g.name} 加入了房間`);
-      if (sing) { renderPads(); renderRank(); }
+      if (live) { renderPads(); renderRank(); renderCover(); }
       this.push(); this.refresh();
     } else if (m.t === "buzz") {
       const g = conn._g; if (!g || !G || G.mode !== "sing") return;
       const i = G.players.findIndex(p => p.pid === g.pid);
-      if (i >= 0) buzz(i);
+      if (i >= 0) buzz(i, true);
+    } else if (m.t === "vote") {
+      const g = conn._g; if (!g || !G) return;
+      castVote(G.players.findIndex(p => p.pid === g.pid), m.v);
+    } else if (m.t === "ans") {
+      const g = conn._g; if (!g || !G) return;
+      answerBy(G.players.findIndex(p => p.pid === g.pid), +m.i);
     }
   },
   drop(conn){
     const g = conn._g; if (!g || g.conn !== conn) return;
     this.guests.delete(g.pid);
-    if (G && G.mode === "sing") { const p = G.players.find(p => p.pid === g.pid); if (p) p.off = true; renderRank(); }
+    if (G && G.players) {
+      const p = G.players.find(p => p.pid === g.pid); if (p) p.off = true;
+      renderRank(); if (G.cur) renderCover();
+      checkAllAnswered(); tallyVote();
+    }
     toast(`${g.name} 離線了`); this.push(); this.refresh();
   },
   snap(){
-    if (!G) return { phase: "lobby", players: [] };
-    if (G.mode !== "sing") return { phase: "other", players: [] };
-    const c = G.cur;
-    const o = { phase: G.done ? "end" : c ? c.phase : "load", n: G.n, total: G.total, players: G.players.map(p => ({ name: p.name, color: p.color, score: p.score, off: !!p.off })), buzzer: -1, winner: -1 };
-    if (c) {
-      o.title = nameOf(c.song); o.artist = c.song.artist || "";
-      o.left = Math.max(0, Math.round(c.phase === "buzz" ? c.left : c.phase === "show" ? c.dur - (performance.now() - c.t0) : 0));
-      o.buzzer = c.buzzer; o.winner = c.winner == null ? -1 : c.winner;
+    if (!G) return { phase: "lobby", mode: null, players: [...this.guests.values()].map((g, i) => ({ name: g.name, color: PCOL[(locals().length + i) % 8], score: 0, off: !(g.conn && g.conn.open) })) };
+    if (G.mode === "quiz" && !G.multi) return { phase: "other", mode: "quiz", players: [] };
+    const c = G.cur, sing = G.mode === "sing";
+    const o = { mode: G.mode, judge: cfg.judge, phase: G.done ? "end" : c ? c.phase : "load", n: G.n, total: G.total, buzzer: -1, winner: -1,
+      players: G.players.map(p => ({ name: p.name, color: p.color, score: p.score, combo: p.combo || 0, off: !!p.off })) };
+    if (c && !G.done) {
+      if (sing) {
+        o.title = nameOf(c.song); o.artist = c.song.artist || "";
+        o.dur = c.dur; o.left = Math.max(0, Math.round(c.phase === "buzz" ? c.left : c.phase === "show" ? c.dur - (performance.now() - c.t0) : 0));
+        o.buzzer = c.buzzer; o.winner = c.winner == null ? -1 : c.winner;
+      } else {
+        o.dur = c.dur; o.left = c.phase === "answer" ? Math.max(0, Math.round(c.dur - (performance.now() - c.t0))) : 0;
+        o.opts = c.phase === "answer" || c.phase === "reveal" ? c.opts.map(optLabel) : [];
+        o.answered = c.picks.size; o.alive = G.players.filter(p => !p.off).length;
+        if (c.phase === "reveal") { o.ans = c.answer; o.song = label(c.song); o.board = !!c.board; if (c.board) { o.mv = c.moves; o.gains = G.players.map((p, i) => { const r = (c.results || []).find(x => x.pi === i); return r && r.ok ? r.gain : 0; }); } }
+      }
     }
     return o;
   },
@@ -2080,27 +2293,39 @@ const NET = {
     const s = this.snap(), c = G && G.cur;
     this.guests.forEach(g => {
       if (!g.conn || !g.conn.open) return;
-      const me = G && G.mode === "sing" ? G.players.findIndex(p => p.pid === g.pid) : -1;
-      try { g.conn.send({ t: "state", ...s, me, locked: !!(me >= 0 && c && c.locked && c.locked.has(me)) }); } catch {}
+      const me = G && G.players ? G.players.findIndex(p => p.pid === g.pid) : -1;
+      const o = Object.assign({ t: "state", me }, s);
+      if (G && me >= 0 && c && !G.done) {
+        if (G.mode === "sing") {
+          o.locked = !!(c.locked && c.locked.has(me));
+          if (c.phase === "buzz" && cfg.judge === "vote") { o.votes = tally(); o.myVote = c.votes && c.votes.has(me) ? c.votes.get(me) : null; }
+        } else if (G.multi) {
+          const a = c.picks && c.picks.get(me), r = c.results && c.results.find(x => x.pi === me);
+          o.mine = { pick: a ? a.i : -1, ok: r ? r.ok : null, gain: r ? r.gain : 0 };
+        }
+      }
+      try { g.conn.send(o); } catch {}
     });
   },
   renderChip(){
-    const b = $("#roomBtn"); if (!b) return;
-    b.hidden = !(this.on && G && G.mode === "sing");
-    if (!b.hidden) $("#roomBtnT").textContent = `房號 ${this.code} · ${this.count()} 人`;
+    const txt = `房號 ${this.code} · ${this.count()} 人`;
+    const b = $("#roomBtn"); if (b) { b.hidden = !(this.on && G && G.players); if (!b.hidden) $("#roomBtnT").textContent = txt; }
+    const t = $("#roomTop"); if (t) { t.hidden = !this.on; if (this.on) $("#roomTopT").textContent = txt; }
   },
   boxHTML(){
     if (this.status === "opening") return `<div class="roombox"><div class="hintp" style="margin:0">正在建立房間…</div></div>`;
-    if (!this.on) return `<div class="roombox"><button class="btn" data-room="open">${icon("globe")}開啟房間</button><p class="hintp">開啟後會產生房號和連結，朋友用手機打開連結就能搶答，不用安裝任何東西。${this.err ? `<br><span style="color:var(--bad)">${esc(this.err)}</span>` : ""}</p></div>`;
-    const chips = [...this.guests.values()].map((g, i) => `<span class="gchip${g.conn && g.conn.open ? "" : " off"}" style="--c:${PCOL[(cfg.players.length + i) % 8]}"><i></i>${esc(g.name)}</span>`).join("")
+    if (!this.on) return `<div class="roombox"><button class="btn pri" data-room="open">${icon("globe")}開啟房間</button><p class="hintp">開啟後會產生房號和 QR Code，朋友用手機掃了就能加入，不用安裝任何東西。${this.err ? `<br><span style="color:var(--bad)">${esc(this.err)}</span>` : ""}</p></div>`;
+    const lc = locals().length;
+    const chips = [...this.guests.values()].map((g, i) => `<span class="gchip${g.conn && g.conn.open ? "" : " off"}" style="--c:${PCOL[(lc + i) % 8]}"><i></i>${esc(g.name)}</span>`).join("")
       || `<span class="hintp" style="margin:0">還沒有人加入…</span>`;
-    return `<div class="roombox"><small style="color:var(--mute);letter-spacing:.15em">房號</small><div class="code">${this.code}</div>
+    return `<div class="roombox"><div class="rtop"><div><small class="k">房號</small><div class="code">${this.code}</div></div><canvas class="qr" data-qr aria-label="掃碼加入房間"></canvas></div>
       <div class="url"><input readonly value="${esc(this.url())}" aria-label="加入連結" data-room="url"><button class="btn sm" data-room="copy">複製連結</button></div>
       <div class="guests">${chips}</div>
-      <p class="hintp">朋友用手機打開這個連結，輸入暱稱就能加入，遊戲中途也可以加入。房間會在你關掉這個分頁時結束。</p>
+      <p class="hintp">朋友用手機掃 QR Code，或打開網站按右上角「加入房間」輸入房號。遊戲中途也能加入，斷線重連會回到原本的位置。</p>
       <button class="btn sm danger" data-room="close" style="margin-top:10px">${icon("x")}關閉房間</button></div>`;
   },
   bindBox(root){
+    $$("[data-qr]", root).forEach(cv => drawQR(cv, this.url()));
     $$("[data-room]", root).forEach(b => {
       const a = b.dataset.room;
       if (a === "open") b.onclick = () => this.open();
@@ -2118,67 +2343,111 @@ const NET = {
     this.renderChip();
   }
 };
-$("#roomBtn").onclick = () => {
+function openRoomPanel(){
   openModal(`${mhead("手機連線")}<div style="padding:24px 28px;flex:1;overflow:auto"><div id="roomSlot">${NET.boxHTML()}</div></div>`, true);
   NET.bindBox(modal);
+}
+/* "跟朋友玩" on the lobby: open the room first so friends can already join while the host picks songs */
+function openParty(){
+  const all = ALL(), n = all.songs.filter(usable).length;
+  openModal(`${mhead("跟朋友玩")}<div style="padding:22px 28px 30px;flex:1;overflow:auto">
+    <div class="sec"><div class="sh">${icon("globe")}手機連線<small>朋友用自己的手機加入</small></div><div id="roomSlot">${NET.boxHTML()}</div></div>
+    <div class="sec"><div class="sh">${icon("play")}開始一局<small>朋友加入後再開始也可以</small></div><div class="modes">
+      <button class="mode" data-pq="sing"><span class="ic">${icon("mic")}</span><div><b>搶唱派對</b><span>手機當搶唱鈕，唱對得分。全部 ${n} 首隨機。</span></div></button>
+      <button class="mode" data-pq="quiz"><span class="ic">${icon("play")}</span><div><b>四選一多人</b><span>每人用手機作答，越快越高分。全部 ${n} 首隨機。</span></div></button></div>
+      <button class="btn" id="pqPick" style="margin-top:14px">${icon("list")}改選題庫</button></div></div>`, true);
+  NET.bindBox(modal);
+  $$("[data-pq]", modal).forEach(b => b.onclick = () => {
+    const mode = b.dataset.pq;
+    if (n < (mode === "quiz" ? 4 : 1)) return toast(mode === "quiz" ? "歌曲還不夠，四選一至少要 4 首。" : "歌曲還不夠。");
+    openSetup("all", mode);
+  });
+  $("#pqPick").onclick = () => { closeModal(); $("#grid").scrollIntoView({ behavior: "smooth", block: "start" }); toast("選一個題庫，再按「四選一」或「搶唱派對」，房間會一直開著。", 4200); };
+  if (!NET.on) NET.open();
+}
+$("#roomBtn").onclick = openRoomPanel;
+$("#roomTop").onclick = openRoomPanel;
+$("#heroParty").onclick = openParty;
+$("#joinTop").onclick = () => {
+  if ((G || NET.on) && !confirm("要離開目前的房間或遊戲，去加入別人的房間嗎？")) return;
+  location.href = baseUrl() + "?room=";
 };
 
-/* ---- phone controller: this page opened with ?room=CODE ---- */
+/* ---- phone controller: this page opened with ?room=… ---- */
 const CTL = {
-  active: false, peer: null, conn: null, st: null, got: 0, retry: 0, kicked: false, name: "", prev: "", _rt: 0, timer: 0,
+  active: false, code: ROOM_Q, peer: null, conn: null, st: null, got: 0, retry: 0, kicked: false, name: "", _rt: 0, timer: 0,
   start(){
     this.active = true;
     $("#topbar").hidden = true; $("#lobby").hidden = true; $("#game").hidden = true;
-    document.title = `房間 ${ROOM_Q} · 猜歌`;
+    document.title = "加入房間 · 猜歌";
     const el = $("#ctl"); el.hidden = false;
-    el.innerHTML = `<div class="ctop"><div class="logo"><b>猜歌</b><small>房號 ${esc(ROOM_Q)}</small></div><span class="st" id="cSt"></span></div>
-      <div class="jin" id="cBody"><h2 style="margin:0">加入搶唱派對</h2><p style="color:var(--mute);margin:0">輸入暱稱後加入，等房主開始。</p>
-        <input id="cName" maxlength="8" value="${esc(store.get("yt.gname", ""))}" placeholder="暱稱（最多 8 字）" autocomplete="off">
-        <button class="btn pri" id="cGo">${icon("mic")}加入房間</button><p class="msg" id="cMsg" style="color:var(--bad)"></p></div>`;
+    el.innerHTML = `<div class="ctop"><div class="logo"><b>猜歌</b><small>朋友版</small></div><span class="st" id="cSt"></span></div>
+      <div class="cjoin" id="cBody"><p class="kicker">跟朋友玩</p><h2 class="mega">加入<em>房間</em></h2>
+        <input class="field" id="cCode" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 位數字房號" aria-label="房號" value="${esc(ROOM_Q)}">
+        <input class="field" id="cName" maxlength="8" autocomplete="off" placeholder="你的暱稱（最多 8 字）" aria-label="暱稱" value="${esc(store.get("yt.gname", ""))}">
+        <button class="btn pri" id="cGo">${icon("mic")}加入房間</button><p class="msg" id="cMsg"></p></div>`;
     const go = () => {
-      this.name = $("#cName").value.trim() || "玩家"; store.set("yt.gname", this.name);
-      keepAwake(); this.connect();
-      $("#cBody").innerHTML = `<p style="color:var(--mute);text-align:center">連線中…</p>`;
+      const code = $("#cCode").value.replace(/\D/g, "");
+      if (!/^\d{4}$/.test(code)) { $("#cMsg").textContent = "請輸入大螢幕上的 4 位數字房號。"; $("#cCode").focus(); return; }
+      this.code = code; this.name = $("#cName").value.trim() || "玩家"; store.set("yt.gname", this.name);
+      try { history.replaceState(null, "", baseUrl() + "?room=" + code); } catch {}
+      keepAwake(); this.wait(); this.connect();
     };
-    $("#cGo").onclick = go; $("#cName").onkeydown = e => { if (e.key === "Enter") go(); };
+    $("#cGo").onclick = go; $("#cName").onkeydown = $("#cCode").onkeydown = e => { if (e.key === "Enter") go(); };
+    if (!ROOM_Q) $("#cCode").focus(); else $("#cName").focus();
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden || !this.name || this.kicked) return;
+      if (document.hidden || !this.name || this.kicked || !this.code) return;
       keepAwake();
       if (!this.conn || !this.conn.open) { this.retry = 0; this.connect(); }
     });
+    el.addEventListener("click", e => {
+      const o = e.target.closest("[data-o]"), v = e.target.closest("[data-v]");
+      if (o) this.send({ t: "ans", i: +o.dataset.o });
+      else if (v) this.send({ t: "vote", v: v.dataset.v === "1" });
+    });
     clearInterval(this.timer); this.timer = setInterval(() => this.tick(), 250);
   },
+  send(m){ try { if (this.conn && this.conn.open) this.conn.send(m); } catch {} },
   status(t, cls = ""){ const s = $("#cSt"); if (s) { s.textContent = t; s.className = "st " + cls; } },
-  fail(msg){
+  wait(){
+    const b = $("#cBody"); if (!b) return; b.className = "cjoin"; b.style.display = "";
+    b.innerHTML = `<p class="kicker">房號 ${esc(this.code)}</p><h2 class="mega">連線<em>中</em></h2><p class="cnote" id="cHint">正在找房間…</p>`;
+  },
+  hint(t){ const h = $("#cHint"); if (h) h.textContent = t; },
+  fail(msg, again){
     this.kicked = true; clearTimeout(this._rt); this.status(msg, "bad");
     const b = $("#cBody"); if (!b) return;
-    b.className = "jin"; b.style.display = ""; b.innerHTML = `<p style="text-align:center;color:var(--bad)">${esc(msg)}</p><button class="btn pri" id="cReload">重新整理</button>`;
-    $("#cReload").onclick = () => location.reload();
+    b.className = "cjoin"; b.style.display = "";
+    b.innerHTML = `<p class="kicker">連線失敗</p><p class="cnote" style="font-size:17px;color:var(--text)">${esc(msg)}</p>${again ? `<button class="btn pri" id="cAgain">重新輸入房號</button>` : `<button class="btn pri" id="cReload">重新整理</button>`}`;
+    if (again) $("#cAgain").onclick = () => { location.href = baseUrl() + "?room="; }; else $("#cReload").onclick = () => location.reload();
   },
   async connect(){
     clearTimeout(this._rt); this.status("連線中…");
-    try { await loadPeer(); } catch { return this.fail("PeerJS 載入失敗，請檢查網路後重試。"); }
+    try { await loadPeer(); } catch { return this.fail("連線元件載入失敗，請檢查網路後重新整理。"); }
     if (this.peer) { try { this.peer.destroy(); } catch {} }
     const peer = this.peer = new Peer();
     peer.on("open", () => { if (this.peer === peer) this.dial(); });
     peer.on("error", e => {
       if (this.peer !== peer) return;
-      if (e.type === "peer-unavailable") this.fail("找不到這個房間，請確認連結，或請房主重新開房。");
+      if (e.type === "peer-unavailable") this.fail("找不到這個房間。請確認房號，或請房主確認房間還開著。", true);
+      else if (["network", "server-error", "socket-error", "socket-closed"].includes(e.type)) { this.hint("連不到配對服務，重試中…請檢查網路。"); this.again(); }
       else this.again();
     });
   },
   dial(){
-    const conn = this.conn = this.peer.connect(RID + ROOM_Q, { reliable: true });
+    const conn = this.conn = this.peer.connect(RID + this.code, { reliable: true });
     let opened = false;
     conn.on("open", () => { opened = true; this.retry = 0; conn.send({ t: "hello", pid: PID, name: this.name }); });
     conn.on("data", m => this.onData(m));
     const lost = () => { if (this.conn === conn && !this.kicked) { this.status("連線中斷，重連中…", "bad"); this.again(); } };
     conn.on("close", lost); conn.on("error", lost);
-    setTimeout(() => { if (!opened && this.conn === conn && !this.kicked) this.again(); }, 12000);
+    setTimeout(() => {
+      if (!opened && this.conn === conn && !this.kicked) { this.hint("還連不上。學校或公司 Wi-Fi 常擋這種連線，可以改用手機熱點或行動網路再試。"); this.again(); }
+    }, 12000);
   },
   again(){
     clearTimeout(this._rt);
-    if (++this.retry > 8) return this.fail("連不上房間，請確認房主還開著，然後重新整理。");
+    if (++this.retry > 8) return this.fail("連不上房間。請確認房主還開著，學校或公司 Wi-Fi 請改用手機熱點，然後重新整理。");
     this._rt = setTimeout(() => this.connect(), 1200 + this.retry * 600);
   },
   onData(m){
@@ -2191,48 +2460,92 @@ const CTL = {
   },
   cues(p, s){
     if (!p || s.me < 0) return;
-    if (p.phase !== "buzz" && s.phase === "buzz" && s.buzzer === s.me) { beep("buzz"); vibrate(60); }
-    else if (p.phase !== "reveal" && s.phase === "reveal" && s.winner === s.me) { beep("win"); vibrate([40, 40, 40]); }
-    else if (p.phase === "buzz" && s.phase === "show" && s.locked) { beep("bad"); vibrate([40, 60, 40]); }
+    if (s.mode === "sing") {
+      if (p.phase !== "buzz" && s.phase === "buzz" && s.buzzer === s.me) { beep("buzz"); vibrate(60); }
+      else if (p.phase !== "reveal" && s.phase === "reveal" && s.winner === s.me) { beep("win"); vibrate([40, 40, 40]); }
+      else if (p.phase === "buzz" && s.phase === "show" && s.locked) { beep("bad"); vibrate([40, 60, 40]); }
+    } else if (s.mode === "quiz" && p.phase !== "reveal" && s.phase === "reveal" && s.mine) {
+      if (s.mine.ok) { beep("good"); vibrate(30); } else { beep("bad"); vibrate([40, 60, 40]); }
+    }
   },
   buzz(){
-    const s = this.st; if (!s || s.phase !== "show" || s.me < 0 || s.locked || !this.conn || !this.conn.open) return;
-    vibrate(25); try { this.conn.send({ t: "buzz" }); } catch {}
+    const s = this.st; if (!s || s.mode !== "sing" || s.phase !== "show" || s.me < 0 || s.locked) return;
+    vibrate(25); this.send({ t: "buzz" });
   },
-  leftSec(){
+  leftMs(){
     const s = this.st; if (!s) return 0;
-    const ms = s.phase === "show" ? s.left - (performance.now() - this.got) : s.left;
-    return Math.max(0, Math.ceil(ms / 1000));
+    return Math.max(0, (s.phase === "show" || s.phase === "answer") ? s.left - (performance.now() - this.got) : s.left || 0);
   },
   tick(){
-    const s = this.st, n = $("#cNum"); if (!s || !n || s.phase !== "show") return;
-    const v = this.leftSec(); if (n.textContent !== String(v)) n.textContent = v;
-    n.classList.toggle("hot", v <= 5);
+    const s = this.st; if (!s || !(s.phase === "show" || s.phase === "answer")) return;
+    const l = this.leftMs(), sec = Math.ceil(l / 1000), num = $("#ringN"), arc = $("#arc"), rw = $(".ringw");
+    if (num && num.textContent !== String(sec)) num.textContent = sec;
+    if (arc && s.dur) arc.style.strokeDashoffset = 100 - l / s.dur * 100;
+    if (rw) rw.classList.toggle("hot", sec <= 5);
+  },
+  rankHTML(s){
+    const bd = s.board && s.mv;
+    return s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) =>
+      `<div class="rrow${i === s.me ? " me" : ""}" style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}${i === s.me ? `<span class="you">YOU</span>` : ""}${p.off ? "（離線）" : ""}</span>${bd && s.gains && s.gains[i] ? `<span class="st ok">+${s.gains[i]}</span>` : ""}${bd ? moveHTML(s.mv[i]) : ""}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`).join("");
   },
   render(){
     const s = this.st, body = $("#cBody"); if (!s || !body) return;
-    const me = s.me >= 0 ? s.players[s.me] : null, c = me ? me.color : "var(--teal)";
-    const song = s.title ? `<div class="t">${esc(s.title)}</div>${s.artist ? `<div class="a">${esc(s.artist)}</div>` : ""}` : "";
-    let top = "", label = "等待中…", sub = "", can = false;
-    if (s.phase === "lobby" || s.phase === "other") top = `<div class="song"><div class="t">等房主開始遊戲</div><div class="sub">${s.phase === "other" ? "現在是四選一挑戰，下一局搶唱派對再來搶！" : "你已經在房間裡了"}</div></div>`;
-    else if (s.phase === "show") { top = `<div class="song">${song}<div class="sub">第 ${s.n}/${s.total} 題 · 會唱就搶先按！</div></div><div class="cnum" id="cNum">${this.leftSec()}</div>`; label = s.locked ? "這首已鎖定" : "搶唱！"; can = !s.locked; }
-    else if (s.phase === "buzz") { const b = s.players[s.buzzer]; top = `<div class="song">${song}<div class="sub">${b ? esc(b.name) + " 搶唱中…" : ""}</div></div>`; label = s.buzzer === s.me ? "輪到你唱！" : "別人在唱"; }
-    else if (s.phase === "reveal") { const w = s.players[s.winner]; top = `<div class="song">${song}<div class="sub">${w ? esc(w.name) + " 得分！" : "這首沒人唱出來"}</div></div>`; label = "等下一題"; }
-    else if (s.phase === "end") { top = `<div class="song"><div class="t">遊戲結束</div><div class="sub">看房主畫面的結果</div></div>`; label = "已結束"; }
-    else top = `<div class="song"><div class="t">準備中…</div></div>`;
-    if (s.me < 0 && s.phase !== "lobby" && s.phase !== "other") { label = "觀戰中"; can = false; }
-    const rank = s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }) =>
-      `<div class="crow${i === s.me ? " me" : ""}" style="--c:${p.color}"><span class="d"></span><span class="nm">${esc(p.name)}${p.off ? "（離線）" : ""}</span><span class="sc">${p.score}</span></div>`).join("");
-    const mine = s.phase === "buzz" && s.buzzer === s.me;
+    const me = s.me >= 0 ? s.players[s.me] : null, sec = Math.ceil(this.leftMs() / 1000);
+    const col = c => `--k:${c};--k2:color-mix(in srgb,${c} 55%,#fff)`;
+    const pill = s.total ? `<div class="pill">題目 ${s.n}/${s.total}</div>` : "";
+    const ring = `<div class="cring">${ringHTML(sec)}</div>`;
+    const song = `${s.title ? `<div class="t">${esc(s.title)}</div>` : ""}${s.artist ? `<div class="a">${esc(s.artist)}</div>` : ""}`;
+    const pad = (big, can, mine) => `<button class="pad cpad${mine ? " mine" : ""}" id="cBtn" style="--c:${me ? me.color : "var(--sky)"}" ${can ? "" : "disabled"}><span class="big">${esc(big)}</span>${me ? `<small>${esc(me.name)} · ${fmt(me.score)} 分</small>` : `<small>觀戰中</small>`}</button>`;
+    let blk = "", main = "", st = "";
+    if (!s.mode || s.phase === "lobby" || s.phase === "other") {
+      blk = `<div class="t">${s.phase === "other" ? "房主正在玩單人四選一" : "等房主開始"}</div><div class="s">${s.phase === "other" ? "這局結束後，下一局再一起玩！" : "你已經在房間裡了，房主選好題庫就會開始。"}</div>`;
+    } else if (s.phase === "load") {
+      blk = `${pill}<div class="t">準備中…</div><div class="s">下一首馬上開始</div>`;
+    } else if (s.phase === "end") {
+      blk = `<div class="t">遊戲結束</div><div class="s">看大螢幕的結果，房主可以再開一局</div>`;
+    } else if (s.mode === "sing") {
+      if (s.phase === "show") { blk = `${pill}${song}${ring}<div class="s">會唱的人搶先按！</div>`; main = pad(s.locked ? "這首已鎖定" : "搶唱！", !s.locked && s.me >= 0, false); }
+      else if (s.phase === "buzz") {
+        const b = s.players[s.buzzer], isMe = s.buzzer === s.me;
+        st = col(b ? b.color : "var(--sky)");
+        blk = `${pill}${song}<div class="s">${isMe ? "輪到你唱！唱完等大家判定" : esc(b ? b.name : "") + " 搶唱中…"}</div>`;
+        const v = s.votes;
+        if (s.judge === "vote" && s.me >= 0 && !isMe && v && v.n > 0) {
+          main = `<div class="judge"><button class="btn ok${s.myVote === true ? " on" : ""}" data-v="1">${icon("check")}唱對了</button><button class="btn ng${s.myVote === false ? " on" : ""}" data-v="0">${icon("x")}唱錯了</button></div>
+            <p class="cnote">${s.myVote == null ? "聽聽看，投一票！" : "已投票，可以改"} · 唱對 ${v.yes} ／ 唱錯 ${v.no}（${v.n} 人投票）</p>`;
+        } else main = pad(isMe ? "你在唱！" : "別人在唱", false, isMe) + (s.judge === "vote" ? `<p class="cnote">${isMe ? "大家投票中…" : "沒有可以投票的人，由房主判定"}</p>` : "");
+      } else {
+        const w = s.players[s.winner]; st = w ? col(w.color) : "";
+        blk = `${pill}${song}<div class="s">${w ? esc(w.name) + " 得分！" : "這首沒人唱出來"}</div>`; main = pad("等下一題", false, false);
+      }
+    } else {                                                          // quiz
+      const mine = s.mine ? s.mine.pick : -1;
+      if (s.phase === "answer") {
+        blk = `${pill}${ring}<div class="s">已答 ${s.answered || 0}/${s.alive || s.players.length}</div>`;
+      } else {
+        const r = s.mine; const mv = s.board && s.mv && s.me >= 0 ? s.mv[s.me] : null;
+        const head = s.board && mv ? `第 ${mv.t} 名` : !r ? "公布答案" : r.ok ? `答對了！+${r.gain}` : (mine < 0 ? "時間到" : "答錯了");
+        st = col(r && r.ok ? "var(--lime)" : r ? "#ff8f9f" : "var(--sky)");
+        blk = `${pill}<div class="t">${esc(head)}</div><div class="s">${s.board && mv ? (mv.t < mv.f ? `上升 ${mv.f - mv.t} 名 ▲` : mv.t > mv.f ? `下降 ${mv.t - mv.f} 名 ▼` : "名次不變") + " · 下一題馬上開始" : `答案：${esc(s.song || "")}`}</div>`;
+      }
+      main = s.board ? "" : `<div class="opts">${(s.opts || []).map((t, i) => {
+        let cls = "opt";
+        if (s.phase === "reveal") cls += i === s.ans ? " right" : i === mine ? " wrong" : " fade";
+        else if (i === mine) cls += " pick";
+        const dis = s.phase !== "answer" || mine >= 0 || s.me < 0;
+        return `<button class="${cls}" data-o="${i}" ${dis ? "disabled" : ""}><span class="ot">${esc(t)}</span><span class="mk">${s.phase === "reveal" && i === s.ans ? "✓" : s.phase === "reveal" && i === mine ? "✕" : ""}</span></button>`;
+      }).join("")}</div>${s.phase === "answer" && mine >= 0 ? `<p class="cnote">已作答，等其他人…</p>` : ""}`;
+    }
     body.className = ""; body.style.display = "contents";
-    body.innerHTML = `${top}<button class="cbuzz${mine ? " mine" : ""}" id="cBtn" style="--c:${c}" ${can ? "" : "disabled"}>${icon("mic")}${esc(label)}${me ? `<small>${esc(me.name)} · ${me.score} 分</small>` : ""}</button>${rank ? `<div class="crank">${rank}</div>` : ""}`;
+    const rank = this.rankHTML(s);
+    body.innerHTML = `<div class="cblk" style="${st}">${blk}</div>${main}${rank ? `<div class="crank">${rank}</div>` : ""}`;
     const btn = $("#cBtn"); if (btn) btn.onpointerdown = e => { e.preventDefault(); this.buzz(); };
   }
 };
 
 /* ================= boot ================= */
 paintIcons(); renderMe();
-if (ROOM_Q) CTL.start();
+if (ROOM_ON) CTL.start();
 else { renderGrid(); $("#quickSub").textContent = `全部 ${allSongs().filter(usable).length} 首隨機四選一`; }
 window.__game = { get G(){ return G; }, YTP, cfg };   // for debugging in the console
 })();
