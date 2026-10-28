@@ -685,7 +685,8 @@ const YTP = {
   whenReady(){ return this.ready ? Promise.resolve() : new Promise(r => this.waiters.push(r)); },
   callOn(i, fn, ...a){ try { const p = this.ps[i]; return p && p[fn] ? p[fn](...a) : undefined; } catch (e) { console.warn(e); } },
   call(fn, ...a){ return this.callOn(this.a, fn, ...a); },
-  load(v, s){ this.call("loadVideoById", { videoId: v, startSeconds: s }); },
+  /* always START muted (browsers allow that without a tap) and turn the sound on once it is really playing */
+  load(v, s){ this.call("mute"); this.call("loadVideoById", { videoId: v, startSeconds: s }); },
   cue(v, s){ this.call("cueVideoById", { videoId: v, startSeconds: s }); },
   play(){ this.call("playVideo"); }, pause(){ this.call("pauseVideo"); }, stop(){ this.call("stopVideo"); },
   stopAll(){ this.callOn(0, "stopVideo"); this.callOn(1, "stopVideo"); this.pre = null; },
@@ -707,16 +708,16 @@ const YTP = {
   /* start song v at s; instant when it was preloaded, otherwise a normal load */
   take(v, s){
     const p = this.pre;
-    if (p && p.v === v && p.start === s && p.ready) {
+    if (p && p.v === v && p.start === s) {          // ready, or still buffering: either way don't download it a second time
       const old = this.a;
       this.a = p.idx; this.pre = null;
       this.callOn(old, "pauseVideo");
       this.front(this.a);
       this.callOn(this.a, "setVolume", this.volume);
-      this.callOn(this.a, this.volume > 0 ? "unMute" : "mute");
-      this.callOn(this.a, "seekTo", s, true);
+      this.callOn(this.a, "mute");                     // sound comes on in onYTState, once it is really playing
+      if (p.ready) this.callOn(this.a, "seekTo", s, true);
       this.callOn(this.a, "playVideo");
-      return true;
+      return p.ready;
     }
     this.pre = null;
     this.load(v, s);
@@ -1166,9 +1167,11 @@ function nextQ(){
 function checkLoad(){
   const c = G && G.cur; if (!c || c.phase !== "load") return;
   const st = YTP.state(), el = performance.now() - c.loadAt;
-  if (c.swapped && st !== 1 && st !== 3 && el > 1200 && !c.retried) { c.retried = true; YTP.load(c.song.v, c.start); }
-  else if ((st === -1 || st === 5 || st === 2) && el > 2500) $("#tap").hidden = false;     // autoplay blocked: needs a tap
-  if (st === 3 && el > 16000) return skipBad(c, "載入太久");
+  if (el > 4000) { const cn = $("#cntT"); if (cn) cn.textContent = "網路比較慢，還在載入…"; }
+  if (el > 5000 && !c.retried && st !== 1) { c.retried = true; YTP.load(c.song.v, c.start); }       // one clean reload
+  else if ((st === -1 || st === 5 || st === 2) && el > 1500 && !c.nudged) { c.nudged = true; YTP.play(); }          // a quiet nudge first
+  else if ((st === -1 || st === 5 || st === 2) && el > 4500) $("#tap").hidden = false;     // autoplay blocked: needs a tap
+  if (el > 18000) return skipBad(c, "載入太久", true);
   later(checkLoad, 1000);
 }
 $("#tapBtn").onclick = () => { YTP.play(); $("#tap").hidden = true; };
@@ -1188,6 +1191,7 @@ function onYTState(s, i){
   }
   if (!G || !G.cur) return;
   const c = G.cur;
+  if (s === 1 && !c.unm) { c.unm = true; if (YTP.volume > 0) { YTP.call("setVolume", YTP.volume); YTP.call("unMute"); } }
   if (s === 1) { c.playing = true; $("#tap").hidden = true; if (G.mode === "quiz" && c.phase === "load") beginAnswer(); }
   if (s === 2 || s === 0 || s === 5) c.playing = false;
   if (s === 0 && G.mode === "quiz" && (c.phase === "answer" || c.phase === "load")) { YTP.seek(Math.max(0, c.start - 20)); YTP.play(); }
@@ -1208,9 +1212,9 @@ function onYTError(code, i){
   if (G.mode === "sing") { markBad(c.song); toast("這首的原曲影片無法播放，請自行判斷。"); }
 }
 function markBad(song){ bad.add(song.v); store.set("yt.bad", [...bad]); }
-function skipBad(c, why){
+function skipBad(c, why, soft){
   if (!G || G.cur !== c) return;
-  markBad(c.song); G.pool = G.pool.filter(s => s.v !== c.song.v);
+  if (!soft) markBad(c.song);      // a slow load is not proof the video is unplayable, so don't remember it G.pool = G.pool.filter(s => s.v !== c.song.v);
   toast(`「${nameOf(c.song)}」${why}，換下一首`);
   G.n--; c.phase = "skip"; nextQ();
 }
