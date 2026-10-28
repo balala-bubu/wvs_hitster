@@ -639,6 +639,12 @@ let bad = new Set(store.get("yt.bad", []));
 const usable = s => s && s.v && !bad.has(s.v);
 const cleanVT = t => String(t || "").replace(/[\(\[（【][^\)\]）】]*(official|mv|music video|lyric|audio|官方|歌詞|完整|高畫質|hd|4k)[^\)\]）】]*[\)\]）】]/gi, "").replace(/\s+/g, " ").trim();
 const nameOf = s => s.title || cleanVT(s.vt) || "（未知歌曲）";
+const optLabel = s => {
+  if (!s.title) return label(s);
+  if (cfg.optShow === "title") return s.title;
+  if (cfg.optShow === "artist") return s.artist || s.title;
+  return label(s);
+};
 const label = s => s.title ? (s.artist ? `${s.title} — ${s.artist}` : s.title) : cleanVT(s.vt) || s.v;
 const BUILTIN = (DATA.lists || []).map(l => ({ id: l.id, name: l.name, tags: l.tags || [], songs: (l.songs || []).filter(s => s.v), builtin: true }));
 let MINE = store.get("yt.lists", []);
@@ -652,7 +658,7 @@ const ALL = () => ({ id: "all", name: "全部歌曲大混戰", tags: ["綜合", 
 function findLib(id){ return id === "all" ? ALL() : [...BUILTIN, ...MINE].find(l => l.id === id); }
 
 const PCOL = ["#5fd6d2","#ff7eb6","#f1d27a","#9b8cff","#7fe07a","#ff9f5a","#6fb6ff","#ff6b6b"];
-let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 4, start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"] }, store.get("yt.cfg", {}));
+let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 4, optShow: "both", start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"] }, store.get("yt.cfg", {}));
 const saveCfg = () => store.set("yt.cfg", cfg);
 let me = store.get("yt.name", "") || "玩家";
 const recs = () => store.get("yt.rec", {});
@@ -898,6 +904,8 @@ function renderSetup(){
           <div class="stepper"><button class="rd" data-s="-5">−</button><span class="v">${cfg.singTime}<small>秒</small></span><button class="rd" data-s="+5">+</button></div>
           <div class="quick">${[15, 25, 40, 60].map(v => `<button data-s="${v}" class="${cfg.singTime === v ? "on" : ""}">${v} 秒</button>`).join("")}</div></div>`}
       </div>
+      ${quiz ? `<div class="sec"><div class="sh">${icon("music")}選項顯示<small>四個選項上寫什麼</small></div><div class="opts3">
+        ${[["both", "歌名＋歌手", "最完整"], ["title", "只顯示歌名", "要猜歌手以外的"], ["artist", "只顯示歌手", "猜是誰唱的"]].map(([v, b, d]) => `<button class="opt3 ${cfg.optShow === v ? "on" : ""}" data-os="${v}"><b>${b}</b><span>${d}</span></button>`).join("")}</div></div>` : ""}
       ${quiz ? "" : `<div class="sec"><div class="sh">${icon("users")}玩家<small>每人一個搶答鈕，最多 8 人</small></div><div class="plist">${players}</div></div>
       <div class="sec"><div class="sh">${icon("trophy")}獲勝條件</div><div class="opts3">
         ${[[0, "打完全部題數", "最後分數最高的人贏"], [3, "先到 3 分", "快速一局"], [5, "先到 5 分", "標準一局"], [10, "先到 10 分", "長期抗戰"]].map(([v, b, s]) => `<button class="opt3 ${cfg.win === v ? "on" : ""}" data-win="${v}"><b>${b}</b><span>${s}</span></button>`).join("")}</div></div>
@@ -923,6 +931,7 @@ function renderSetup(){
   $$("[data-s]", modal).forEach(b => b.onclick = () => { const v = b.dataset.s; cfg.singTime = clamp(/^[+-]/.test(v) ? cfg.singTime + +v : +v, 10, 90); re(); });
   $$("[data-win]", modal).forEach(b => b.onclick = () => { cfg.win = +b.dataset.win; re(); });
   $$("[data-wrong]", modal).forEach(b => b.onclick = () => { cfg.wrong = b.dataset.wrong; re(); });
+  $$("[data-os]", modal).forEach(b => b.onclick = () => { cfg.optShow = b.dataset.os; re(); });
   $$("[data-start]", modal).forEach(b => b.onclick = () => { cfg.start = b.dataset.start; re(); });
   $$("[data-p]", modal).forEach(i => i.oninput = () => { cfg.players[+i.dataset.p] = i.value; saveCfg(); });
   $$("[data-rm]", modal).forEach(b => b.onclick = () => { cfg.players.splice(+b.dataset.rm, 1); re(); });
@@ -1139,7 +1148,7 @@ function checkLoad(){
 $("#tapBtn").onclick = () => { YTP.play(); $("#tap").hidden = true; };
 
 function makeOpts(song){
-  const key = s => label(s).toLowerCase();
+  const key = s => optLabel(s).toLowerCase();
   const others = shuffle(G.pool.filter(s => s.v !== song.v && key(s) !== key(song)));
   const picks = [], seen = new Set([key(song)]);
   for (const s of others) { if (!seen.has(key(s))) { seen.add(key(s)); picks.push(s); } if (picks.length === 3) break; }
@@ -1398,7 +1407,7 @@ function renderOpts(){
     const sig = "q" + G.n;
     if (el.dataset.sig !== sig) {
       el.dataset.sig = sig; el._h = ""; el.className = "opts enter";
-      el.innerHTML = c.opts.map((s, i) => `<button class="opt" data-o="${i}" title="${esc(s.vt || label(s))}"><span class="ot">${esc(label(s))}</span><kbd>${KEYS[i]}</kbd><span class="mk"></span></button>`).join("");
+      el.innerHTML = c.opts.map((s, i) => `<button class="opt" data-o="${i}" title="${esc(s.vt || label(s))}"><span class="ot">${esc(optLabel(s))}</span><kbd>${KEYS[i]}</kbd><span class="mk"></span></button>`).join("");
     }
     $$(".opt", el).forEach((b, i) => {
       let cls = "opt";
