@@ -238,8 +238,7 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
 .ahead h1{margin:0;flex:1;min-width:200px;font:700 34px/1.2 var(--num)}
 .ahead h1 small{display:block;font:500 14px "Noto Sans TC";color:var(--mute)}
 .stage{position:relative;border-radius:22px;overflow:hidden;background:#000;border:1px solid var(--line);height:clamp(260px,46vh,600px)}
-.ytwrap{position:absolute;inset:0;pointer-events:none}
-.ytwrap iframe,#yt{width:100%;height:100%;display:block;border:0}
+.ytwrap{position:absolute;inset:0;pointer-events:none;z-index:0}
 .thumbL{position:absolute;inset:0;background:#000 center/contain no-repeat;opacity:0;transition:opacity .3s}
 .thumbL.on{opacity:1}
 .cover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center;background:radial-gradient(600px 300px at 50% 45%,#0f1a24,#060a0e);transition:opacity .45s}
@@ -345,6 +344,68 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
 .flashL.go{animation:flash .7s ease-out}
 @keyframes flash{0%{opacity:.55}100%{opacity:0}}
 
+/* ---------- motion that links the screens together ---------- */
+@keyframes viewin{from{opacity:0;transform:translateY(8px)}}
+@keyframes swapin{from{opacity:0;transform:translateX(12px)}}
+@keyframes sheetout{to{transform:translateX(36px);opacity:0}}
+@keyframes fadeout{to{opacity:0}}
+@keyframes popout{to{opacity:0;transform:translateY(-50%) scale(.94)}}
+@keyframes mkpop{from{transform:scale(.4);opacity:0}}
+@keyframes rcin{from{opacity:0;transform:translateY(14px) scale(.97)}}
+@keyframes bump{40%{transform:scale(1.35)}}
+.lobby:not([hidden]),.game:not([hidden]){animation:viewin .32s cubic-bezier(.2,.8,.2,1)}
+.sheet.swap>:not(.mh){animation:swapin .24s cubic-bezier(.2,.8,.2,1)}
+.modal.out{animation:fadeout .2s forwards;pointer-events:none}
+.modal.out .sheet{animation:sheetout .2s forwards}
+.rcard{animation:rcin .4s cubic-bezier(.2,.8,.2,1)}
+
+/* two stacked players: the one in front is the one playing */
+.ytslot{position:absolute;inset:0;opacity:0}
+.ytslot.front{opacity:1;z-index:2}
+.ytwrap iframe,.ytslot>div{width:100%;height:100%;display:block;border:0}
+
+/* stage cover: fades in quickly (so the next song's picture never shows), fades out gently */
+.cover{transition:opacity .12s}
+.cover.off{transition:opacity .45s}
+.cover.swapin>*{animation:fade .2s}
+.cover.peek{justify-content:flex-start;gap:6px;padding-top:14px;background:linear-gradient(180deg,rgba(5,8,10,.9),rgba(5,8,10,.55) 34%,rgba(5,8,10,0) 60%)}
+.cover.peek .pill,.cover.peek .singH{display:none}
+.cover.peek .singT{font-size:clamp(22px,3.4vw,38px)}
+.cover.peek .singA{font-size:15px}
+.cover.peek .buzzN{font-size:clamp(18px,2.6vw,28px)}
+.ringw.slow .ring{animation:spin 1.1s linear infinite}
+.ringw.slow .arc{stroke-dashoffset:72!important}
+
+/* gap between questions */
+.nextbar{position:absolute;left:0;right:0;bottom:0;height:4px;z-index:3;opacity:0;transition:opacity .2s;pointer-events:none}
+.nextbar.on{opacity:1}
+.nextbar i{display:block;height:100%;background:var(--grad);transform-origin:left;transform:scaleX(0)}
+.pop.out{animation:popout .25s forwards;pointer-events:none}
+.opts.enter .opt{animation:fade .22s}
+.opt .mk:empty{display:none}
+.opt.right .mk,.opt.wrong .mk{animation:mkpop .3s cubic-bezier(.2,1.4,.4,1)}
+.rrow .sc b{font-weight:700}
+.pad .ps.bump{animation:bump .35s ease-out}
+.pad .lk{display:none}
+.pad.lock .lk{display:block}
+.pad{transition:transform .08s,opacity .25s,filter .25s,box-shadow .25s}
+
+/* timeline scrubber (sing mode) */
+.scrub{display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:16px;background:var(--panel);flex-wrap:wrap;animation:fade .2s}
+.scrub button{height:38px;min-width:44px;padding:0 11px;border-radius:11px;border:1px solid var(--line2);font:600 13px var(--num);display:inline-flex;align-items:center;justify-content:center;gap:6px;color:#d6dee5}
+.scrub button:hover{border-color:rgba(255,255,255,.28)}
+.scrub #scrubPlay{width:44px;padding:0;background:var(--panel3)}
+.scrub .tm{font:600 13px var(--num);color:var(--mute);min-width:40px;text-align:center}
+.scrubline{display:flex;align-items:center;gap:8px;flex:1;min-width:200px}
+.scrub input[type=range]{flex:1;min-width:0;margin:0}
+.scrub .sp{flex:1;min-width:8px}
+@media (max-width:860px){
+  .scrub{padding:8px 10px;gap:6px}
+  .scrub button{height:36px;min-width:38px;padding:0 8px}
+  .scrub .long{display:none}
+  .scrubline{order:-1;flex-basis:100%}
+}
+
 /* ---------- responsive ---------- */
 @media (max-width:1100px){
   .sheet{width:100vw;border-radius:0}
@@ -432,7 +493,7 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
       <button class="nav" data-tab="mine"><span data-i="bookmark"></span>我的題庫</button>
       <button class="nav" id="navImport"><span data-i="video"></span>貼上 YouTube 連結</button>
       <div class="grow"></div>
-      <div class="cta"><b>想加歌？</b>到 GitHub 編輯 <code>songs.txt</code>，一行一首「歌名 | 歌手」，也可以貼整個 YouTube 播放清單網址。存檔幾分鐘後網站會自動更新。</div>
+      <div class="cta"><b>想加歌？</b>點左邊「貼上 YouTube 連結」，貼影片或播放清單網址就能建立自己的題庫（只存在這台裝置）。想讓大家都玩得到，就寫進 GitHub 的 <code>songs.txt</code>。</div>
       <a href="classic.html">舊版（Apple Music 試聽、同機搶答）→</a>
     </aside>
     <section>
@@ -454,18 +515,27 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
     <div class="ahead">
       <h1 id="gTitle">房間</h1>
       <button class="btn sm warn" id="extendBtn" hidden><span data-i="clock"></span><span>延長播放</span></button>
+      <button class="btn sm pri" id="nextQBtn" hidden><span data-i="next"></span><span>下一題</span></button>
       <button class="btn sm info" id="restartBtn"><span data-i="restart"></span><span>重新開始</span></button>
       <button class="btn sm danger" id="leaveBtn"><span data-i="exit"></span><span>離開</span></button>
     </div>
     <div class="stage" id="stage">
-      <div class="ytwrap"><div id="yt"></div></div>
+      <div class="ytwrap"><div class="ytslot front" id="slot0"><div id="yt0"></div></div><div class="ytslot" id="slot1"><div id="yt1"></div></div></div>
       <div class="thumbL" id="thumbL"></div>
       <div class="vinfo" id="vinfo"><b id="vTitle"></b><small id="vCh"></small></div>
       <div class="cover" id="cover"></div>
       <div id="popL"></div>
+      <div class="nextbar" id="nextBar"><i></i></div>
       <div class="sctl l"><button data-show="video"><span data-i="video"></span><span>顯示影片</span></button><button data-show="thumb"><span data-i="image"></span><span>顯示縮圖</span></button></div>
       <div class="sctl r"><span data-i="vol"></span><span id="volN">60%</span><input type="range" id="vol" min="0" max="100" step="5" aria-label="音量"></div>
       <div class="tap" id="tap" hidden><button class="btn pri" id="tapBtn"><span data-i="play"></span>點一下開始播放</button></div>
+    </div>
+    <div class="scrub" id="scrub" hidden>
+      <button data-seek="-10" aria-label="倒退 10 秒" class="long">−10</button><button data-seek="-5" aria-label="倒退 5 秒">−5</button>
+      <button id="scrubPlay" aria-label="播放或暫停"></button>
+      <button data-seek="5" aria-label="快轉 5 秒">+5</button><button data-seek="10" aria-label="快轉 10 秒" class="long">+10</button>
+      <div class="scrubline"><span class="tm" id="scrubT">0:00</span><input type="range" id="scrubR" min="0" max="240" step="1" value="0" aria-label="播放進度"><span class="tm" id="scrubD">--:--</span></div>
+      <button data-seekto="start" class="long">回到片段起點</button><button data-seekto="0">從頭</button>
     </div>
     <div class="opts" id="opts"></div>
   </div>
@@ -581,7 +651,7 @@ const ALL = () => ({ id: "all", name: "全部歌曲大混戰", tags: ["綜合", 
 function findLib(id){ return id === "all" ? ALL() : [...BUILTIN, ...MINE].find(l => l.id === id); }
 
 const PCOL = ["#5fd6d2","#ff7eb6","#f1d27a","#9b8cff","#7fe07a","#ff9f5a","#6fb6ff","#ff6b6b"];
-let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 6, start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"] }, store.get("yt.cfg", {}));
+let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 4, start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"] }, store.get("yt.cfg", {}));
 const saveCfg = () => store.set("yt.cfg", cfg);
 let me = store.get("yt.name", "") || "玩家";
 const recs = () => store.get("yt.rec", {});
@@ -594,27 +664,69 @@ function addRec(id, n, rec){
   const rank = arr.indexOf(rec); all[k] = arr.slice(0, 20); store.set("yt.rec", all); return rank;
 }
 
-/* ================= YouTube player ================= */
+/* ================= YouTube players =================
+   Two players are used so the next song can be buffered (muted, paused) in the standby
+   one while the current song is still being revealed; swapping then starts it instantly. */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 const YTP = {
-  p: null, ready: false, failed: false, waiters: [],
+  ps: [null, null], rdy: [false, false], a: 0, volume: 60,
+  ready: false, failed: false, waiters: [], pre: null, plErr: 0, plWatch: false,
   whenReady(){ return this.ready ? Promise.resolve() : new Promise(r => this.waiters.push(r)); },
-  call(fn, ...a){ try { return this.p && this.p[fn] ? this.p[fn](...a) : undefined; } catch (e) { console.warn(e); } },
+  callOn(i, fn, ...a){ try { const p = this.ps[i]; return p && p[fn] ? p[fn](...a) : undefined; } catch (e) { console.warn(e); } },
+  call(fn, ...a){ return this.callOn(this.a, fn, ...a); },
   load(v, s){ this.call("loadVideoById", { videoId: v, startSeconds: s }); },
   cue(v, s){ this.call("cueVideoById", { videoId: v, startSeconds: s }); },
   play(){ this.call("playVideo"); }, pause(){ this.call("pauseVideo"); }, stop(){ this.call("stopVideo"); },
+  stopAll(){ this.callOn(0, "stopVideo"); this.callOn(1, "stopVideo"); this.pre = null; },
   seek(s){ this.call("seekTo", s, true); },
-  vol(v){ this.call("setVolume", v); v > 0 ? this.call("unMute") : this.call("mute"); },
-  state(){ const s = this.call("getPlayerState"); return s == null ? -1 : s; }
+  vol(v){ this.volume = v; this.call("setVolume", v); this.call(v > 0 ? "unMute" : "mute"); },
+  state(){ const s = this.call("getPlayerState"); return s == null ? -1 : s; },
+  time(){ const t = this.call("getCurrentTime"); return typeof t === "number" && isFinite(t) ? t : 0; },
+  dur(){ const d = this.call("getDuration"); return typeof d === "number" && isFinite(d) ? d : 0; },
+  front(i){ $("#slot0").classList.toggle("front", i === 0); $("#slot1").classList.toggle("front", i === 1); },
+  /* buffer the next song in the standby player: muted, starts, then is paused as soon as it plays */
+  preload(v, s){
+    if (!this.ready) return;
+    if (this.pre && this.pre.v === v && this.pre.start === s) return;
+    const i = 1 - this.a;
+    this.pre = { v, start: s, idx: i, ready: false };
+    this.callOn(i, "mute");
+    this.callOn(i, "loadVideoById", { videoId: v, startSeconds: s });
+  },
+  /* start song v at s; instant when it was preloaded, otherwise a normal load */
+  take(v, s){
+    const p = this.pre;
+    if (p && p.v === v && p.start === s && p.ready) {
+      const old = this.a;
+      this.a = p.idx; this.pre = null;
+      this.callOn(old, "pauseVideo");
+      this.front(this.a);
+      this.callOn(this.a, "setVolume", this.volume);
+      this.callOn(this.a, this.volume > 0 ? "unMute" : "mute");
+      this.callOn(this.a, "seekTo", s, true);
+      this.callOn(this.a, "playVideo");
+      return true;
+    }
+    this.pre = null;
+    this.load(v, s);
+    return false;
+  }
 };
 window.onYouTubeIframeAPIReady = () => {
-  YTP.p = new YT.Player("yt", {
-    host: "https://www.youtube-nocookie.com", width: "100%", height: "100%",
-    playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, iv_load_policy: 3, fs: 0, modestbranding: 1, origin: location.origin },
-    events: {
-      onReady(){ YTP.ready = true; YTP.vol(cfg.vol); YTP.waiters.splice(0).forEach(f => f()); },
-      onStateChange(e){ onYTState(e.data); },
-      onError(e){ onYTError(e.data); }
-    }
+  [0, 1].forEach(i => {
+    YTP.ps[i] = new YT.Player("yt" + i, {
+      host: "https://www.youtube-nocookie.com", width: "100%", height: "100%",
+      playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0, iv_load_policy: 3, fs: 0, modestbranding: 1, origin: location.origin },
+      events: {
+        onReady(){
+          YTP.rdy[i] = true;
+          if (i === 0) YTP.vol(cfg.vol); else YTP.callOn(1, "mute");
+          if (YTP.rdy[0] && YTP.rdy[1]) { YTP.ready = true; YTP.waiters.splice(0).forEach(f => f()); }
+        },
+        onStateChange(e){ onYTState(e.data, i); },
+        onError(e){ onYTError(e.data, i); }
+      }
+    });
   });
 };
 (function loadYT(){
@@ -646,7 +758,7 @@ function renderGrid(){
   $$(".seg button").forEach(b => b.classList.toggle("on", b.dataset.view === view));
   if (!ls.length) {
     g.innerHTML = tab === "mine"
-      ? `<div class="empty"><b>還沒有自己的題庫</b>貼上 YouTube 影片連結就能建立，只存在這台裝置上。<br><br><button class="btn pri sm" id="emptyImport">${icon("plus")}貼上 YouTube 連結</button></div>`
+      ? `<div class="empty"><b>還沒有自己的題庫</b>貼上 YouTube 播放清單或影片連結就能建立，只存在這台裝置上。<br><br><button class="btn pri sm" id="emptyImport">${icon("plus")}貼上 YouTube 連結</button></div>`
       : q ? `<div class="empty"><b>找不到「${esc(query)}」</b>換個關鍵字試試看。</div>`
           : `<div class="empty"><b>${rawCount ? "歌單還在準備 YouTube 影片" : "還沒有歌單"}</b>${rawCount ? "GitHub 正在幫 songs.txt 裡的每首歌找 YouTube 影片，大約幾分鐘後重新整理就好。" : "到 GitHub 編輯 songs.txt 加歌。"}<br>也可以先到「我的題庫」貼 YouTube 連結來玩。</div>`;
     const e = $("#emptyImport"); if (e) e.onclick = () => openImport();
@@ -671,13 +783,31 @@ $("#meBtn").onclick = openName;
 
 /* ================= modals ================= */
 const modal = $("#modal");
+let quietNext = false, closing = false;
+const modalOpen = () => !modal.hidden && !closing;
+/* The first open slides the sheet in. Moving between steps (detail → settings) keeps the sheet and
+   only swaps its contents, so nothing re-slides; a "quiet" update (stepper clicks) swaps with no motion at all. */
 function openModal(html, narrow){
-  modal.innerHTML = `<div class="sheet${narrow ? " narrow" : ""}" role="dialog" aria-modal="true">${html}</div>`;
-  modal.hidden = false; paintIcons(modal);
+  const quiet = quietNext; quietNext = false;
+  const sh = modalOpen() ? modal.firstElementChild : null;
+  if (sh) {
+    sh.classList.toggle("narrow", !!narrow);
+    sh.innerHTML = html;
+    if (!quiet) { sh.classList.remove("swap"); void sh.offsetWidth; sh.classList.add("swap"); }
+  } else {
+    closing = false; modal.classList.remove("out");
+    modal.innerHTML = `<div class="sheet${narrow ? " narrow" : ""}" role="dialog" aria-modal="true">${html}</div>`;
+    modal.hidden = false;
+  }
+  paintIcons(modal);
   modal.onclick = e => { if (e.target === modal) closeModal(); };
   $$("[data-close]", modal).forEach(b => b.onclick = closeModal);
 }
-function closeModal(){ modal.hidden = true; modal.innerHTML = ""; }
+function closeModal(){
+  if (!modalOpen()) return;
+  closing = true; modal.classList.add("out");
+  setTimeout(() => { if (!closing) return; modal.hidden = true; modal.innerHTML = ""; modal.classList.remove("out"); closing = false; }, 200);
+}
 const mhead = (title, extra = "", back) => `<div class="mh">${back ? `<button class="x" data-back aria-label="返回">${icon("back")}</button>` : ""}${extra}<h2>${esc(title)}</h2><span class="esc">Esc 關閉</span><button class="x" data-close aria-label="關閉">${icon("x")}</button></div>`;
 
 function openName(){
@@ -776,15 +906,15 @@ function renderSetup(){
       <div class="sec"><div class="sh">${icon("clock")}播放片段</div>
         <div class="box"><div class="bt">${icon("play")}從哪裡開始播</div><div class="bd">${quiz ? "題目開始播放的位置。" : "按「播原曲核對」時從哪裡播。"}</div>
           <div class="opts3"><button class="opt3 ${cfg.start === "auto" ? "on" : ""}" data-start="auto"><b>隨機片段</b><span>題庫有指定秒數就照題庫</span></button><button class="opt3 ${cfg.start === "head" ? "on" : ""}" data-start="head"><b>從頭開始</b><span>每首都從 0:00 播</span></button></div></div>
-        ${quiz ? `<div class="box"><div class="bt">${icon("clock")}公布答案</div><div class="bd">答完後保留給大家看答案、聽歌的時間。</div>
-          <div class="rangev" id="revV">${cfg.reveal}s</div><input type="range" id="revR" min="3" max="15" value="${cfg.reveal}"></div>` : ""}
+        ${quiz ? `<div class="box"><div class="bt">${icon("clock")}公布答案</div><div class="bd">答完後多久自動跳到下一題（也可以按「下一題」或 Enter 提前跳）。</div>
+          <div class="rangev" id="revV">${cfg.reveal}s</div><input type="range" id="revR" min="2" max="15" value="${cfg.reveal}"></div>` : ""}
       </div>
       <p class="msg" id="setupMsg"></p>
     </div></div>
     <div class="mf"><div class="lbl"><small>確認房間</small><b>${quiz ? `四選一 · ${cfg.count} 題 · ${cfg.ansTime} 秒` : `搶唱派對 · ${cfg.players.length} 人 · ${cfg.count} 題`}</b></div>
       <button class="btn" data-back>${icon("back")}返回</button><button class="btn pri" id="goBtn">${icon("play")}開始遊戲</button></div>`);
   $(".setup .form").scrollTop = keep;
-  const re = () => { saveCfg(); renderSetup(); };
+  const re = () => { saveCfg(); quietNext = true; renderSetup(); };
   $$("[data-back]", modal).forEach(b => b.onclick = () => openDetail(l.id));
   $$("[data-mode]", modal).forEach(b => b.onclick = () => { cfg.mode = b.dataset.mode; re(); });
   $$("[data-q]", modal).forEach(b => b.onclick = () => { const v = b.dataset.q; cfg.count = clamp(/^[+-]/.test(v) ? cfg.count + +v : +v, minQ, maxQ); re(); });
@@ -806,6 +936,7 @@ function renderSetup(){
 
 /* ---- my libraries: paste YouTube links ---- */
 const YT_ID = /(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})(?![\w-])/;
+const YT_LIST = /[?&]list=([\w-]+)/;
 let cbN = 0;
 function jsonp(url){
   return new Promise((res, rej) => {
@@ -827,15 +958,51 @@ function guessSong(vt, ch){
   if (p.length >= 2) return { artist: p[0].trim(), title: p[1].trim() };
   return { title: s || vt, artist: chName };
 }
+
+/* Read every video id of a playlist through the YouTube player itself (no API key needed). */
+async function readPlaylist(id){
+  try { await Promise.race([YTP.whenReady(), sleep(8000).then(() => { throw new Error("t"); })]); }
+  catch { throw new Error("YouTube 播放器還沒載入完成，請稍後再試。"); }
+  YTP.plErr = 0; YTP.plWatch = true;
+  YTP.call("cuePlaylist", { listType: "playlist", list: id });
+  try {
+    for (let n = 0; n < 50; n++) {
+      await sleep(300);
+      const ids = YTP.call("getPlaylist");
+      if (ids && ids.length) return ids.filter((v, i) => /^[\w-]{11}$/.test(v) && ids.indexOf(v) === i);
+      if (YTP.plErr === 100 && n > 4) break;
+    }
+  } finally { YTP.plWatch = false; YTP.stop(); }
+  throw new Error(YTP.plErr === 100 ? "找不到這份播放清單，或是它設成私人。把清單的隱私權改成「不公開」或「公開」再試。" : "讀不到這份播放清單。自動產生的合輯（網址 list= 後面是 RD 開頭）不支援。");
+}
+/* Title lookup 1: noembed (fast, bulk). Title lookup 2: the standby player (slow, but needs no third party). */
+async function titleViaNoembed(v){
+  try {
+    const d = await jsonp(`https://noembed.com/embed?url=${encodeURIComponent("https://www.youtube.com/watch?v=" + v)}`);
+    return d && d.title ? { vt: d.title, ch: d.author_name || "" } : null;
+  } catch { return null; }
+}
+async function titleViaPlayer(v){
+  if (!YTP.ready) return null;
+  const i = 1 - YTP.a;
+  YTP.callOn(i, "mute"); YTP.callOn(i, "cueVideoById", v);
+  for (let n = 0; n < 20; n++) {
+    await sleep(150);
+    const d = YTP.callOn(i, "getVideoData");
+    if (d && d.video_id === v && d.title) return { vt: d.title, ch: d.author || "" };
+  }
+  return null;
+}
+
 function openImport(id){
   const ed = id ? MINE.find(l => l.id === id) : null;
   const text = ed ? ed.songs.map(s => [s.title, s.artist, "https://youtu.be/" + s.v].filter(Boolean).join(" | ")).join("\n") : "";
   openModal(`${mhead(ed ? "編輯題庫" : "貼上 YouTube 連結")}
     <div style="padding:24px 28px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:14px">
       <input class="field" id="impName" placeholder="題庫名稱，例如：大學同學 KTV" maxlength="24" value="${esc(ed ? ed.name : "")}">
-      <textarea class="field" id="impText" placeholder="一行一首，貼 YouTube 影片連結就好：&#10;https://www.youtube.com/watch?v=…&#10;https://youtu.be/…&#10;&#10;想自己寫歌名歌手也可以：&#10;小幸運 | 田馥甄 | https://youtu.be/…">${esc(text)}</textarea>
-      <p style="margin:0;color:var(--mute);font-size:13px">沒寫歌名的話，會從影片標題自動猜。整個 YouTube 播放清單請加到 GitHub 的 songs.txt，會自動展開。這份題庫只存在這台裝置。</p>
-      <p class="msg" id="impMsg"></p>
+      <textarea class="field" id="impText" placeholder="貼上播放清單網址，整份清單變成題庫：&#10;https://www.youtube.com/playlist?list=PL…&#10;&#10;或一行一支影片：&#10;https://www.youtube.com/watch?v=…&#10;https://youtu.be/…&#10;&#10;想自己寫歌名歌手也可以：&#10;小幸運 | 田馥甄 | https://youtu.be/…">${esc(text)}</textarea>
+      <p style="margin:0;color:var(--mute);font-size:13px">沒寫歌名的話，會從影片標題自動猜，猜錯可以回來編輯。播放清單最多讀前 200 支，要是公開或不公開的清單。這份題庫只存在這台裝置。</p>
+      <p class="msg" id="impMsg" role="status"></p>
     </div>
     <div class="mf"><span class="lbl"></span>${ed ? `<button class="btn danger" id="impDel">${icon("trash")}刪除</button>` : ""}<button class="btn" data-close>取消</button><button class="btn pri" id="impSave">${icon("check")}儲存</button></div>`, true);
   $("#impName").focus();
@@ -843,62 +1010,96 @@ function openImport(id){
   $("#impSave").onclick = async () => {
     const msg = $("#impMsg"), btn = $("#impSave");
     const lines = $("#impText").value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-    const items = [], seen = new Set(); let skipped = 0, playlist = false;
+    const items = [], seen = new Set(), lists = []; let skipped = 0;
     lines.forEach(line => {
-      const m = line.match(YT_ID);
-      if (!m) { if (/[?&]list=/.test(line)) playlist = true; skipped++; return; }
-      if (seen.has(m[1])) return; seen.add(m[1]);
-      const rest = line.split("|").map(s => s.trim()).filter(p => p && !YT_ID.test(p));
-      items.push({ v: m[1], title: rest[0] || "", artist: rest[1] || "" });
+      const m = line.match(YT_ID), pl = line.match(YT_LIST);
+      if (m) {
+        if (seen.has(m[1])) return; seen.add(m[1]);
+        const rest = line.split("|").map(s => s.trim()).filter(p => p && !YT_ID.test(p));
+        items.push({ v: m[1], title: rest[0] || "", artist: rest[1] || "" });
+      } else if (pl && /youtube\.com/.test(line)) lists.push(pl[1]);
+      else skipped++;
     });
-    if (!items.length) { msg.textContent = playlist ? "播放清單網址請加到 GitHub 的 songs.txt；這裡請貼單支影片的連結。" : "沒有找到 YouTube 影片連結。"; return; }
-    btn.disabled = true;
-    let done = 0;
-    const need = items.filter(s => !s.title);
+    if (!items.length && !lists.length) { msg.textContent = "沒有找到 YouTube 連結。播放清單的網址長得像 youtube.com/playlist?list=…"; return; }
+    btn.disabled = true; msg.textContent = "";
+    try {
+      for (const lid of lists) {
+        msg.textContent = "讀取播放清單…";
+        const ids = await readPlaylist(lid);
+        ids.forEach(v => { if (!seen.has(v)) { seen.add(v); items.push({ v, title: "", artist: "" }); } });
+      }
+    } catch (e) { msg.textContent = e.message; btn.disabled = false; return; }
+    /* titles */
+    const need = items.filter(s => !s.title), total = need.length; let done = 0;
+    const meta = new Map();
     const worker = async () => { while (need.length) { const s = need.shift();
-      try { const d = await jsonp(`https://noembed.com/embed?url=${encodeURIComponent("https://www.youtube.com/watch?v=" + s.v)}`);
-        if (d && d.title) { s.vt = d.title; s.ch = d.author_name || ""; const g = guessSong(s.vt, s.ch); s.title = g.title; s.artist = g.artist; } } catch {}
-      if (!s.title) s.title = "影片 " + s.v;
-      msg.textContent = `讀取影片標題… ${++done}`; } };
-    await Promise.all([worker(), worker(), worker(), worker()]);
-    const name = $("#impName").value.trim() || "我的題庫";
+      const d = await titleViaNoembed(s.v); if (d) meta.set(s.v, d);
+      msg.textContent = `讀取影片標題… ${++done}/${total}`; } };
+    await Promise.all([worker(), worker(), worker(), worker(), worker(), worker()]);
+    const miss = items.filter(s => !s.title && !meta.has(s.v));
+    for (let k = 0; k < miss.length; k++) {
+      msg.textContent = `改用播放器讀取標題… ${k + 1}/${miss.length}`;
+      const d = await titleViaPlayer(miss[k].v); if (d) meta.set(miss[k].v, d);
+    }
+    YTP.callOn(1 - YTP.a, "stopVideo");
+    let unnamed = 0;
+    items.forEach(s => {
+      if (s.title) return;
+      const d = meta.get(s.v);
+      if (d) { s.vt = d.vt; s.ch = d.ch; const g = guessSong(d.vt, d.ch); s.title = g.title; s.artist = g.artist; }
+      else { s.title = "影片 " + s.v; unnamed++; }
+    });
+    const name = $("#impName").value.trim() || (lists.length ? "我的播放清單" : "我的題庫");
     if (ed) { ed.name = name; ed.songs = items; }
     else MINE.push({ id: "m-" + Date.now().toString(36), name, tags: ["自訂"], songs: items });
     store.set("yt.lists", MINE);
     closeModal(); tab = "mine"; $$(".nav[data-tab]").forEach(x => x.classList.toggle("on", x.dataset.tab === "mine")); renderGrid();
-    toast(`已儲存 ${items.length} 首` + (skipped ? `，${skipped} 行沒有影片連結被略過` : ""));
+    toast(`已儲存 ${items.length} 首` + (unnamed ? `，${unnamed} 首讀不到標題，請到「編輯」補上` : "") + (skipped ? `，${skipped} 行不是 YouTube 連結被略過` : ""), 5000);
   };
 }
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && modalOpen()) closeModal(); });
+
 
 /* ================= game ================= */
-let G = null, raf = 0;
-const stage = $("#stage"), cover = $("#cover");
+let G = null, raf = 0, tickT = 0, wake = null;
+const stage = $("#stage"), cover = $("#cover"), barEl = $("#nextBar"), barI = $("#nextBar i");
 function startOf(song){
   if (cfg.start === "head") return 0;
   if (song.s != null) return song.s;
-  if (song.d > 70) return Math.round(song.d * (.22 + Math.random() * .33));
-  return 25 + Math.round(Math.random() * 35);
+  if (G && G.starts.has(song.v)) return G.starts.get(song.v);
+  const s = song.d > 70 ? Math.round(song.d * (.22 + Math.random() * .33)) : 25 + Math.round(Math.random() * 35);
+  if (G) G.starts.set(song.v, s);     // the preloaded copy and the real play must start at the same second
+  return s;
 }
+async function keepAwake(){
+  try { if ("wakeLock" in navigator && !wake) { wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => { wake = null; }); } } catch {}
+}
+function releaseWake(){ try { wake && wake.release(); } catch {} wake = null; }
+document.addEventListener("visibilitychange", () => { if (!document.hidden && G) keepAwake(); });
+
 function startGame(lib){
   const pool = lib.songs.filter(usable);
   const total = Math.min(cfg.count, pool.length);
   const p = plays(); p[lib.id] = (p[lib.id] || 0) + 1; store.set("yt.plays", p);
-  G = { mode: cfg.mode, lib, pool, queue: shuffle(pool), total, n: 0, t0: Date.now(), log: [], timers: [] };
+  if (G) cancelAnimationFrame(G.twRaf);
+  G = { mode: cfg.mode, lib, pool, queue: shuffle(pool), total, n: 0, t0: Date.now(), log: [], timers: [], starts: new Map(), shown: 0 };
   if (G.mode === "quiz") Object.assign(G, { score: 0, combo: 0, maxCombo: 0, correct: 0, recs: topRecs(lib.id, total) });
   else Object.assign(G, { players: cfg.players.map((name, i) => ({ name, score: 0, color: PCOL[i] })), win: cfg.win });
+  YTP.stopAll(); stopBar();
+  $("#opts").dataset.sig = ""; $("#opts")._h = ""; cover.dataset.key = ""; $("#padsA").dataset.sig = ""; $("#scrub").hidden = true;
   $("#lobby").hidden = true; $("#game").hidden = false; $("#result").hidden = true;
   $("#game").classList.toggle("sing", G.mode === "sing");
   $("#gTitle").innerHTML = `${esc(lib.name)}<small>${G.mode === "quiz" ? "四選一挑戰" : "搶唱派對"} · ${total} 題</small>`;
   document.title = `${lib.name} · 猜歌`;
   $("#vol").value = cfg.vol; $("#volN").textContent = cfg.vol + "%";
-  renderShow();
-  renderPads();
+  renderShow(); renderPads();
   window.scrollTo(0, 0);
+  keepAwake();
+  clearInterval(tickT); tickT = setInterval(scrubTick, 250);
   if (!YTP.ready) {
     cover.classList.remove("off");
-    cover.innerHTML = `<div class="ringw spin"><svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" pathLength="100"/></svg></div><div class="singH">${YTP.failed ? "YouTube 播放器載入失敗，請重新整理。" : "YouTube 播放器載入中…"}</div>`;
-    YTP.whenReady().then(() => { if (G) nextQ(); });
+    cover.innerHTML = `<div class="ringw slow"><svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" pathLength="100"/></svg></div><div class="singH">${YTP.failed ? "YouTube 播放器載入失敗，請重新整理。" : "YouTube 播放器載入中…"}</div>`;
+    const g = G; YTP.whenReady().then(() => { if (G === g) nextQ(); });
   } else nextQ();
 }
 function clearTimers(){ if (!G) return; G.timers.forEach(clearTimeout); G.timers = []; }
@@ -906,31 +1107,32 @@ const later = (fn, ms) => { G.timers.push(setTimeout(fn, ms)); };
 
 function nextQ(){
   if (!G) return;
-  clearTimers();
-  $("#popL").innerHTML = ""; $("#tap").hidden = true;
+  clearTimers(); leavePop(); stopBar();
+  $("#tap").hidden = true;
   if (G.over || G.n >= G.total || !G.queue.length) return finish();
   const song = G.queue.shift();
   G.n++;
-  const c = G.cur = { song, start: startOf(song), playing: false };
+  const c = G.cur = { song, start: startOf(song), playing: false, phase: "load" };
   if (G.mode === "quiz") {
-    c.phase = "load"; c.opts = makeOpts(song); c.answer = c.opts.indexOf(song); c.pick = -1;
-    c.loadAt = performance.now();
-    YTP.load(song.v, c.start);
-    later(checkLoad, 1500);
+    c.opts = makeOpts(song); c.answer = c.opts.indexOf(song); c.pick = -1; c.loadAt = performance.now();
+    c.swapped = YTP.take(song.v, c.start);                       // instant when it was buffered during the last reveal
+    later(checkLoad, 1200);
+    later(() => { if (G && G.cur === c && c.phase === "load") { c.slow = true; coverClasses(); } }, 700);
   } else {
     YTP.stop(); YTP.cue(song.v, c.start);
-    c.phase = "show"; c.dur = cfg.singTime * 1000; c.t0 = performance.now(); c.locked = new Set(); c.buzzer = -1;
+    c.phase = "show"; c.dur = cfg.singTime * 1000; c.t0 = performance.now(); c.locked = new Set(); c.buzzer = -1; c.winner = undefined;
   }
   renderAll(); loop();
 }
 function checkLoad(){
   const c = G && G.cur; if (!c || c.phase !== "load") return;
   const st = YTP.state(), el = performance.now() - c.loadAt;
-  if ((st === -1 || st === 5 || st === 2) && el > 2500) $("#tap").hidden = false;     // autoplay blocked: needs a tap
+  if (c.swapped && st !== 1 && st !== 3 && el > 1200 && !c.retried) { c.retried = true; YTP.load(c.song.v, c.start); }
+  else if ((st === -1 || st === 5 || st === 2) && el > 2500) $("#tap").hidden = false;     // autoplay blocked: needs a tap
   if (st === 3 && el > 16000) return skipBad(c, "載入太久");
-  later(checkLoad, 1500);
+  later(checkLoad, 1000);
 }
-$("#tapBtn").onclick = () => { YTP.play(); $("#tap").hidden = true; if (G && G.cur && G.cur.phase !== "load") G.cur.wantPlay = true; };
+$("#tapBtn").onclick = () => { YTP.play(); $("#tap").hidden = true; };
 
 function makeOpts(song){
   const key = s => label(s).toLowerCase();
@@ -940,16 +1142,27 @@ function makeOpts(song){
   if (picks.length < 3) for (const s of shuffle(allSongs())) { if (!seen.has(key(s)) && s.v !== song.v) { seen.add(key(s)); picks.push(s); } if (picks.length === 3) break; }
   return shuffle([song, ...picks]);
 }
-function onYTState(s){
+function onYTState(s, i){
+  if (i !== YTP.a) {          // standby player: keep it paused once it has buffered
+    if (s === 1) { YTP.callOn(i, "pauseVideo"); if (YTP.pre && YTP.pre.idx === i) YTP.pre.ready = true; }
+    return;
+  }
   if (!G || !G.cur) return;
   const c = G.cur;
-  if (s === 1) { c.playing = true; $("#tap").hidden = true; if (c.phase === "load") beginAnswer(); }
+  if (s === 1) { c.playing = true; $("#tap").hidden = true; if (G.mode === "quiz" && c.phase === "load") beginAnswer(); }
   if (s === 2 || s === 0 || s === 5) c.playing = false;
   if (s === 0 && G.mode === "quiz" && (c.phase === "answer" || c.phase === "load")) { YTP.seek(Math.max(0, c.start - 20)); YTP.play(); }
-  if (G.mode === "sing") renderOpts();
+  if (G.mode === "sing") { renderOpts(); renderCover(); }
   renderThumb();
 }
-function onYTError(code){
+function onYTError(code, i){
+  if (YTP.plWatch && i === YTP.a) { YTP.plErr = code; return; }
+  if (i !== YTP.a) {           // the preloaded video can't be embedded: drop it from this round right away
+    const p = YTP.pre; if (!p || p.idx !== i) return;
+    YTP.pre = null; markBad({ v: p.v });
+    if (G) { G.queue = G.queue.filter(s => s.v !== p.v); G.pool = G.pool.filter(s => s.v !== p.v); G.total = Math.min(G.total, G.n + G.queue.length); }
+    return;
+  }
   if (!G || !G.cur) return;
   const c = G.cur;
   if (G.mode === "quiz" && (c.phase === "load" || c.phase === "answer")) return skipBad(c, code === 101 || code === 150 ? "不允許嵌入播放" : "無法播放");
@@ -963,7 +1176,7 @@ function skipBad(c, why){
   G.n--; c.phase = "skip"; nextQ();
 }
 function beginAnswer(){
-  const c = G.cur; c.phase = "answer"; c.t0 = performance.now(); c.dur = cfg.ansTime * 1000;
+  const c = G.cur; c.phase = "answer"; c.slow = false; c.t0 = performance.now(); c.dur = cfg.ansTime * 1000;
   renderAll(); loop();
 }
 function loop(){
@@ -984,6 +1197,28 @@ function loop(){
   raf = requestAnimationFrame(tick);
 }
 
+/* ---- the gap between questions ---- */
+function runBar(total, from = 0){
+  barI.style.transition = "none"; barI.style.transform = `scaleX(${from})`; void barI.offsetWidth;
+  barI.style.transition = `transform ${Math.max(0, total * (1 - from))}ms linear`; barI.style.transform = "scaleX(1)";
+  barEl.classList.add("on");
+}
+function stopBar(){ barEl.classList.remove("on"); barI.style.transition = "none"; barI.style.transform = "scaleX(0)"; }
+function leavePop(){
+  [...$("#popL").children].forEach(p => { if (p.classList.contains("out")) return; p.classList.add("out"); setTimeout(() => p.remove(), 260); });
+}
+function tweenScore(){
+  cancelAnimationFrame(G.twRaf);
+  const g = G, from = g.shown, to = g.score, t0 = performance.now();
+  const f = now => {
+    const p = Math.min(1, (now - t0) / 650);
+    g.shown = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+    const n = $("#scN"); if (n) n.textContent = fmt(g.shown);
+    if (p < 1) g.twRaf = requestAnimationFrame(f);
+  };
+  g.twRaf = requestAnimationFrame(f);
+}
+
 /* ---- quiz ---- */
 function pick(i){
   if (!G || G.mode !== "quiz") return;
@@ -1001,24 +1236,28 @@ function resolveQ(i){
     G.score += c.gain; beep("good"); vibrate(30);
   } else { G.combo = 0; c.gain = 0; beep("bad"); vibrate([40, 60, 40]); }
   G.log.push({ song: c.song, ok, gain: c.gain, timeout: i < 0 });
-  renderAll(); renderPop();
-  c.revealUntil = Date.now() + cfg.reveal * 1000;
-  later(nextQ, cfg.reveal * 1000);
+  const nx = G.queue[0]; if (nx && G.n < G.total) YTP.preload(nx.v, startOf(nx));     // buffer the next song while this one is shown
+  c.revealTotal = cfg.reveal * 1000; c.revealStart = Date.now();
+  renderAll(); renderPop(); tweenScore(); runBar(c.revealTotal);
+  later(nextQ, c.revealTotal);
 }
 function renderPop(){
-  const c = G.cur;
+  const c = G.cur, L = $("#popL");
+  leavePop();
+  let html;
   if (G.mode === "quiz") {
     const place = 1 + G.recs.filter(r => r.score > G.score).length;
-    $("#popL").innerHTML = c.gain
+    html = c.gain
       ? `<div class="pop"><div class="big">+${c.gain}<i>x${G.combo}</i></div><div class="sub">${G.recs.length ? `暫居第 ${place} 名` : "答對了！"}</div><div class="parts">${c.parts.filter(p => p[1]).map(p => `<span>+${p[1]} ${p[0]}</span>`).join("")}</div></div>`
       : `<div class="pop no"><div class="sub">${c.pick < 0 ? "時間到！" : "答錯了"}</div><div class="ans">答案是 <b>${esc(label(c.song))}</b></div></div>`;
   } else {
     const w = c.winner >= 0 ? G.players[c.winner] : null;
-    $("#popL").innerHTML = w
+    html = w
       ? `<div class="pop" style="border-color:${w.color}"><div class="big" style="color:${w.color}">+1</div><div class="sub">${esc(w.name)} 唱對了！</div><div class="ans">現在 ${w.score} 分</div></div>`
       : `<div class="pop no"><div class="sub">沒人唱出來</div><div class="ans">按「播原曲」聽聽看</div></div>`;
-    later(() => { const p = $(".pop"); if (p) p.style.opacity = ".0", p.style.transition = "opacity .5s"; }, 3500);
+    later(leavePop, 3500);
   }
+  L.insertAdjacentHTML("beforeend", html);
 }
 
 /* ---- sing ---- */
@@ -1029,7 +1268,6 @@ function buzz(i){
   c.phase = "buzz"; c.buzzer = i;
   beep("buzz"); vibrate(60); flash(G.players[i].color);
   renderAll();
-  const pad = $(`.pad[data-p="${i}"]`); if (pad) pad.classList.add("buzz");
 }
 function judge(ok){
   const c = G && G.cur; if (!c || c.phase !== "buzz") return;
@@ -1062,55 +1300,118 @@ function playOriginal(){
   if (st === 2) YTP.play(); else YTP.load(c.song.v, c.start);
 }
 
+/* ---- timeline scrubber (sing mode: check the original) ---- */
+const scrub = $("#scrub"), scrubR = $("#scrubR");
+let dragging = false;
+const scrubVisible = () => !!(G && G.mode === "sing" && G.cur && (G.cur.phase === "buzz" || G.cur.phase === "reveal"));
+function scrubTick(){
+  const show = scrubVisible();
+  if (scrub.hidden === show) scrub.hidden = !show;
+  if (!show) return;
+  const c = G.cur, d = YTP.dur() || c.song.d || 0, t = YTP.time();
+  if (d && +scrubR.max !== Math.floor(d)) scrubR.max = Math.floor(d);
+  if (!dragging) scrubR.value = t;
+  const shown = dragging ? +scrubR.value : t;
+  $("#scrubT").textContent = mmss(shown); $("#scrubD").textContent = d ? mmss(d) : "--:--";
+  scrubR.style.setProperty("--p", d ? Math.min(100, shown / d * 100) + "%" : "0%");
+  const ic = c.playing ? "pause" : "play", pb = $("#scrubPlay");
+  if (pb.dataset.ic !== ic) { pb.dataset.ic = ic; pb.innerHTML = icon(ic); }
+}
+function seekTo(t){
+  const c = G.cur, d = YTP.dur() || c.song.d || 0;
+  t = clamp(t, 0, d ? Math.max(0, d - 1) : 1e6);
+  const st = YTP.state();
+  if (st === 5 || st === -1) YTP.load(c.song.v, t); else { YTP.seek(t); YTP.play(); }
+  scrubR.value = t; scrubTick();
+}
+const seekBy = dx => seekTo(YTP.time() + dx);
+scrub.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || !G || !G.cur) return;
+  if (b.dataset.seek) seekBy(+b.dataset.seek);
+  else if (b.dataset.seekto) seekTo(b.dataset.seekto === "start" ? G.cur.start : 0);
+  else if (b.id === "scrubPlay") playOriginal();
+});
+scrubR.addEventListener("pointerdown", () => { dragging = true; });
+scrubR.addEventListener("input", () => { if (dragging) $("#scrubT").textContent = mmss(+scrubR.value); });
+const endDrag = () => { if (dragging && G && G.cur) { dragging = false; seekTo(+scrubR.value); } dragging = false; };
+scrubR.addEventListener("pointerup", endDrag); scrubR.addEventListener("pointercancel", endDrag);
+scrubR.addEventListener("change", () => { if (!dragging && G && G.cur) seekTo(+scrubR.value); });
+
 /* ---- rendering ---- */
-function renderAll(){ renderCover(); renderOpts(); renderRank(); renderPads(); renderThumb(); renderShow();
-  $("#extendBtn").hidden = !(G.mode === "quiz" && G.cur && G.cur.phase === "reveal"); }
-const ringHTML = (n, spin) => `<div class="ringw${spin ? " spin" : ""}"><svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" id="arc" cx="60" cy="60" r="52" pathLength="100" style="stroke-dashoffset:0"/></svg><b id="ringN">${spin ? "" : n}</b></div>`;
+function renderAll(){
+  renderCover(); renderOpts(); renderRank(); renderPads(); renderThumb(); renderShow();
+  const c = G.cur, rev = !!(c && c.phase === "reveal" && G.mode === "quiz");
+  $("#extendBtn").hidden = !rev; $("#nextQBtn").hidden = !rev;
+  if (rev) $("#nextQBtn").lastElementChild.textContent = G.n >= G.total || !G.queue.length ? "看結果" : "下一題";
+  scrubTick();
+}
+const ringHTML = (n, spin) => `<div class="ringw${spin ? " slow" : ""}"><svg class="ring" viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" id="arc" cx="60" cy="60" r="52" pathLength="100" style="stroke-dashoffset:0"/></svg><b id="ringN">${n}</b></div>`;
+function coverClasses(){
+  const c = G && G.cur; if (!c) return;
+  const reveal = c.phase === "reveal";
+  cover.classList.toggle("off", reveal);
+  cover.classList.toggle("peek", G.mode === "sing" && c.phase === "buzz" && c.playing);
+  cover.classList.toggle("slow", !!c.slow && c.phase === "load");
+}
 function renderCover(){
   const c = G.cur; if (!c) return;
+  coverClasses();
+  /* only rebuild when the card actually changes, so the countdown ring never flickers */
+  const key = G.mode === "quiz" ? `q${G.n}${c.phase === "reveal" ? "r" : "a"}`
+    : [G.n, c.phase, c.buzzer, c.winner, c.phase === "buzz" ? (c.playing ? 1 : 0) : ""].join("|");
+  if (G.mode === "quiz") { const cn = $("#cntT"); if (cn) cn.textContent = c.phase === "load" ? "準備中…" : "已答 0/1"; }
+  if (cover.dataset.key === key) return;
+  cover.dataset.key = key;
   const pill = `<div class="pill">題目 ${G.n}/${G.total}</div>`;
+  let html = "";
   if (G.mode === "quiz") {
-    cover.classList.toggle("off", c.phase === "reveal");
-    if (c.phase === "load") cover.innerHTML = `${pill}${ringHTML("", true)}<div class="cnt">載入歌曲中…</div>`;
-    else if (c.phase === "answer") cover.innerHTML = `${pill}${ringHTML(cfg.ansTime)}<div class="cnt">已答 0/1</div>`;
-    else if (c.phase === "reveal") cover.innerHTML = "";
+    if (c.phase !== "reveal") html = `${pill}${ringHTML(cfg.ansTime)}<div class="cnt" id="cntT">${c.phase === "load" ? "準備中…" : "已答 0/1"}</div>`;
   } else {
     const s = c.song;
-    cover.classList.toggle("off", c.phase === "reveal" && c.playing && cfg.show === "video");
     const title = `<div class="singT">${esc(nameOf(s))}</div>${s.artist ? `<div class="singA">${esc(s.artist)}</div>` : ""}`;
-    if (c.phase === "show") cover.innerHTML = `${pill}${title}<div class="mini">${ringHTML(Math.ceil((c.dur - (performance.now() - c.t0)) / 1000))}</div><div class="singH">會唱的人搶先按自己的按鈕，然後唱出來！</div>`;
-    else if (c.phase === "buzz") { const p = G.players[c.buzzer]; cover.innerHTML = `${pill}<div class="buzzN" style="--c:${p.color}">${icon("mic")} ${esc(p.name)} 搶唱！</div>${title}<div class="singH">唱完後大家判定，不確定就按「播原曲核對」</div>`; }
-    else { const w = c.winner >= 0 ? G.players[c.winner] : null; cover.innerHTML = `${pill}${title}<div class="singH">${w ? `${esc(w.name)} 得分！` : "這首沒人唱出來"}</div>`; }
+    if (c.phase === "show") html = `${pill}${title}<div class="mini">${ringHTML(Math.ceil((c.dur - (performance.now() - c.t0)) / 1000))}</div><div class="singH">會唱的人搶先按自己的按鈕，然後唱出來！</div>`;
+    else if (c.phase === "buzz") { const p = G.players[c.buzzer]; html = `${pill}<div class="buzzN" style="--c:${p.color}">${icon("mic")} ${esc(p.name)} 搶唱！</div>${title}<div class="singH">唱完後大家判定，可以拖動下面的時間軸聽原曲核對</div>`; }
+    else { const w = c.winner >= 0 ? G.players[c.winner] : null; html = `${pill}${title}<div class="singH">${w ? `${esc(w.name)} 得分！` : "這首沒人唱出來"}</div>`; }
   }
+  cover.innerHTML = html;
+  cover.classList.remove("swapin"); void cover.offsetWidth; cover.classList.add("swapin");
 }
 function renderThumb(){
   const c = G && G.cur; const t = $("#thumbL");
-  const showThumb = c && c.phase === "reveal" && (cfg.show === "thumb" || !c.playing);
+  const showThumb = c && (c.phase === "reveal" && (cfg.show === "thumb" || !c.playing) || G.mode === "sing" && c.phase === "buzz" && c.playing && cfg.show === "thumb");
   t.classList.toggle("on", !!showThumb);
   if (c) t.style.backgroundImage = `url(${thumb(c.song.v, "hqdefault")})`;
   const vi = $("#vinfo"); vi.classList.toggle("on", !!(c && c.phase === "reveal"));
   if (c) { $("#vTitle").textContent = label(c.song); $("#vCh").textContent = [c.song.ch, c.song.vt && c.song.vt !== label(c.song) ? c.song.vt : ""].filter(Boolean).join(" · "); }
-  if (G && G.mode === "sing" && c) cover.classList.toggle("off", c.phase === "reveal" && c.playing && cfg.show === "video");
+  if (G && c) coverClasses();
 }
 function renderShow(){ $$("[data-show]").forEach(b => b.classList.toggle("on", b.dataset.show === cfg.show)); }
 const KEYS = ["Q", "W", "A", "S"];
 function renderOpts(){
   const c = G.cur, el = $("#opts"); if (!c) return;
   if (G.mode === "quiz") {
-    el.className = "opts";
-    el.innerHTML = c.opts.map((s, i) => {
+    /* build the four buttons once per question, then only change their classes so the result states fade in */
+    const sig = "q" + G.n;
+    if (el.dataset.sig !== sig) {
+      el.dataset.sig = sig; el._h = ""; el.className = "opts enter";
+      el.innerHTML = c.opts.map((s, i) => `<button class="opt" data-o="${i}" title="${esc(s.vt || label(s))}"><span class="ot">${esc(label(s))}</span><kbd>${KEYS[i]}</kbd><span class="mk"></span></button>`).join("");
+    }
+    $$(".opt", el).forEach((b, i) => {
       let cls = "opt";
       if (c.phase === "load") cls += " wait";
       if (c.phase === "reveal") cls += i === c.answer ? " right" : i === c.pick ? " wrong" : " fade";
-      const mk = c.phase === "reveal" && (i === c.answer || i === c.pick) ? `<span class="mk">${i === c.answer ? "✓" : "✕"}</span>` : "";
-      return `<button class="${cls}" data-o="${i}" ${c.phase !== "answer" ? "disabled" : ""} title="${esc(s.vt || label(s))}"><span class="ot">${esc(label(s))}</span><kbd>${KEYS[i]}</kbd>${mk}</button>`;
-    }).join("");
+      if (b.className !== cls) b.className = cls;
+      b.disabled = c.phase !== "answer";
+      b.querySelector(".mk").textContent = c.phase === "reveal" && i === c.answer ? "✓" : c.phase === "reveal" && i === c.pick ? "✕" : "";
+    });
   } else {
-    el.className = "judge";
+    el.dataset.sig = "";
     const orig = `<button class="btn" data-j="orig">${icon(c.playing ? "pause" : "play")}${c.playing ? "暫停原曲" : c.phase === "buzz" ? "播原曲核對" : "播原曲"}<kbd>P</kbd></button>`;
-    if (c.phase === "show") el.innerHTML = `<div class="hint">等待搶唱… ${G.players.length > 1 ? `按自己的按鈕（鍵盤 1–${G.players.length}）` : "按按鈕或鍵盤 1"}</div><button class="btn" data-j="skip">${icon("next")}跳過這首</button>`;
-    else if (c.phase === "buzz") el.innerHTML = `<button class="btn ng" data-j="no">${icon("x")}唱錯了<kbd>X</kbd></button>${orig}<button class="btn ok" data-j="ok">${icon("check")}唱對了<kbd>Enter</kbd></button>`;
-    else el.innerHTML = `${orig}<button class="btn pri" data-j="next">${G.over || G.n >= G.total ? icon("trophy") + "看結果" : icon("next") + "下一題"}<kbd style="color:#08201f;border-color:rgba(0,0,0,.25)">Enter</kbd></button>`;
+    let html;
+    if (c.phase === "show") html = `<div class="hint">等待搶唱… ${G.players.length > 1 ? `按自己的按鈕（鍵盤 1–${G.players.length}）` : "按按鈕或鍵盤 1"}</div><button class="btn" data-j="skip">${icon("next")}跳過這首</button>`;
+    else if (c.phase === "buzz") html = `<button class="btn ng" data-j="no">${icon("x")}唱錯了<kbd>X</kbd></button>${orig}<button class="btn ok" data-j="ok">${icon("check")}唱對了<kbd>Enter</kbd></button>`;
+    else html = `${orig}<button class="btn pri" data-j="next">${G.over || G.n >= G.total ? icon("trophy") + "看結果" : icon("next") + "下一題"}<kbd style="color:#08201f;border-color:rgba(0,0,0,.25)">Enter</kbd></button>`;
+    if (el._h !== html) { el._h = html; el.className = "judge"; el.innerHTML = html; }
   }
 }
 $("#opts").addEventListener("click", e => {
@@ -1127,8 +1428,8 @@ function renderRank(){
   if (G.mode === "quiz") {
     const c = G.cur, st = !c ? "" : c.phase === "reveal" ? (c.gain ? `<span class="st ok">答對</span>` : `<span class="st no">${c.pick < 0 ? "超時" : "答錯"}</span>`) : `<span class="st">待答</span>`;
     const place = 1 + G.recs.filter(r => r.score > G.score).length;
-    el.innerHTML = `<h4>這一局</h4><div class="rrow me"><span class="n">#${place}</span><span class="av">${esc([...me][0] || "玩")}</span><span class="nm">${esc(me)}<span class="you">YOU</span></span>${st}<span class="sc">${fmt(G.score)}<i>x${G.combo}</i></span></div>`
-      + (G.recs.length ? `<h4>個人紀錄 · ${G.total} 題</h4>` + G.recs.slice(0, 8).map((r, i) => `<div class="rrow ghost"><span class="n">#${i + 1}</span><span class="av">${esc([...r.name][0] || "?")}</span><span class="nm">${esc(r.name)}</span><span class="sc">${fmt(r.score)}</span></div>`).join("") : `<h4>第一次挑戰這個題數，加油！</h4>`);
+    el.innerHTML = `<h4>這一局</h4><div class="rrow me"><span class="n">#${place}</span><span class="av">${esc([...me][0] || "玩")}</span><span class="nm">${esc(me)}<span class="you">YOU</span></span>${st}<span class="sc"><b id="scN">${fmt(G.shown)}</b><i>x${G.combo}</i></span></div>`
+      + (G.recs.length ? `<h4>個人紀錄 · ${G.total} 題</h4>` + G.recs.slice(0, 8).map((r, i) => `<div class="rrow ghost"><span class="n">#${i + 1}</span><span class="av">${esc([...r.name][0] || "?")}</span><span class="nm">${esc(r.name)}</span><span class="sc"><b>${fmt(r.score)}</b></span></div>`).join("") : `<h4>第一次挑戰這個題數，加油！</h4>`);
   } else {
     const c = G.cur, max = Math.max(...G.players.map(p => p.score));
     el.innerHTML = `<h4>玩家</h4>` + G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
@@ -1139,55 +1440,75 @@ function renderRank(){
 }
 function renderPads(){
   const A = $("#padsA"), B = $("#padsB");
-  if (!G || G.mode !== "sing") { A.innerHTML = B.innerHTML = ""; return; }
-  const c = G.cur, n = G.players.length, half = Math.ceil(n / 2);
-  const pad = (p, i) => {
-    const lock = c && c.locked && c.locked.has(i), buzzing = c && c.buzzer === i;
-    const idle = c && c.phase !== "show" && !buzzing;
-    return `<button class="pad ${lock ? "lock" : ""} ${idle ? "idle" : ""} ${buzzing ? "buzz" : ""}" data-p="${i}" style="--c:${p.color}" ${!c || c.phase !== "show" || lock ? "disabled" : ""} aria-label="${esc(p.name)} 搶答"><kbd>${i + 1}</kbd><b>${esc(p.name)}</b><span class="ps">${p.score}</span>${lock ? `<span class="lk">${icon("lock")} 這首鎖定</span>` : ""}</button>`;
-  };
-  // pointerdown so a tap registers instantly
-  A.innerHTML = G.players.slice(0, half).map((p, i) => pad(p, i)).join("");
-  B.innerHTML = G.players.slice(half).map((p, i) => pad(p, i + half)).join("");
+  if (!G || G.mode !== "sing") { A.innerHTML = B.innerHTML = ""; A.dataset.sig = ""; return; }
+  const n = G.players.length, half = Math.ceil(n / 2);
+  const sig = G.players.map(p => p.name + p.color).join("|");
+  if (A.dataset.sig !== sig) {        // build once per game; afterwards only classes and scores change
+    A.dataset.sig = sig;
+    const pad = (p, i) => `<button class="pad" data-p="${i}" style="--c:${p.color}" aria-label="${esc(p.name)} 搶答"><kbd>${i + 1}</kbd><b>${esc(p.name)}</b><span class="ps">${p.score}</span><span class="lk">${icon("lock")} 這首鎖定</span></button>`;
+    A.innerHTML = G.players.slice(0, half).map((p, i) => pad(p, i)).join("");
+    B.innerHTML = G.players.slice(half).map((p, i) => pad(p, i + half)).join("");
+  }
+  const c = G.cur;
+  G.players.forEach((p, i) => {
+    const b = $(`.pad[data-p="${i}"]`); if (!b) return;
+    const lock = !!(c && c.locked && c.locked.has(i)), buzzing = !!(c && c.buzzer === i && c.phase === "buzz");
+    const idle = !!(c && c.phase !== "show" && !buzzing);
+    const cls = "pad" + (lock ? " lock" : "") + (idle ? " idle" : "") + (buzzing ? " buzz" : "");
+    if (b.className !== cls) b.className = cls;
+    b.disabled = !c || c.phase !== "show" || lock;
+    const ps = b.querySelector(".ps");
+    if (ps.textContent !== String(p.score)) { ps.textContent = p.score; ps.classList.remove("bump"); void ps.offsetWidth; ps.classList.add("bump"); }
+  });
 }
+// pointerdown so a tap registers instantly
 ["#padsA", "#padsB"].forEach(s => $(s).addEventListener("pointerdown", e => { const p = e.target.closest(".pad"); if (p && !p.disabled) { e.preventDefault(); buzz(+p.dataset.p); } }));
 
-$$("[data-show]").forEach(b => b.onclick = () => { cfg.show = b.dataset.show; saveCfg(); renderShow(); if (G) { renderThumb(); } });
+$$("[data-show]").forEach(b => b.onclick = () => { cfg.show = b.dataset.show; saveCfg(); renderShow(); if (G) renderThumb(); });
 $("#vol").oninput = e => { cfg.vol = +e.target.value; $("#volN").textContent = cfg.vol + "%"; YTP.vol(cfg.vol); saveCfg(); };
-$("#extendBtn").onclick = () => { if (!G || !G.cur || G.cur.phase !== "reveal") return; clearTimers(); G.cur.revealUntil += 10000; later(nextQ, Math.max(0, G.cur.revealUntil - Date.now())); toast("多聽 10 秒"); };
-$("#restartBtn").onclick = () => { if (!G) return; const lib = G.lib; clearTimers(); YTP.stop(); startGame(lib); };
+$("#extendBtn").onclick = () => {
+  const c = G && G.cur; if (!c || c.phase !== "reveal" || G.mode !== "quiz") return;
+  clearTimers();
+  const el = Date.now() - c.revealStart; c.revealTotal += 10000;
+  runBar(c.revealTotal, el / c.revealTotal); later(nextQ, c.revealTotal - el); toast("多聽 10 秒");
+};
+$("#nextQBtn").onclick = () => { if (G && G.cur && G.cur.phase === "reveal" && G.mode === "quiz") nextQ(); };
+$("#restartBtn").onclick = () => { if (!G) return; const lib = G.lib; clearTimers(); startGame(lib); };
 $("#leaveBtn").onclick = leave;
 function leave(){
-  if (G) clearTimers(); cancelAnimationFrame(raf); YTP.stop(); G = null;
+  if (G) { clearTimers(); cancelAnimationFrame(G.twRaf); }
+  cancelAnimationFrame(raf); clearInterval(tickT); YTP.stopAll(); releaseWake(); stopBar();
+  G = null; scrub.hidden = true;
   $("#game").hidden = true; $("#result").hidden = true; $("#lobby").hidden = false; $("#popL").innerHTML = "";
   document.title = "朋友版猜歌"; renderGrid();
 }
 
 /* keyboard */
 document.addEventListener("keydown", e => {
-  if (!G || !modal.hidden || e.target.matches("input,textarea,select") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (!G || modalOpen() || e.target.matches("input,textarea,select") || e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (!$("#result").hidden) { if (k === "enter") $("#againBtn") && $("#againBtn").click(); return; }
   const c = G.cur; if (!c) return;
   if (G.mode === "quiz") {
     const i = { q: 0, w: 1, a: 2, s: 3, "1": 0, "2": 1, "3": 2, "4": 3 }[k];
     if (i != null && c.phase === "answer") { e.preventDefault(); pick(i); }
-    else if (k === "enter" && c.phase === "reveal") nextQ();
+    else if ((k === "enter" || k === " ") && c.phase === "reveal") { e.preventDefault(); nextQ(); }
   } else {
     if (/^[1-8]$/.test(k) && c.phase === "show") { e.preventDefault(); buzz(+k - 1); }
     else if (c.phase === "buzz" && k === "enter") judge(true);
     else if (c.phase === "buzz" && (k === "x" || k === "backspace")) judge(false);
     else if (k === "p" && c.phase !== "show") playOriginal();
+    else if ((k === "arrowleft" || k === "arrowright") && scrubVisible()) { e.preventDefault(); seekBy((k === "arrowleft" ? -1 : 1) * (e.shiftKey ? 10 : 5)); }
     else if ((k === "enter" || k === " ") && c.phase === "reveal") { e.preventDefault(); nextQ(); }
   }
 });
 
 /* ---- results ---- */
 function finish(){
-  clearTimers(); cancelAnimationFrame(raf);
+  clearTimers(); cancelAnimationFrame(raf); stopBar();
   const r = $("#result"), time = Math.round((Date.now() - G.t0) / 1000);
   if (G.mode === "quiz") {
-    YTP.pause();
+    YTP.stopAll();
     const rec = { name: me, score: G.score, correct: G.correct, total: G.n, maxCombo: G.maxCombo, time, date: Date.now() };
     const rank = G.n ? addRec(G.lib.id, G.total, rec) : -1;
     const acc = G.n ? Math.round(G.correct / G.n * 100) : 0;
@@ -1198,6 +1519,7 @@ function finish(){
       <div class="ract"><button class="btn" id="backBtn">${icon("back")}回大廳</button><button class="btn pri" id="againBtn">${icon("restart")}再挑戰一次</button></div></div>`;
     if (rank === 0 || acc >= 80) confetti(["#5fd6d2", "#f1d27a", "#ffffff", "#9b8cff"]);
   } else {
+    YTP.stopAll();
     const order = G.players.map((p, i) => ({ ...p, i })).sort((a, b) => b.score - a.score);
     const top = order[0], tie = order.filter(p => p.score === top.score).length > 1;
     r.innerHTML = `<div class="rcard podium"><h2>搶唱派對結束 · 唱了 ${G.log.length} 首</h2>
