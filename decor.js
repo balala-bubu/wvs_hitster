@@ -181,7 +181,7 @@ function buildOpen() {
   const bar = $("#topbar"), me = $("#meBtn"); if (!bar) return;
   const b = document.createElement("button"); b.type = "button"; b.id = "dcOpen"; b.className = "dc-open"; b.setAttribute("aria-label", "角色夥伴設定");
   b.innerHTML = `<i class="dc-av" id="dcOpenAv"></i><span>角色夥伴</span>`;
-  bar.insertBefore(b, me || null);
+  (me && me.parentNode || bar).insertBefore(b, me || null);
   b.addEventListener("click", () => openModal(b));
   applyCur();
 }
