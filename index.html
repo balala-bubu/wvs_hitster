@@ -239,6 +239,8 @@ textarea.field{min-height:260px;resize:vertical;font:14px/1.6 ui-monospace,Menlo
 .ahead h1 small{display:block;font:500 14px "Noto Sans TC";color:var(--mute)}
 .stage{position:relative;border-radius:22px;overflow:hidden;background:#000;border:1px solid var(--line);height:clamp(260px,46vh,600px)}
 .ytwrap{position:absolute;inset:0;pointer-events:none;z-index:0}
+.btn.danger.armed{background:#c0392b;border-color:#c0392b;color:#fff}
+.hnote{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:12px;padding:16px;color:var(--mute);font-size:13px}
 .thumbL{position:absolute;inset:0;background:#000 center/contain no-repeat;opacity:0;transition:opacity .3s}
 .thumbL.on{opacity:1}
 .cover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center;background:radial-gradient(600px 300px at 50% 45%,#0f1a24,#060a0e);transition:opacity .45s}
@@ -646,7 +648,9 @@ const optLabel = s => {
   return label(s);
 };
 const label = s => s.title ? (s.artist ? `${s.title} — ${s.artist}` : s.title) : cleanVT(s.vt) || s.v;
-const BUILTIN = (DATA.lists || []).map(l => ({ id: l.id, name: l.name, tags: l.tags || [], songs: (l.songs || []).filter(s => s.v), builtin: true }));
+let hidden = new Set(store.get("yt.hidden", []));          // public lists this device chose to hide
+const BUILTIN_ALL = (DATA.lists || []).map(l => ({ id: l.id, name: l.name, tags: l.tags || [], songs: (l.songs || []).filter(s => s.v), builtin: true }));
+let BUILTIN = BUILTIN_ALL.filter(l => !hidden.has(l.id));
 let MINE = store.get("yt.lists", []);
 const rawCount = (DATA.lists || []).reduce((n, l) => n + (l.songs || []).length, 0);
 function allSongs(){
@@ -757,6 +761,11 @@ function libsNow(){
   const all = ALL();
   return [all, ...BUILTIN].filter(l => l.songs.filter(usable).length);
 }
+function setHidden(set){ hidden = set; store.set("yt.hidden", [...hidden]); BUILTIN = BUILTIN_ALL.filter(l => !hidden.has(l.id)); }
+function restoreNote(){
+  const n = BUILTIN_ALL.filter(l => hidden.has(l.id)).length;
+  return tab === "mine" || !n ? "" : `<div class="hnote"><span>這台裝置隱藏了 ${n} 份公開歌單。</span><button class="btn sm" id="restoreBtn">全部復原</button></div>`;
+}
 function renderGrid(){
   const q = query.trim().toLowerCase();
   const ls = libsNow().filter(l => !q || [l.name, ...(l.tags || []), ...l.songs.map(s => `${s.title} ${s.artist} ${s.vt || ""}`)].join(" ").toLowerCase().includes(q));
@@ -769,6 +778,7 @@ function renderGrid(){
       : q ? `<div class="empty"><b>找不到「${esc(query)}」</b>換個關鍵字試試看。</div>`
           : `<div class="empty"><b>${rawCount ? "歌單還在準備 YouTube 影片" : "還沒有歌單"}</b>${rawCount ? "GitHub 正在幫 songs.txt 裡的每首歌找 YouTube 影片，大約幾分鐘後重新整理就好。" : "到 GitHub 編輯 songs.txt 加歌。"}<br>也可以先到「我的題庫」貼 YouTube 連結來玩。</div>`;
     const e = $("#emptyImport"); if (e) e.onclick = () => openImport();
+    if (tab !== "mine") g.insertAdjacentHTML("beforeend", restoreNote());
     return;
   }
   const pl = plays();
@@ -777,9 +787,11 @@ function renderGrid(){
     return `<button class="card" data-id="${esc(l.id)}">${coverHTML(l)}<div class="cb"><h3>${esc(l.name)}</h3>
       <div class="meta">${best ? `<span class="star">${icon("star")}</span>最佳 ${fmt(best)} 分` : `<span style="color:var(--dim)">還沒有紀錄</span>`}</div>
       <div class="stats"><span>${icon("music")}${n}題</span><span>${icon("play")}${pl[l.id] || 0}</span>${l.builtin ? "" : `<span style="color:var(--mute);font:500 12px 'Noto Sans TC'">我的</span>`}</div></div></button>`;
-  }).join("");
+  }).join("") + restoreNote();
 }
-$("#grid").addEventListener("click", e => { const c = e.target.closest(".card"); if (c) openDetail(c.dataset.id); });
+$("#grid").addEventListener("click", e => {
+  if (e.target.closest("#restoreBtn")) { setHidden(new Set()); renderGrid(); toast("已復原隱藏的公開歌單"); return; }
+  const c = e.target.closest(".card"); if (c) openDetail(c.dataset.id); });
 $$(".nav[data-tab]").forEach(b => b.onclick = () => { tab = b.dataset.tab; $$(".nav[data-tab]").forEach(x => x.classList.toggle("on", x === b)); renderGrid(); });
 $$(".seg button").forEach(b => b.onclick = () => { view = b.dataset.view; store.set("yt.view", view); renderGrid(); });
 $("#q").oninput = e => { query = e.target.value; renderGrid(); };
@@ -838,7 +850,7 @@ function openDetail(id){
     <div class="mb"><div>
       <div class="dcover"><img alt="" onerror="this.style.visibility='hidden'" src="${songs[0] ? thumb(songs[0].v, "hqdefault") : ""}"><div class="tags">${tags}</div></div>
       <div class="dstats"><span>${icon("music")}${n} 題</span><span>${icon("play")}玩過 ${pl} 次</span>${best ? `<span style="color:var(--sun)">${icon("trophy")}${fmt(best)}</span>` : ""}<span class="sp"></span>
-        ${l.builtin ? "" : `<button class="btn sm" id="dEdit">${icon("edit")}編輯</button>`}</div>
+        ${l.builtin ? "" : `<button class="btn sm" id="dEdit">${icon("edit")}編輯</button>`}${l.id === "all" ? "" : `<button class="btn sm danger" id="dDel">${icon("trash")}${l.builtin ? "從這台裝置移除" : "刪除"}</button>`}</div>
       <div class="tabs"><button data-dt="list">播放清單</button><button data-dt="how">怎麼玩</button></div>
       <div id="dBody"></div>
     </div><div>
@@ -869,6 +881,19 @@ function openDetail(id){
   $("#dQuiz").onclick = () => { cfg.count = dCount; openSetup(l.id, "quiz"); };
   $("#dSing").onclick = () => openSetup(l.id, "sing");
   const ed = $("#dEdit"); if (ed) ed.onclick = () => openImport(l.id);
+  const dd = $("#dDel"); if (dd) {
+    let armed = 0, label0 = dd.lastChild.textContent;
+    dd.onclick = () => {
+      if (!armed) {                                   // first tap asks, second tap deletes
+        armed = setTimeout(() => { armed = 0; dd.classList.remove("armed"); dd.lastChild.textContent = label0; }, 3500);
+        dd.classList.add("armed"); dd.lastChild.textContent = "再按一次確定"; return;
+      }
+      clearTimeout(armed);
+      if (l.builtin) { const h = new Set(hidden); h.add(l.id); setHidden(h); }
+      else { MINE = MINE.filter(x => x.id !== l.id); store.set("yt.lists", MINE); }
+      closeModal(); renderGrid(); toast(l.builtin ? `已從這台裝置移除「${l.name}」，可在公開歌單頁底部復原` : `已刪除「${l.name}」`, 4500);
+    };
+  }
   body(); lb();
 }
 
