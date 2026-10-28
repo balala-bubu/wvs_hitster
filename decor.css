@@ -1,54 +1,95 @@
-/* 角色夥伴裝飾（配合 decor.js）。角色圖來自世志大亂鬥的 3D 模型，8 欄 × 4 列的動畫圖，一格 144×180。 */
-.dc-sp{position:relative;width:calc(144px*var(--sc,.7));height:calc(180px*var(--sc,.7));background-repeat:no-repeat;background-size:800% 400%;pointer-events:none;-webkit-user-select:none;user-select:none;filter:drop-shadow(0 5px 7px rgba(0,0,0,.45))}
-
-/* ---- 遊戲中的夥伴 ---- */
-.dc-crew{position:fixed;left:16px;bottom:0;z-index:20;width:calc(144px*.72);height:calc(180px*.72);cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* 角色夥伴裝飾（配合 decor.js）。角色圖來自世志大亂鬥的 3D 模型，8 欄 × 4 列的動畫圖，一格 144×180。
+   角色放在舞台（#stage）裡，加分提示旁邊；大小由 decor.js 依舞台高度設定 --sc。 */
+.dc-crew{position:absolute;z-index:4;width:calc(144px*var(--sc,1));height:calc(180px*var(--sc,1));cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 .dc-crew[hidden]{display:none}
+.dc-crew.in{animation:dc-in .5s cubic-bezier(.2,1.3,.4,1)}
+.dc-crew.out{animation:dc-out .26s ease-in forwards;pointer-events:none}
+.dc-sp{width:100%;height:100%;background-repeat:no-repeat;background-size:800% 400%;pointer-events:none;filter:drop-shadow(0 6px 9px rgba(0,0,0,.5))}
 .dc-body{position:absolute;inset:0;transform-origin:50% 95%}
-.dc-shadow{position:absolute;left:50%;bottom:3px;width:62%;height:9px;border-radius:50%;background:rgba(0,0,0,.5);filter:blur(3px);transform:translateX(-50%);pointer-events:none}
+.dc-shadow{position:absolute;left:50%;bottom:calc(9px*var(--sc,1));width:58%;height:calc(10px*var(--sc,1));border-radius:50%;background:rgba(0,0,0,.5);filter:blur(4px);transform:translateX(-50%);pointer-events:none}
 .dc-fx{position:absolute;left:0;right:0;top:0;height:60%;pointer-events:none}
-.dc-aura{position:absolute;left:-30%;right:-30%;top:-8%;bottom:-6%;border-radius:50%;pointer-events:none;opacity:0;transform:scale(.6);transition:opacity .35s,transform .35s;background:radial-gradient(closest-side,rgba(255,178,63,.55),rgba(255,178,63,.18) 55%,transparent 72%)}
+.dc-aura{position:absolute;left:-30%;right:-30%;top:-4%;bottom:0;border-radius:50%;pointer-events:none;opacity:0;transform:scale(.6);transition:opacity .35s,transform .35s;background:radial-gradient(closest-side,rgba(255,178,63,.55),rgba(255,178,63,.18) 55%,transparent 72%)}
 .dc-crew[data-state="cheer"] .dc-aura{opacity:.85;transform:scale(1);animation:dc-aura 1.1s ease-out}
 .dc-crew[data-heat="1"] .dc-aura,.dc-crew[data-heat="2"] .dc-aura{opacity:.7;transform:scale(1);animation:dc-flick .8s ease-in-out infinite alternate}
 .dc-crew[data-heat="2"] .dc-aura{background:radial-gradient(closest-side,rgba(255,120,60,.75),rgba(255,178,63,.28) 55%,transparent 74%);animation-duration:.45s}
 .dc-crew[data-state="cheer"] .dc-body{animation:dc-hop .46s cubic-bezier(.3,.7,.4,1) 4}
 .dc-crew[data-state="sob"] .dc-body{animation:dc-sway 1.3s ease-in-out infinite;filter:saturate(.7) brightness(.92)}
-.dc-crew[data-state="sob"]::after{content:"";position:absolute;left:-18%;right:-18%;top:-14%;height:34%;border-radius:50%;pointer-events:none;background:radial-gradient(closest-side,rgba(120,150,200,.35),transparent 75%);animation:dc-fade 2.8s ease-out forwards}
 .dc-crew:hover .dc-body{transform:translateY(-3px);transition:transform .15s}
 
-.dc-name{position:absolute;left:50%;bottom:100%;transform:translate(-50%,8px);white-space:nowrap;padding:5px 12px;border-radius:999px;background:rgba(7,11,20,.86);border:1px solid var(--line2,rgba(255,255,255,.17));text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;line-height:1.25}
+.dc-name{position:absolute;left:50%;top:0;transform:translate(-50%,6px);white-space:nowrap;padding:5px 12px;border-radius:999px;background:rgba(7,11,20,.86);border:1px solid var(--line2,rgba(255,255,255,.17));text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;line-height:1.25;z-index:2}
 .dc-name b{display:block;font-size:13px;color:var(--text,#f2f6fa)}
 .dc-name small{display:block;font-size:10.5px;color:var(--mute,#9aa8b8)}
-.dc-crew.say .dc-name,.dc-crew:hover .dc-name{opacity:1;transform:translate(-50%,-2px)}
-
-/* 窄螢幕／搶唱模式：平常躲起來，只有答題結果出來時探頭 */
-.dc-crew.peek{left:auto;right:12px;pointer-events:none;transform:translateY(108%);transition:transform .38s cubic-bezier(.2,1.25,.4,1)}
-.dc-crew.peek.up{transform:none}
+.dc-crew.say .dc-name,.dc-crew:hover .dc-name{opacity:1;transform:translate(-50%,0)}
 
 /* ---- 粒子 ---- */
 .dc-p{position:absolute;left:50%;top:50%;width:var(--s,8px);height:var(--s,8px);background:var(--c,#fff);pointer-events:none;opacity:0;animation:dc-burst var(--t,1.1s) cubic-bezier(.2,.7,.3,1) forwards}
 .dc-p.star{clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
-.dc-p.drop{width:6px;height:9px;border-radius:50% 50% 50% 50%/65% 65% 35% 35%;animation-name:dc-drop;top:22%}
+.dc-p.drop{width:8px;height:12px;border-radius:50% 50% 50% 50%/65% 65% 35% 35%;animation-name:dc-drop;top:22%}
 
-/* ---- 跑過畫面的角色 ---- */
-.dc-run{position:fixed;bottom:0;left:0;z-index:6;pointer-events:none;animation:dc-across var(--d,9s) linear forwards;will-change:transform}
-.dc-run.rev{animation-name:dc-across-rev}
-.dc-run.rev .dc-sp{transform:scaleX(-1)}
-.dc-runshadow{position:absolute;left:50%;bottom:2px;width:46%;height:7px;border-radius:50%;background:rgba(0,0,0,.4);filter:blur(3px);transform:translateX(-50%)}
-
-/* ---- 結算畫面 ---- */
-.dc-podium{position:fixed;z-index:41;display:flex;justify-content:center;align-items:flex-end;gap:4px;pointer-events:none}
-.dc-podium>.dc-sp{overflow:visible}
-
-@keyframes dc-hop{0%,100%{transform:translateY(0) scale(1,1)}40%{transform:translateY(-16px) scale(.97,1.04)}85%{transform:translateY(0) scale(1.04,.95)}}
+@keyframes dc-in{from{opacity:0;transform:translateY(40px) scale(.85)}to{opacity:1;transform:none}}
+@keyframes dc-out{to{opacity:0;transform:translateY(30px) scale(.92)}}
+@keyframes dc-hop{0%,100%{transform:translateY(0) scale(1,1)}40%{transform:translateY(calc(-14px*var(--sc,1))) scale(.97,1.04)}85%{transform:translateY(0) scale(1.04,.95)}}
 @keyframes dc-sway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(2px)}}
 @keyframes dc-aura{0%{opacity:0;transform:scale(.5)}35%{opacity:.95;transform:scale(1.12)}100%{opacity:.5;transform:scale(1)}}
 @keyframes dc-flick{from{opacity:.45;transform:scale(.96)}to{opacity:.85;transform:scale(1.06)}}
-@keyframes dc-fade{0%{opacity:1}100%{opacity:0}}
 @keyframes dc-burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(0)}12%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1) rotate(var(--r,0))}}
 @keyframes dc-drop{0%{opacity:0;transform:translate(-50%,0)}15%{opacity:.95}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),var(--dy))}}
-@keyframes dc-across{from{transform:translateX(-200px)}to{transform:translateX(calc(100vw + 60px))}}
-@keyframes dc-across-rev{from{transform:translateX(calc(100vw + 60px))}to{transform:translateX(-200px)}}
 
-@media (max-width:860px){.dc-crew{transform-origin:100% 100%}}
-@media (prefers-reduced-motion:reduce){.dc-p,.dc-aura,.dc-crew::after{display:none!important}.dc-crew .dc-body{animation:none!important}.dc-run{display:none}}
+@media (max-width:860px){.dc-crew{z-index:6;pointer-events:none}}
+
+/* ================= 首頁「角色夥伴」按鈕與設定面板 ================= */
+.dc-av{display:block;flex:none;border-radius:14px;image-rendering:pixelated;background-repeat:no-repeat;background-color:var(--panel3,#1a2b42)}
+.dc-open{display:flex;align-items:center;gap:8px;margin-left:auto;padding:5px 14px 5px 5px;border:1px solid var(--line2,rgba(255,255,255,.17));border-radius:999px;background:var(--panel,#0e1623);font-weight:700;font-size:14px;color:var(--text,#f2f6fa);cursor:pointer;white-space:nowrap}
+.dc-open:hover{border-color:var(--lime,#8cc63f)}
+.dc-open .dc-av{border-radius:50%}
+html.dc-lock{overflow:hidden}
+.dc-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(4,8,16,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:dc-fadein .2s}
+.dc-modal[hidden]{display:none}
+.dc-sheet{width:min(600px,100%);max-height:min(88vh,880px);overflow:auto;border-radius:28px;border:1px solid var(--line2,rgba(255,255,255,.17));background:linear-gradient(180deg,#14233a,#0a111d);padding:20px 22px 26px;box-shadow:0 40px 100px -20px rgba(0,0,0,.8);animation:dc-sheet .28s cubic-bezier(.2,.9,.3,1)}
+.dc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dc-head h3{margin:0;font-size:20px}
+.dc-x{width:36px;height:36px;border-radius:50%;border:1px solid var(--line2,rgba(255,255,255,.17));background:transparent;color:var(--mute,#9aa8b8);cursor:pointer}
+.dc-prev{display:flex;align-items:center;gap:16px;padding:12px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(108,197,214,.18),rgba(140,198,63,.1));border:1px solid var(--line,rgba(255,255,255,.09));margin-bottom:6px}
+.dc-prev-sp{flex:none;width:calc(144px*.7);height:calc(180px*.7);background-repeat:no-repeat;background-size:800% 400%;filter:drop-shadow(0 5px 7px rgba(0,0,0,.45))}
+.dc-prev-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dc-prev-info b{font-size:20px}
+.dc-prev-info small{color:var(--mute,#9aa8b8);font-size:13px}
+.dc-mini{align-self:flex-start;margin-top:8px;padding:6px 14px;border-radius:999px;border:1px solid var(--line2,rgba(255,255,255,.17));background:var(--panel3,#1a2b42);color:var(--text,#f2f6fa);font-size:13px;cursor:pointer}
+.dc-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 4px;border-bottom:1px solid var(--line,rgba(255,255,255,.09))}
+.dc-row[hidden]{display:none}
+.dc-row b{display:block;font-size:15px}
+.dc-row small{display:block;color:var(--mute,#9aa8b8);font-size:12.5px;margin-top:2px;line-height:1.4}
+.dc-sw{flex:none;position:relative;width:48px;height:28px;border-radius:999px;border:1px solid var(--line2,rgba(255,255,255,.17));background:var(--panel3,#1a2b42);cursor:pointer;transition:background .2s}
+.dc-sw::after{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.dc-sw[aria-checked="true"]{background:var(--lime,#8cc63f);border-color:transparent}
+.dc-sw[aria-checked="true"]::after{transform:translateX(20px)}
+.dc-sec{margin:18px 0 8px;font-weight:800;font-size:13px;letter-spacing:.08em;color:var(--mute,#9aa8b8)}
+.dc-sec small{font-weight:500;letter-spacing:0;margin-left:8px;color:var(--dim,#66768a)}
+.dc-seg{display:grid;grid-template-columns:1fr 1fr;padding:4px;gap:4px;border-radius:999px;border:1px solid var(--line2,rgba(255,255,255,.17));background:var(--bg2,#0b111c)}
+.dc-seg button{height:38px;border-radius:999px;border:0;background:transparent;color:var(--mute,#9aa8b8);font-weight:700;cursor:pointer}
+.dc-seg button[aria-pressed="true"]{background:var(--panel3,#1a2b42);color:#fff;box-shadow:0 0 0 1px var(--lime,#8cc63f) inset}
+.dc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+.dc-ch,.dc-sk{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:16px;border:1px solid var(--line,rgba(255,255,255,.09));background:var(--panel,#0e1623);color:var(--text,#f2f6fa);font-size:12.5px;cursor:pointer}
+.dc-ch:hover,.dc-sk:hover{border-color:var(--line2,rgba(255,255,255,.3))}
+.dc-ch[aria-pressed="true"],.dc-sk[aria-pressed="true"]{border-color:var(--lime,#8cc63f);background:rgba(140,198,63,.14)}
+.dc-skins{display:flex;flex-wrap:wrap;gap:8px}
+.dc-skins.dim{opacity:.55}
+.dc-sk{width:92px;padding:8px 6px}
+.dc-sk span{text-align:center;line-height:1.25}
+@media (max-width:560px){.dc-modal{align-items:flex-end;padding:0}.dc-sheet{border-radius:26px 26px 0 0;max-height:92vh;padding:18px 16px 24px}.dc-open span{display:none}.dc-open{padding:4px}}
+
+/* ================= 影片框回饋：答對＝螢光綠＋衝擊波，答錯＝紅色＋輕微震動 ================= */
+.stage.dc-ok{animation:dc-st-ok 1.1s ease-out}
+.stage.dc-bad{animation:dc-st-bad .5s linear}
+.dc-flash{position:absolute;inset:0;z-index:6;border-radius:inherit;pointer-events:none;animation:dc-flash .9s ease-out both}
+.dc-flash.ok{border:3px solid #7cff59;box-shadow:inset 0 0 50px 6px rgba(124,255,89,.75),inset 0 0 130px rgba(124,255,89,.25)}
+.dc-flash.bad{border:3px solid #ff4560;box-shadow:inset 0 0 50px 6px rgba(255,69,96,.7),inset 0 0 130px rgba(255,69,96,.25)}
+.dc-ring{position:absolute;left:50%;top:50%;width:140px;height:140px;margin:-70px 0 0 -70px;border-radius:50%;z-index:6;pointer-events:none;border:4px solid #7cff59;box-shadow:0 0 24px #7cff59,inset 0 0 24px rgba(124,255,89,.6);animation:dc-ring 1s cubic-bezier(.15,.6,.3,1) both}
+@keyframes dc-flash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+@keyframes dc-ring{0%{opacity:.95;transform:scale(.15)}100%{opacity:0;transform:scale(9)}}
+@keyframes dc-st-ok{0%{border-color:#7cff59;box-shadow:var(--g-edge,0 0 0 0 transparent),0 0 0 0 rgba(124,255,89,.95),0 0 36px 6px rgba(124,255,89,.85)}60%{border-color:#7cff59}100%{box-shadow:var(--g-edge,0 0 0 0 transparent),0 0 0 44px rgba(124,255,89,0),0 0 70px 14px rgba(124,255,89,0)}}
+@keyframes dc-st-bad{0%{transform:translate(0);border-color:#ff4560;box-shadow:var(--g-edge,0 0 0 0 transparent),0 0 0 0 rgba(255,69,96,.9),0 0 34px 6px rgba(255,69,96,.8)}12%{transform:translate(-5px,1px)}24%{transform:translate(5px,-1px)}36%{transform:translate(-4px,1px)}48%{transform:translate(4px,0)}60%{transform:translate(-2px,0);border-color:#ff4560}72%{transform:translate(2px,0)}100%{transform:translate(0);box-shadow:var(--g-edge,0 0 0 0 transparent),0 0 0 30px rgba(255,69,96,0),0 0 60px 10px rgba(255,69,96,0)}}
+@keyframes dc-fadein{from{opacity:0}}
+@keyframes dc-sheet{from{opacity:0;transform:translateY(24px) scale(.97)}}
+
+@media (prefers-reduced-motion:reduce){.dc-p,.dc-aura,.dc-ring{display:none!important}.stage.dc-bad{animation:none}.dc-crew .dc-body{animation:none!important}}
