@@ -904,6 +904,25 @@ input[type=range]{accent-color:var(--lime)}
 .mv.up{color:var(--lime)}.mv.dn{color:#ff8f9f}
 .ctl .crank{display:flex;flex-direction:column;gap:8px}
 .ctl .rrow{flex:none;padding:10px 14px}
+
+/* ---- first place: tilted crown on the avatar + golden glow over the whole block ---- */
+.rrow.first{border-color:rgba(255,222,120,.9);background:linear-gradient(135deg,rgba(255,196,64,.42),rgba(255,236,170,.12) 55%,rgba(255,196,64,.22));
+  box-shadow:var(--g-edge),0 0 0 1px rgba(255,214,102,.35),0 0 24px 2px rgba(255,196,64,.5),0 14px 44px -12px rgba(255,178,63,.7);animation:goldPulse 2.4s ease-in-out infinite}
+.rrow.first::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+  background:linear-gradient(105deg,transparent 32%,rgba(255,244,200,.55) 50%,transparent 68%) -150% 0/60% 100% no-repeat;animation:goldSweep 3.2s ease-in-out infinite}
+.rrow.first>*{position:relative;z-index:1}
+.rrow.first .av{box-shadow:0 0 0 2px rgba(255,226,140,.95),0 0 16px rgba(255,200,70,.95)}
+.rrow.first .sc{text-shadow:0 0 14px rgba(255,200,70,.9)}
+.crown{position:absolute;left:-14px;top:-18px;width:26px;height:22px;transform:rotate(-28deg);transform-origin:70% 100%;pointer-events:none;z-index:3;
+  filter:drop-shadow(0 0 5px rgba(255,200,70,.95)) drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.crown.drop{animation:crownDrop .75s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes goldPulse{
+  0%,100%{box-shadow:var(--g-edge),0 0 0 1px rgba(255,214,102,.35),0 0 20px 1px rgba(255,196,64,.42),0 14px 40px -12px rgba(255,178,63,.6)}
+  50%{box-shadow:var(--g-edge),0 0 0 1px rgba(255,230,150,.65),0 0 42px 6px rgba(255,200,70,.85),0 16px 56px -8px rgba(255,178,63,.95)}}
+@keyframes goldSweep{0%,35%{background-position:-150% 0}70%,100%{background-position:250% 0}}
+@keyframes crownDrop{0%{transform:translateY(-26px) rotate(-75deg) scale(.2);opacity:0}60%{transform:translateY(2px) rotate(-22deg) scale(1.2);opacity:1}100%{transform:rotate(-28deg) scale(1);opacity:1}}
+@media (max-width:860px){.rank{padding:14px 6px 12px;margin-top:-6px}}   /* the row list scrolls sideways, so leave room for the crown and glow */
+@media (prefers-reduced-motion:reduce){.rrow.first,.rrow.first::after,.crown.drop{animation:none}}
 </style>
 <link rel="stylesheet" href="decor.css?v=6">
 </head>
@@ -1750,12 +1769,85 @@ function resolveQ(i){
   renderAll(); renderPop(); tweenScore(); runBar(c.revealTotal);
   later(nextQ, c.revealTotal);
 }
+/* ---- ranking motion: first-place crown + overtake (position swap) animation ---- */
+const crownHTML = drop => `<svg class="crown${drop ? " drop" : ""}" viewBox="0 0 26 22" aria-hidden="true"><path d="M2.5 7.5 8.5 12 13 2.5 17.5 12 23.5 7.5 21.5 19.5H4.5Z" fill="#ffd54a" stroke="#c98a12" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 16.2H20.5" stroke="#fff3b0" stroke-width="1.6" stroke-linecap="round"/><circle cx="2.5" cy="7.5" r="1.8" fill="#fff3b0"/><circle cx="13" cy="2.5" r="1.8" fill="#fff3b0"/><circle cx="23.5" cy="7.5" r="1.8" fill="#fff3b0"/></svg>`;
+const calmMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+// a row that has just taken 1st place carries data-nf; it gets the crown and glow only once it has slid into place
+function crownUp(e){
+  e.removeAttribute("data-nf"); e.classList.add("first");
+  const av = e.querySelector(".av"); if (av && !av.querySelector(".crown")) av.insertAdjacentHTML("beforeend", crownHTML(true));
+}
+// leaders = Set of player indexes in 1st place (ties share it); prev = the Set from the last render (null the first time)
+function rankFlags(players, prev){
+  const max = Math.max(0, ...players.map(p => p.score)), now = new Set();
+  players.forEach((p, i) => { if (max > 0 && p.score === max) now.add(String(i)); });
+  return { now, first: i => now.has(String(i)), fresh: i => !!prev && now.has(String(i)) && !prev.has(String(i)) };
+}
+function rankSnap(box){
+  const m = new Map(); if (!box) return m;
+  const b = box.getBoundingClientRect();
+  box.querySelectorAll(".rrow[data-pi]").forEach(e => { const r = e.getBoundingClientRect(); m.set(e.dataset.pi, { x: r.left - b.left, y: r.top - b.top }); });
+  return m;
+}
+// FLIP: rows were rebuilt in their new order; slide each one from where it used to be. Rows that overtook someone pop up over the rest.
+function rankPlay(box, snap){
+  if (!box) return;
+  const b = box.getBoundingClientRect(), calm = calmMotion() || !snap || !snap.size;
+  box.querySelectorAll(".rrow[data-pi]").forEach(e => {
+    const done = () => { e.style.zIndex = ""; if (e.hasAttribute("data-nf")) crownUp(e); };
+    const o = snap && snap.get(e.dataset.pi);
+    if (calm || !o || !e.animate) return done();
+    const r = e.getBoundingClientRect(), dx = o.x - (r.left - b.left), dy = o.y - (r.top - b.top);
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) return done();
+    const up = dx + dy > 0;                                           // it used to sit further back, so it moved up
+    e.style.zIndex = up ? 3 : 1;
+    const a = e.animate(up
+      ? [{ transform: `translate(${dx}px,${dy}px) scale(1)` }, { transform: `translate(${dx * .45}px,${dy * .45}px) scale(1.07)`, offset: .45 }, { transform: "translate(0,0) scale(1)" }]
+      : [{ transform: `translate(${dx}px,${dy}px)` }, { transform: "translate(0,0)" }],
+      { duration: up ? 820 : 700, easing: "cubic-bezier(.22,.9,.28,1.08)" });
+    a.onfinish = a.oncancel = done;
+  });
+}
+// result board: it is built already sorted, so replay the swap from the previous order (m.f) to the new one, with the score counting up
+function boardPlay(box, moves){
+  if (!box) return;
+  const rows = [...box.querySelectorAll(".rrow[data-pi]")], calm = calmMotion() || rows.length < 2 || !moves;
+  const pitch = rows.length > 1 ? rows[1].offsetTop - rows[0].offsetTop : 0, DELAY = 650, DUR = 900;
+  rows.forEach((e, idx) => {
+    const m = moves && moves[e.dataset.pi], sc = e.querySelector(".sc"), n = e.querySelector(".n");
+    const to = sc ? +sc.dataset.to : 0, from = sc && sc.dataset.from != null ? +sc.dataset.from : to;
+    const finish = () => { e.style.zIndex = ""; if (n) n.textContent = "#" + (idx + 1); if (sc) sc.textContent = fmt(to); if (e.hasAttribute("data-nf")) crownUp(e); };
+    if (calm || !m || !e.animate) return finish();
+    const dy = (Math.min(m.f, rows.length + 1) - (idx + 1)) * pitch, up = dy > 0;
+    if (n) n.textContent = "#" + m.f;
+    if (sc) sc.textContent = fmt(from);
+    if (dy !== 0) {
+      e.style.zIndex = up ? 3 : 1;
+      const enter = m.f > rows.length, op = enter ? { opacity: 0 } : {}, op1 = enter ? { opacity: 1 } : {};
+      e.animate(up
+        ? [{ transform: `translateY(${dy}px) scale(1)`, ...op }, { transform: `translateY(${dy * .45}px) scale(1.07)`, offset: .45, ...op1 }, { transform: "translateY(0) scale(1)", ...op1 }]
+        : [{ transform: `translateY(${dy}px)` }, { transform: "translateY(0)" }],
+        { duration: DUR, delay: DELAY, easing: "cubic-bezier(.22,.9,.28,1.08)", fill: "backwards" });
+      setTimeout(() => { if (n) n.textContent = "#" + (idx + 1); }, DELAY + DUR * .45);
+    }
+    if (sc && from !== to) {
+      const t0 = performance.now() + DELAY, step = t => {
+        const k = Math.min(1, Math.max(0, (t - t0) / (DUR * .8)));
+        sc.textContent = fmt(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))));
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+    setTimeout(finish, DELAY + DUR + 30);
+  });
+}
 function moveHTML(m){
   if (!m || m.f === m.t) return `<span class="mv">–</span>`;
   return m.t < m.f ? `<span class="mv up">▲${m.f - m.t}</span>` : `<span class="mv dn">▼${m.t - m.f}</span>`;
 }
-function boardRow(p, r, m, res){
-  return `<div class="rrow ${p.host ? "me" : ""}" style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${res && res.ok ? `<span class="st ok">+${res.gain}</span>` : ""}${moveHTML(m)}<span class="sc" style="color:${p.color}">${fmt(p.score)}</span></div>`;
+function boardRow(p, r, m, res, i, fl){
+  const crown = fl.first && !fl.nf ? crownHTML(false) : "";
+  return `<div class="rrow ${p.host ? "me" : ""} ${fl.first && !fl.nf ? "first" : ""}" data-pi="${i}" ${fl.nf ? "data-nf" : ""} style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}${crown}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${res && res.ok ? `<span class="st ok">+${res.gain}</span>` : ""}${moveHTML(m)}<span class="sc" data-from="${fl.from}" data-to="${p.score}" style="color:${p.color}">${fmt(p.score)}</span></div>`;
 }
 function renderPop(){
   const c = G.cur, L = $("#popL");
@@ -1763,7 +1855,10 @@ function renderPop(){
   let html;
   if (G.multi && c.board) {
     const top = G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).slice(0, 5);
-    html = `<div class="pop board"><h4>${icon("check")}第 ${G.n} 題結算</h4>${top.map(({ p, i }, r) => boardRow(p, r, c.moves && c.moves[i], (c.results || []).find(x => x.pi === i))).join("")}</div>`;
+    const gains = G.players.map((p, i) => { const r = (c.results || []).find(x => x.pi === i); return r && r.ok ? r.gain : 0; });
+    const before = G.players.map((p, i) => p.score - gains[i]), maxB = Math.max(0, ...before), maxA = Math.max(0, ...G.players.map(p => p.score));
+    const flags = i => { const first = maxA > 0 && G.players[i].score === maxA, was = maxB > 0 && before[i] === maxB; return { first, nf: first && !was, from: before[i] }; };
+    html = `<div class="pop board"><h4>${icon("check")}第 ${G.n} 題結算</h4>${top.map(({ p, i }, r) => boardRow(p, r, c.moves && c.moves[i], (c.results || []).find(x => x.pi === i), i, flags(i))).join("")}</div>`;
   } else if (G.multi) {
     const rs = (c.results || []).filter(r => r.ok).sort((a, b) => b.gain - a.gain);
     if (rs.length) { const w = G.players[rs[0].pi]; html = `<div class="pop" style="border-color:${w.color}"><div class="big">+${rs[0].gain}<i>x${w.combo}</i></div><div class="sub">${esc(w.name)} 最快${rs.length > 1 ? `，共 ${rs.length} 人答對` : ""}</div><div class="ans">答案是 <b>${esc(label(c.song))}</b></div></div>`; }
@@ -1781,6 +1876,7 @@ function renderPop(){
     later(leavePop, 3500);
   }
   L.insertAdjacentHTML("beforeend", html);
+  if (G.multi && c.board) boardPlay(L.querySelector(".pop.board"), c.moves);
 }
 
 /* ---- sing ---- */
@@ -1956,12 +2052,14 @@ $("#opts").addEventListener("click", e => {
 function renderRank(){
   const el = $("#rank");
   if (G.multi) {
-    const c = G.cur, max = Math.max(0, ...G.players.map(p => p.score));
+    const c = G.cur, snap = rankSnap(el), fl = rankFlags(G.players, el._first);
     el.innerHTML = `<h4>玩家</h4>` + G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
       const a = c && c.picks && c.picks.get(i), res = c && c.results && c.results.find(x => x.pi === i);
       const st = p.off ? `<span class="st no">離線</span>` : !c ? "" : c.phase === "reveal" ? (res && res.ok ? `<span class="st ok">+${res.gain}</span>` : `<span class="st no">${a ? "答錯" : "超時"}</span>`) : c.phase === "answer" ? (a ? `<span class="st ok">已答</span>` : `<span class="st">待答</span>`) : "";
-      return `<div class="rrow ${p.host ? "me" : ""} ${p.score === max && max > 0 ? "lead" : ""}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${st}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
+      const first = fl.first(i), nf = fl.fresh(i);
+      return `<div class="rrow ${p.host ? "me" : ""} ${first && !nf ? "first" : ""}" data-pi="${i}" ${nf ? "data-nf" : ""}><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}${first && !nf ? crownHTML(false) : ""}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${st}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
     }).join("");
+    el._first = fl.now; rankPlay(el, snap);
   } else if (G.mode === "quiz") {
     const c = G.cur, st = !c ? "" : c.phase === "reveal" ? (c.gain ? `<span class="st ok">答對</span>` : `<span class="st no">${c.pick < 0 ? "超時" : "答錯"}</span>`) : `<span class="st">待答</span>`;
     const place = 1 + G.recs.filter(r => r.score > G.score).length;
@@ -2496,9 +2594,13 @@ const CTL = {
     if (rw) rw.classList.toggle("hot", sec <= 5);
   },
   rankHTML(s){
-    const bd = s.board && s.mv;
-    return s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) =>
-      `<div class="rrow${i === s.me ? " me" : ""}" style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}${i === s.me ? `<span class="you">YOU</span>` : ""}${p.off ? "（離線）" : ""}</span>${bd && s.gains && s.gains[i] ? `<span class="st ok">+${s.gains[i]}</span>` : ""}${bd ? moveHTML(s.mv[i]) : ""}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`).join("");
+    const bd = s.board && s.mv, fl = rankFlags(s.players, this._first);
+    const html = s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
+      const first = fl.first(i), nf = fl.fresh(i);
+      return `<div class="rrow${i === s.me ? " me" : ""}${first && !nf ? " first" : ""}" data-pi="${i}" ${nf ? "data-nf" : ""} style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}${first && !nf ? crownHTML(false) : ""}</span><span class="nm">${esc(p.name)}${i === s.me ? `<span class="you">YOU</span>` : ""}${p.off ? "（離線）" : ""}</span>${bd && s.gains && s.gains[i] ? `<span class="st ok">+${s.gains[i]}</span>` : ""}${bd ? moveHTML(s.mv[i]) : ""}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
+    }).join("");
+    this._first = fl.now;
+    return html;
   },
   render(){
     const s = this.st, body = $("#cBody"); if (!s || !body) return;
@@ -2549,8 +2651,9 @@ const CTL = {
       }).join("")}</div>${s.phase === "answer" && mine >= 0 ? `<p class="cnote">已作答，等其他人…</p>` : ""}`;
     }
     body.className = ""; body.style.display = "contents";
-    const rank = this.rankHTML(s);
+    const snap = rankSnap(body.querySelector(".crank")), rank = this.rankHTML(s);
     body.innerHTML = `<div class="cblk" style="${st}">${blk}</div>${main}${rank ? `<div class="crank">${rank}</div>` : ""}`;
+    rankPlay(body.querySelector(".crank"), snap);
     const btn = $("#cBtn"); if (btn) btn.onpointerdown = e => { e.preventDefault(); this.buzz(); };
   }
 };
