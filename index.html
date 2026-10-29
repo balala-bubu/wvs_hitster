@@ -4,7 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070b14">
-<title>朋友版猜歌</title>
+<title>世志猜歌王</title>
+<meta name="description" content="世志猜歌王：和朋友一起聽前奏、搶唱的猜歌派對遊戲。">
+<link rel="icon" type="image/png" sizes="48x48" href="assets/favicon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="世志猜歌王">
+<meta property="og:description" content="和朋友一起聽前奏、搶唱的猜歌派對遊戲。">
+<meta property="og:image" content="https://balala-bubu.github.io/wvs_hitster/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
@@ -535,6 +544,9 @@ body{overflow-x:hidden;overflow-x:clip}
 .logo{font-size:32px;font-weight:900;letter-spacing:.04em}
 .logo b{background:var(--grad) 0 0/220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 8s ease-in-out infinite alternate}
 .logo small{font-weight:700}
+.logo{line-height:0}
+.logo img{display:block;height:54px;width:auto;filter:drop-shadow(0 2px 10px rgba(0,0,0,.35))}
+.herologo{display:block;height:clamp(110px,22vw,170px);width:auto;margin:0 0 10px -6px;filter:drop-shadow(0 6px 22px rgba(0,0,0,.4))}
 .me{border-radius:999px;font-weight:700}
 @keyframes flow{to{background-position:100% 0}}
 
@@ -760,6 +772,7 @@ input[type=range]{accent-color:var(--lime)}
 @media (max-width:860px){
   .top{padding:14px 16px}
   .logo{font-size:26px}
+  .logo img{height:44px}
   .wrapped{padding:2px 0 22px}
   .mega{font-size:clamp(46px,15vw,84px)}
   .ticker{margin:18px -40px 0}
@@ -855,6 +868,7 @@ input[type=range]{accent-color:var(--lime)}
 .ctl[hidden]{display:none}
 .ctl .ctop{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .ctl .logo{font-size:26px}
+.ctl .logo img{height:40px}
 .ctl .st{font-size:12.5px;font-weight:800;color:var(--mute);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:5px 12px;background:rgba(255,255,255,.06);white-space:nowrap}
 .ctl .st.ok{color:#d9f3a8;border-color:rgba(140,198,63,.6)}
 .ctl .st.bad{color:#ffb3bd;border-color:rgba(255,107,125,.55)}
@@ -900,7 +914,7 @@ input[type=range]{accent-color:var(--lime)}
 <div class="aura" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
 
 <header class="top" id="topbar">
-  <div class="logo"><b>猜歌</b><small>朋友版</small></div>
+  <div class="logo"><img src="assets/logo.png" alt="世志猜歌王" width="520" height="355"></div>
   <div class="topr"><button class="chip roomtop" id="roomTop" hidden><span data-i="users"></span><span id="roomTopT">房間</span></button><button class="chip" id="joinTop"><span data-i="globe"></span><span>加入房間</span></button>
   <button class="me" id="meBtn" aria-label="改暱稱"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
 </header>
@@ -908,9 +922,10 @@ input[type=range]{accent-color:var(--lime)}
 <!-- ================= LOBBY ================= -->
 <main class="lobby" id="lobby">
   <section class="wrapped" aria-label="歡迎">
-    <p class="kicker">朋友版猜歌 · 今晚開局</p>
+    <img class="herologo" src="assets/logo.png" alt="" aria-hidden="true" width="520" height="355">
+    <p class="kicker">世志猜歌王 · 今晚開局</p>
     <h2 class="mega">誰最會<em>猜歌？</em></h2>
-    <div class="ticker" aria-hidden="true"><div class="tk"><span>四選一挑戰</span><span>搶唱派對</span><span>聽前奏</span><span>比手速</span><span>全員開唱</span><span>朋友版猜歌</span><span>四選一挑戰</span><span>搶唱派對</span><span>聽前奏</span><span>比手速</span><span>全員開唱</span><span>朋友版猜歌</span></div></div>
+    <div class="ticker" aria-hidden="true"><div class="tk"><span>四選一挑戰</span><span>搶唱派對</span><span>聽前奏</span><span>比手速</span><span>全員開唱</span><span>世志猜歌王</span><span>四選一挑戰</span><span>搶唱派對</span><span>聽前奏</span><span>比手速</span><span>全員開唱</span><span>世志猜歌王</span></div></div>
   </section>
   <div class="hero">
     <button class="hcard on" id="heroCreate"><span class="ic" data-i="plus"></span><div><b>選題庫開始</b><span>點下方任一題庫，選「四選一」或「搶唱派對」</span></div></button>
@@ -1579,7 +1594,7 @@ function startGame(lib){
   $("#lobby").hidden = true; $("#game").hidden = false; $("#result").hidden = true;
   $("#game").classList.toggle("sing", G.mode === "sing");
   $("#gTitle").innerHTML = `${esc(lib.name)}<small>${G.mode === "quiz" ? (G.multi ? "四選一多人" : "四選一挑戰") : "搶唱派對"} · ${total} 題</small>`;
-  document.title = `${lib.name} · 猜歌`;
+  document.title = `${lib.name} · 世志猜歌王`;
   $("#vol").value = cfg.vol; $("#volN").textContent = cfg.vol + "%";
   renderShow(); renderPads();
   window.scrollTo(0, 0);
@@ -2005,7 +2020,7 @@ function leave(){
   cancelAnimationFrame(raf); clearInterval(tickT); YTP.stopAll(); releaseWake(); stopBar();
   G = null; scrub.hidden = true; NET.push(); NET.renderChip();
   $("#game").hidden = true; $("#result").hidden = true; $("#lobby").hidden = false; $("#popL").innerHTML = "";
-  document.title = "朋友版猜歌"; renderGrid();
+  document.title = "世志猜歌王"; renderGrid();
 }
 
 /* keyboard */
@@ -2379,9 +2394,9 @@ const CTL = {
   start(){
     this.active = true;
     $("#topbar").hidden = true; $("#lobby").hidden = true; $("#game").hidden = true;
-    document.title = "加入房間 · 猜歌";
+    document.title = "加入房間 · 世志猜歌王";
     const el = $("#ctl"); el.hidden = false;
-    el.innerHTML = `<div class="ctop"><div class="logo"><b>猜歌</b><small>朋友版</small></div><span class="st" id="cSt"></span></div>
+    el.innerHTML = `<div class="ctop"><div class="logo"><img src="assets/logo.png" alt="世志猜歌王" width="520" height="355"></div><span class="st" id="cSt"></span></div>
       <div class="cjoin" id="cBody"><p class="kicker">跟朋友玩</p><h2 class="mega">加入<em>房間</em></h2>
         <input class="field" id="cCode" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 位數字房號" aria-label="房號" value="${esc(ROOM_Q)}">
         <input class="field" id="cName" maxlength="8" autocomplete="off" placeholder="你的暱稱（最多 8 字）" aria-label="暱稱" value="${esc(store.get("yt.gname", ""))}">

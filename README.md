@@ -1,4 +1,6 @@
-# 朋友猜歌（YouTube 版）
+# 世志猜歌王（YouTube 版）
+
+![世志猜歌王](assets/logo.png)
 
 一個放在 GitHub Pages 上的猜歌網頁，音源是 YouTube，流程參考 Muizo。不需要後端，朋友開網址就能玩。
 
