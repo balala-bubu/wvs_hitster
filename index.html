@@ -565,13 +565,14 @@ body{overflow-x:hidden;overflow-x:clip}
 .hero{background:none;border:0;padding:0;gap:18px}
 .hcard{--hc:var(--sky);min-height:120px;border-radius:30px;gap:20px;padding:22px 28px;overflow:hidden;transition:transform .3s var(--ease-pop),box-shadow .3s,border-color .3s}
 #heroQuick{--hc:var(--amber)}
-#heroCreate,#heroQuick{
+#heroSing{--hc:#ff7eb6}
+#heroQuiz,#heroSing,#heroQuick{
   background:linear-gradient(135deg,color-mix(in srgb,var(--hc) 40%,transparent),color-mix(in srgb,var(--hc) 9%,transparent) 62%),var(--g-bg);
   border-color:color-mix(in srgb,var(--hc) 55%,rgba(255,255,255,.3));
   box-shadow:var(--g-edge),0 22px 50px -18px color-mix(in srgb,var(--hc) 60%,transparent);
 }
-#heroCreate:hover,#heroQuick:hover{transform:translateY(-4px) scale(1.01);background:linear-gradient(135deg,color-mix(in srgb,var(--hc) 52%,transparent),color-mix(in srgb,var(--hc) 14%,transparent) 62%),var(--g-bg)}
-#heroCreate:active,#heroQuick:active{transform:scale(.975,.96)}
+#heroQuiz:hover,#heroSing:hover,#heroQuick:hover{transform:translateY(-4px) scale(1.01);background:linear-gradient(135deg,color-mix(in srgb,var(--hc) 52%,transparent),color-mix(in srgb,var(--hc) 14%,transparent) 62%),var(--g-bg)}
+#heroQuiz:active,#heroSing:active,#heroQuick:active{transform:scale(.975,.96)}
 .hcard .ic{width:68px;height:68px;font-size:28px;border:0;color:var(--ink);background:var(--hc);box-shadow:inset 0 2px 0 rgba(255,255,255,.6),0 12px 26px -8px var(--hc)}
 .hcard.on .ic{color:var(--ink);border:0}
 .hcard b{font-size:clamp(20px,2.2vw,28px);font-weight:900;letter-spacing:.01em}
@@ -931,6 +932,40 @@ input[type=range]{accent-color:var(--lime)}
 @keyframes crownDrop{0%{transform:translateY(-26px) rotate(-75deg) scale(.2);opacity:0}60%{transform:translateY(2px) rotate(-22deg) scale(1.2);opacity:1}100%{transform:rotate(-28deg) scale(1);opacity:1}}
 @media (max-width:860px){.rank{padding:14px 6px 12px;margin-top:-6px}}   /* the row list scrolls sideways, so leave room for the crown and glow */
 @media (prefers-reduced-motion:reduce){.rrow.first,.rrow.first::after,.crown.drop{animation:none}}
+
+/* ---- home: "跟朋友玩" title + animated game switch ---- */
+.pick{margin:6px 0 26px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.modesw{--i:0;position:relative;display:grid;grid-template-columns:1fr 1fr;width:min(660px,100%);padding:8px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2)}
+.modesw[data-mode="sing"]{--i:1}
+.modesw .thumb{position:absolute;top:8px;bottom:8px;left:8px;width:calc((100% - 16px) / 2);border-radius:999px;background:linear-gradient(135deg,var(--sky),var(--lime));box-shadow:0 12px 30px -8px var(--sky);transform:translateX(calc(var(--i) * 100%));transition:transform .5s cubic-bezier(.34,1.45,.5,1),background .4s,box-shadow .4s}
+.modesw[data-mode="sing"] .thumb{background:linear-gradient(135deg,#ff7eb6,var(--amber));box-shadow:0 12px 30px -8px #ff7eb6}
+.modesw button{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:64px;padding:0 12px;border:0;background:none;border-radius:999px;font:900 clamp(17px,2.2vw,24px) "Noto Sans TC",sans-serif;color:rgba(255,255,255,.78);cursor:pointer;transition:color .3s}
+.modesw button:hover{color:#fff}
+.modesw button[aria-checked="true"]{color:var(--ink)}
+.modesw button .i{width:26px;height:26px;flex:none}
+.modesw button[aria-checked="true"] .i{animation:swpop .55s cubic-bezier(.34,1.56,.64,1)}
+.modesw[data-mode="sing"] button[aria-checked="true"] .i{animation:swwig .7s ease}
+@keyframes swpop{0%{transform:scale(.3) rotate(-25deg)}100%{transform:none}}
+@keyframes swwig{0%,100%{transform:none}25%{transform:rotate(-20deg) scale(1.15)}75%{transform:rotate(20deg) scale(1.15)}}
+.modedesc{margin:0;min-height:1.6em;text-align:center;color:rgba(255,255,255,.82);font-size:clamp(14px,1.6vw,17px);animation:descin .4s ease}
+@keyframes descin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pickhint{margin:0 0 12px;color:var(--mute);font-size:14px}
+.pickhint b{color:#fff}
+.roomrow{display:none}
+@media (max-width:860px){
+  .roomrow{display:flex;gap:10px;margin:0 0 18px}
+  .roomrow .btn{flex:1;justify-content:center}
+  .topr [data-roomact]{display:none}
+  .modesw button{min-height:56px}
+}
+/* ---- favourites ---- */
+.favbtn{position:absolute;right:10px;top:10px;z-index:3;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(5,8,11,.62);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.7);cursor:pointer;backdrop-filter:blur(6px)}
+.favbtn .i{width:18px;height:18px}
+.favbtn:hover{color:#fff;border-color:rgba(255,255,255,.5)}
+.favbtn.on{color:var(--sun);border-color:var(--sun)}
+.btn.fav.on{color:var(--sun);border-color:var(--sun)}
+.cta details{margin-top:8px}
+.cta summary{cursor:pointer;color:var(--teal)}
 </style>
 <link rel="stylesheet" href="decor.css?v=6">
 </head>
@@ -941,31 +976,37 @@ input[type=range]{accent-color:var(--lime)}
 
 <header class="top" id="topbar">
   <div class="logo"><img src="assets/logo.png" alt="世志猜歌王" width="520" height="355"></div>
-  <div class="topr"><button class="chip roomtop" id="roomTop" hidden><span data-i="users"></span><span id="roomTopT">房間</span></button><button class="chip" id="joinTop"><span data-i="globe"></span><span>加入房間</span></button>
-  <button class="me" id="meBtn" aria-label="改暱稱"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  <div class="topr"><button class="chip roomtop" id="roomTop" hidden><span data-i="users"></span><span id="roomTopT">房間</span></button><button class="chip" id="openTop" data-roomact="open"><span data-i="users"></span><span>開啟房間</span></button><button class="chip" id="joinTop" data-roomact="join"><span data-i="globe"></span><span>加入房間</span></button>
+  <button class="me" id="meBtn" aria-label="改暱稱" title="點一下改暱稱"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
 </header>
 
 <!-- ================= LOBBY ================= -->
 <main class="lobby" id="lobby">
   <section class="wrapped" aria-label="歡迎">
-    <h2 class="mega">誰最會<em>猜歌？</em></h2>
+    <h2 class="mega">跟朋友<em>玩</em></h2>
     <div class="ticker" aria-hidden="true"><div class="tk"><span>四選一挑戰</span><span>搶唱派對</span><span>聽前奏</span><span>比手速</span><span>全員開唱</span><span>世志猜歌王</span><span>四選一挑戰</span><span>搶唱派對</span><span>聽前奏</span><span>比手速</span><span>全員開唱</span><span>世志猜歌王</span></div></div>
   </section>
-  <div class="hero">
-    <button class="hcard on" id="heroCreate"><span class="ic" data-i="plus"></span><div><b>選題庫開始</b><span>點下方任一題庫，選「四選一」或「搶唱派對」</span></div></button>
-    <button class="hcard" id="heroParty"><span class="ic" data-i="users"></span><div><b>跟朋友玩</b><span>開房間，朋友用手機加入</span></div></button>
-    <button class="hcard" id="heroQuick"><span class="ic" data-i="shuffle"></span><div><b>快速開始</b><span id="quickSub">全部歌曲隨機四選一</span></div></button>
+  <div class="roomrow"><button class="btn pri" data-roomact="open"><span data-i="users"></span><span>開啟房間</span></button><button class="btn" data-roomact="join"><span data-i="globe"></span><span>加入房間</span></button></div>
+  <div class="pick">
+    <div class="modesw" id="modeSw" role="radiogroup" aria-label="選玩法" data-mode="quiz">
+      <span class="thumb" aria-hidden="true"></span>
+      <button type="button" role="radio" aria-checked="true" data-pickmode="quiz"><span data-i="play"></span>四選一挑戰</button>
+      <button type="button" role="radio" aria-checked="false" data-pickmode="sing"><span data-i="mic"></span>搶唱派對</button>
+    </div>
+    <p class="modedesc" id="modeDesc" aria-live="polite"></p>
   </div>
   <div class="lib">
     <aside class="side">
       <button class="nav on" data-tab="builtin"><span data-i="globe"></span>公開題庫</button>
+      <button class="nav" data-tab="fav"><span data-i="star"></span>常用</button>
       <button class="nav" data-tab="mine"><span data-i="bookmark"></span>我的題庫</button>
       <button class="nav" id="navImport"><span data-i="video"></span>貼上 YouTube 連結</button>
       <div class="grow"></div>
-      <div class="cta"><b>想加歌？</b>點左邊「貼上 YouTube 連結」，貼影片或播放清單網址就能建立自己的題庫（只存在這台裝置）。想讓大家都玩得到，就寫進 GitHub 的 <code>songs.txt</code>。</div>
+      <div class="cta"><b>想加歌？</b>點上面的「貼上 YouTube 連結」，貼影片或播放清單網址就能建立自己的題庫（只存在這台裝置）。<details><summary>想讓所有朋友都玩得到？</summary>請管理員把歌加進 GitHub 的 <code>songs.txt</code>。</details></div>
       <a href="classic.html">舊版（Apple Music 試聽、同機搶答）→</a>
     </aside>
     <section>
+      <p class="pickhint" id="pickHint"></p>
       <div class="bar">
         <label class="search"><span data-i="search" style="color:var(--dim)"></span><input id="q" placeholder="搜尋題庫名稱、歌名或歌手" autocomplete="off"></label>
         <span class="chip" id="count">共 0 份</span>
@@ -1118,9 +1159,12 @@ const optLabel = s => {
   return label(s);
 };
 const label = s => s.title ? (s.artist ? `${s.title} — ${s.artist}` : s.title) : cleanVT(s.vt) || s.v;
-let hidden = new Set(store.get("yt.hidden", []));          // public lists this device chose to hide
+// public lists can no longer be hidden; clear any hide list an older version saved so they come back
+try { localStorage.removeItem("yt.hidden"); } catch {}
+let favs = new Set(store.get("yt.fav", []));              // starred libraries (this device only)
+function toggleFav(id){ if (favs.has(id)) favs.delete(id); else favs.add(id); store.set("yt.fav", [...favs]); return favs.has(id); }
 const BUILTIN_ALL = (DATA.lists || []).map(l => ({ id: l.id, name: l.name, tags: l.tags || [], songs: (l.songs || []).filter(s => s.v), builtin: true }));
-let BUILTIN = BUILTIN_ALL.filter(l => !hidden.has(l.id));
+let BUILTIN = BUILTIN_ALL.slice();
 let MINE = store.get("yt.lists", []);
 const rawCount = (DATA.lists || []).reduce((n, l) => n + (l.songs || []).length, 0);
 function allSongs(){
@@ -1231,13 +1275,9 @@ function coverHTML(l){
 }
 function libsNow(){
   if (tab === "mine") return MINE.filter(l => l.songs.length);
+  if (tab === "fav") return [ALL(), ...BUILTIN, ...MINE].filter(l => favs.has(l.id) && l.songs.filter(usable).length);
   const all = ALL();
   return [all, ...BUILTIN].filter(l => l.songs.filter(usable).length);
-}
-function setHidden(set){ hidden = set; store.set("yt.hidden", [...hidden]); BUILTIN = BUILTIN_ALL.filter(l => !hidden.has(l.id)); }
-function restoreNote(){
-  const n = BUILTIN_ALL.filter(l => hidden.has(l.id)).length;
-  return tab === "mine" || !n ? "" : `<div class="hnote"><span>這台裝置隱藏了 ${n} 份公開歌單。</span><button class="btn sm" id="restoreBtn">全部復原</button></div>`;
 }
 function renderGrid(){
   const q = query.trim().toLowerCase();
@@ -1246,31 +1286,47 @@ function renderGrid(){
   const g = $("#grid"); g.className = "grid" + (view === "rows" ? " rows" : "");
   $$(".seg button").forEach(b => b.classList.toggle("on", b.dataset.view === view));
   if (!ls.length) {
-    g.innerHTML = tab === "mine"
+    g.innerHTML = tab === "mine" && !q
       ? `<div class="empty"><b>還沒有自己的題庫</b>貼上 YouTube 播放清單或影片連結就能建立，只存在這台裝置上。<br><br><button class="btn pri sm" id="emptyImport">${icon("plus")}貼上 YouTube 連結</button></div>`
+      : tab === "fav" && !q
+      ? `<div class="empty"><b>還沒有常用歌單</b>在題庫卡片右上角按星星，常玩的歌單就會放在這裡。</div>`
       : q ? `<div class="empty"><b>找不到「${esc(query)}」</b>換個關鍵字試試看。</div>`
           : `<div class="empty"><b>${rawCount ? "歌單還在準備 YouTube 影片" : "還沒有歌單"}</b>${rawCount ? "GitHub 正在幫 songs.txt 裡的每首歌找 YouTube 影片，大約幾分鐘後重新整理就好。" : "到 GitHub 編輯 songs.txt 加歌。"}<br>也可以先到「我的題庫」貼 YouTube 連結來玩。</div>`;
     const e = $("#emptyImport"); if (e) e.onclick = () => openImport();
-    if (tab !== "mine") g.insertAdjacentHTML("beforeend", restoreNote());
     return;
   }
   const pl = plays();
   g.innerHTML = ls.map(l => {
     const n = l.songs.filter(usable).length, best = bestOf(l.id);
-    return `<button class="card" data-id="${esc(l.id)}">${coverHTML(l)}<div class="cb"><h3>${esc(l.name)}</h3>
+    const fv = favs.has(l.id);
+    return `<button class="card" data-id="${esc(l.id)}"><span class="favbtn${fv ? " on" : ""}" role="button" data-fav="${esc(l.id)}" aria-label="${fv ? "從常用移除" : "加入常用"}" aria-pressed="${fv}" title="${fv ? "從常用移除" : "加入常用"}">${icon("star")}</span>${coverHTML(l)}<div class="cb"><h3>${esc(l.name)}</h3>
       <div class="meta">${best ? `<span class="star">${icon("star")}</span>最佳 ${fmt(best)} 分` : `<span style="color:var(--dim)">還沒有紀錄</span>`}</div>
       <div class="stats"><span>${icon("music")}${n}題</span><span>${icon("play")}${pl[l.id] || 0}</span>${l.builtin ? "" : `<span style="color:var(--mute);font:500 12px 'Noto Sans TC'">我的</span>`}</div></div></button>`;
-  }).join("") + restoreNote();
+  }).join("");
 }
 $("#grid").addEventListener("click", e => {
-  if (e.target.closest("#restoreBtn")) { setHidden(new Set()); renderGrid(); toast("已復原隱藏的公開歌單"); return; }
+  const fb = e.target.closest("[data-fav]");
+  if (fb) { e.stopPropagation(); const on = toggleFav(fb.dataset.fav); renderGrid(); toast(on ? "已加入常用" : "已從常用移除", 1600); return; }
   const c = e.target.closest(".card"); if (c) openDetail(c.dataset.id); });
 $$(".nav[data-tab]").forEach(b => b.onclick = () => { tab = b.dataset.tab; $$(".nav[data-tab]").forEach(x => x.classList.toggle("on", x === b)); renderGrid(); });
 $$(".seg button").forEach(b => b.onclick = () => { view = b.dataset.view; store.set("yt.view", view); renderGrid(); });
 $("#q").oninput = e => { query = e.target.value; renderGrid(); };
 $("#navImport").onclick = () => openImport();
-$("#heroQuick").onclick = () => { const a = ALL(); if (a.songs.filter(usable).length < 4) return toast("歌曲還不夠，至少要 4 首。"); openSetup("all", "quiz"); };
-$("#heroCreate").onclick = () => $("#grid").scrollIntoView({ behavior: "smooth", block: "start" });
+/* pick the game on the lobby first; every later step reuses it instead of asking again */
+let pickMode = cfg.mode === "sing" ? "sing" : "quiz";
+const MODE_NAME = { quiz: "四選一挑戰", sing: "搶唱派對" };
+const modeNeeds = m => m === "quiz" ? 4 : 1;
+const MODE_DESC = {
+  quiz: "只聽音樂，四個選項選出歌名，答得越快分數越高。一個人、跟朋友都能玩。",
+  sing: "畫面秀出歌名，搶先按鈕唱出來，大家判定唱對就得分。朋友一起玩最有趣。"
+};
+function renderPick(){
+  $("#modeSw").dataset.mode = pickMode;
+  $$("[data-pickmode]").forEach(b => b.setAttribute("aria-checked", String(b.dataset.pickmode === pickMode)));
+  const d = $("#modeDesc"); d.textContent = MODE_DESC[pickMode]; d.style.animation = "none"; void d.offsetWidth; d.style.animation = "";
+  $("#pickHint").innerHTML = `點一個題庫，用「<b>${MODE_NAME[pickMode]}</b>」開始`;
+}
+$$("[data-pickmode]").forEach(b => b.onclick = () => { pickMode = b.dataset.pickmode; cfg.mode = pickMode; saveCfg(); renderPick(); });
 $("#meBtn").onclick = openName;
 
 /* ================= modals ================= */
@@ -1323,7 +1379,8 @@ function openDetail(id){
     <div class="mb"><div>
       <div class="dcover"><img alt="" onerror="this.style.visibility='hidden'" src="${songs[0] ? thumb(songs[0].v, "hqdefault") : ""}"><div class="tags">${tags}</div></div>
       <div class="dstats"><span>${icon("music")}${n} 題</span><span>${icon("play")}玩過 ${pl} 次</span>${best ? `<span style="color:var(--sun)">${icon("trophy")}${fmt(best)}</span>` : ""}<span class="sp"></span>
-        ${l.builtin ? "" : `<button class="btn sm" id="dEdit">${icon("edit")}編輯</button>`}${l.id === "all" ? "" : `<button class="btn sm danger" id="dDel">${icon("trash")}${l.builtin ? "從這台裝置移除" : "刪除"}</button>`}</div>
+        <button class="btn sm fav${favs.has(l.id) ? " on" : ""}" id="dFav" aria-pressed="${favs.has(l.id)}">${icon("star")}<span>常用</span></button>
+        ${l.builtin ? "" : `<button class="btn sm" id="dEdit">${icon("edit")}編輯</button><button class="btn sm danger" id="dDel">${icon("trash")}刪除</button>`}</div>
       <div class="tabs"><button data-dt="list">播放清單</button><button data-dt="how">怎麼玩</button></div>
       <div id="dBody"></div>
     </div><div>
@@ -1332,9 +1389,10 @@ function openDetail(id){
         <select class="sel" id="dCount">${counts.map(c => `<option value="${c}" ${c === dCount ? "selected" : ""}>${c} 題</option>`).join("")}</select></div>
       <div id="dLb"></div>
     </div></div>
-    <div class="mf"><div class="lbl"><small>挑戰模式</small><b id="dMode">四選一 · ${dCount} 題</b></div>
-      <button class="btn" id="dSing" ${n < 1 ? "disabled" : ""}>${icon("mic")}搶唱派對</button>
-      <button class="btn pri" id="dQuiz" ${n < 4 ? "disabled" : ""}>${icon("play")}四選一挑戰</button></div>`);
+    <div class="mf"><div class="lbl"><small>玩法</small><b id="dMode"></b></div>
+      <button class="btn" data-close>取消</button>
+      <button class="btn pri" id="dGo" ${n < modeNeeds(pickMode) ? "disabled" : ""}>${icon("play")}${n < modeNeeds(pickMode) ? `歌曲不足 ${modeNeeds(pickMode)} 首` : "下一步：設定"}</button></div>`);
+  const modeText = () => pickMode === "quiz" ? `四選一 · ${dCount} 題` : "搶唱派對";
   const body = () => {
     $$("[data-dt]").forEach(b => b.classList.toggle("on", b.dataset.dt === dTab));
     $("#dBody").innerHTML = dTab === "list"
@@ -1347,12 +1405,12 @@ function openDetail(id){
     $("#dLb").innerHTML = r.length ? r.slice(0, 10).map((x, i) => `<div class="lrow ${i < 3 ? "g" + (i + 1) : ""}"><span class="rk">#${i + 1}</span><span class="av">${esc([...x.name][0] || "?")}</span>
       <div class="who"><b>${esc(x.name)}</b><small>${x.correct}/${x.total} · 正確率 ${Math.round(x.correct / x.total * 100)}% · Combo x${x.maxCombo} / 耗時 ${mmss(x.time)}</small></div><span class="sc">${fmt(x.score)}</span></div>`).join("")
       : `<div class="note">還沒有 ${dCount} 題的紀錄。完成一次挑戰後，這裡會顯示你的最佳紀錄。</div>`;
-    $("#dMode").textContent = `四選一 · ${dCount} 題`;
+    $("#dMode").textContent = modeText();
   };
   $$("[data-dt]").forEach(b => b.onclick = () => { dTab = b.dataset.dt; body(); });
   $("#dCount").onchange = e => { dCount = +e.target.value; lb(); };
-  $("#dQuiz").onclick = () => { cfg.count = dCount; openSetup(l.id, "quiz"); };
-  $("#dSing").onclick = () => openSetup(l.id, "sing");
+  $("#dGo").onclick = () => { if (pickMode === "quiz") cfg.count = dCount; openSetup(l.id, pickMode); };
+  $("#dFav").onclick = () => { const on = toggleFav(l.id); $("#dFav").classList.toggle("on", on); $("#dFav").setAttribute("aria-pressed", String(on)); renderGrid(); toast(on ? "已加入常用" : "已從常用移除", 1600); };
   const ed = $("#dEdit"); if (ed) ed.onclick = () => openImport(l.id);
   const dd = $("#dDel"); if (dd) {
     let armed = 0, label0 = dd.lastChild.textContent;
@@ -1362,9 +1420,9 @@ function openDetail(id){
         dd.classList.add("armed"); dd.lastChild.textContent = "再按一次確定"; return;
       }
       clearTimeout(armed);
-      if (l.builtin) { const h = new Set(hidden); h.add(l.id); setHidden(h); }
-      else { MINE = MINE.filter(x => x.id !== l.id); store.set("yt.lists", MINE); }
-      closeModal(); renderGrid(); toast(l.builtin ? `已從這台裝置移除「${l.name}」，可在公開歌單頁底部復原` : `已刪除「${l.name}」`, 4500);
+      MINE = MINE.filter(x => x.id !== l.id); store.set("yt.lists", MINE);
+      if (favs.delete(l.id)) store.set("yt.fav", [...favs]);
+      closeModal(); renderGrid(); toast(`已刪除「${l.name}」`, 4500);
     };
   }
   body(); lb();
@@ -1390,9 +1448,6 @@ function renderSetup(){
   openModal(`${mhead(quiz ? "四選一設定" : "搶唱派對設定", "", true)}
     <div class="setup"><aside><img alt="" onerror="this.style.visibility='hidden'" src="${songs[0] ? thumb(songs[0].v, "hqdefault") : ""}"><div style="margin-top:12px"><span class="badge">${icon(l.builtin ? "globe" : "bookmark")}${l.builtin ? "公開題庫" : "我的題庫"}</span></div><b>${esc(l.name)}</b><small>${n} 題</small></aside>
     <div class="form">
-      <div class="sec"><div class="sh">${icon("sofa")}遊戲模式</div><div class="modes">
-        <button class="mode ${quiz ? "on" : ""}" data-mode="quiz"><span class="ic">${icon("play")}</span><div><b>四選一挑戰</b><span>只聽音樂，四個選項選出歌名。倒數計時、越快越高分、連擊加成。</span></div></button>
-        <button class="mode ${quiz ? "" : "on"}" data-mode="sing"><span class="ic">${icon("mic")}</span><div><b>搶唱派對</b><span>秀出歌名，搶先按鈕唱出來，大家判定唱對就得分。</span></div></button></div></div>
       <div class="sec"><div class="sh">${icon("globe")}手機連線<small>朋友用自己的手機加入</small></div><div id="roomSlot">${NET.boxHTML()}</div></div>
       ${quiz && NET.on ? `<div class="sec"><div class="sh">${icon("users")}房主<small>手機玩家一起作答</small></div><div class="opts3">
         <button class="opt3 ${cfg.hostPlays ? "on" : ""}" data-hp="1"><b>房主也一起玩</b><span>用這個畫面的鍵盤或滑鼠作答</span></button>
@@ -1435,7 +1490,6 @@ function renderSetup(){
   $(".setup .form").scrollTop = keep;
   const re = () => { saveCfg(); quietNext = true; renderSetup(); };
   $$("[data-back]", modal).forEach(b => b.onclick = () => openDetail(l.id));
-  $$("[data-mode]", modal).forEach(b => b.onclick = () => { cfg.mode = b.dataset.mode; re(); });
   $$("[data-q]", modal).forEach(b => b.onclick = () => { const v = b.dataset.q; cfg.count = clamp(/^[+-]/.test(v) ? cfg.count + +v : +v, minQ, maxQ); re(); });
   $$("[data-a]", modal).forEach(b => b.onclick = () => { const v = b.dataset.a; cfg.ansTime = clamp(/^[+-]/.test(v) ? cfg.ansTime + +v : +v, 10, 40); re(); });
   $$("[data-s]", modal).forEach(b => b.onclick = () => { const v = b.dataset.s; cfg.singTime = clamp(/^[+-]/.test(v) ? cfg.singTime + +v : +v, 10, 90); re(); });
@@ -2428,7 +2482,7 @@ const NET = {
   renderChip(){
     const txt = `房號 ${this.code} · ${this.count()} 人`;
     const b = $("#roomBtn"); if (b) { b.hidden = !(this.on && G && G.players); if (!b.hidden) $("#roomBtnT").textContent = txt; }
-    const t = $("#roomTop"); if (t) { t.hidden = !this.on; if (this.on) $("#roomTopT").textContent = txt; }
+    $$("[data-roomact=open]").forEach(b => { b.hidden = this.on; }); const t = $("#roomTop"); if (t) { t.hidden = !this.on; if (this.on) $("#roomTopT").textContent = txt; }
   },
   boxHTML(){
     if (this.status === "opening") return `<div class="roombox"><div class="hintp" style="margin:0">正在建立房間…</div></div>`;
@@ -2470,26 +2524,26 @@ function openParty(){
   const all = ALL(), n = all.songs.filter(usable).length;
   openModal(`${mhead("跟朋友玩")}<div style="padding:22px 28px 30px;flex:1;overflow:auto">
     <div class="sec"><div class="sh">${icon("globe")}手機連線<small>朋友用自己的手機加入</small></div><div id="roomSlot">${NET.boxHTML()}</div></div>
-    <div class="sec"><div class="sh">${icon("play")}開始一局<small>朋友加入後再開始也可以</small></div><div class="modes">
-      <button class="mode" data-pq="sing"><span class="ic">${icon("mic")}</span><div><b>搶唱派對</b><span>手機當搶唱鈕，唱對得分。全部 ${n} 首隨機。</span></div></button>
-      <button class="mode" data-pq="quiz"><span class="ic">${icon("play")}</span><div><b>四選一多人</b><span>每人用手機作答，越快越高分。全部 ${n} 首隨機。</span></div></button></div>
+    <div class="sec"><div class="sh">${icon("play")}開始一局<small>朋友加入後再開始也可以</small></div>
+      <button class="mode on" id="pqGo" ${n < modeNeeds(pickMode) ? "disabled" : ""}><span class="ic">${icon(pickMode === "quiz" ? "play" : "mic")}</span><div><b>${pickMode === "quiz" ? "四選一多人" : "搶唱派對"}</b><span>${pickMode === "quiz" ? "每人用手機作答，越快越高分。" : "手機當搶唱鈕，唱對得分。"}全部 ${n} 首隨機。</span></div></button>
+      <p class="hintp" style="margin:10px 0 0">想換玩法？關掉這個視窗，在首頁點另一個玩法就好。</p>
       <button class="btn" id="pqPick" style="margin-top:14px">${icon("list")}改選題庫</button></div></div>`, true);
   NET.bindBox(modal);
-  $$("[data-pq]", modal).forEach(b => b.onclick = () => {
-    const mode = b.dataset.pq;
-    if (n < (mode === "quiz" ? 4 : 1)) return toast(mode === "quiz" ? "歌曲還不夠，四選一至少要 4 首。" : "歌曲還不夠。");
-    openSetup("all", mode);
-  });
-  $("#pqPick").onclick = () => { closeModal(); $("#grid").scrollIntoView({ behavior: "smooth", block: "start" }); toast("選一個題庫，再按「四選一」或「搶唱派對」，房間會一直開著。", 4200); };
+  $("#pqGo").onclick = () => {
+    if (n < modeNeeds(pickMode)) return toast(`歌曲還不夠，${MODE_NAME[pickMode]}至少要 ${modeNeeds(pickMode)} 首。`);
+    openSetup("all", pickMode);
+  };
+  $("#pqPick").onclick = () => { closeModal(); $("#grid").scrollIntoView({ behavior: "smooth", block: "start" }); toast("選一個題庫就能開始，房間會一直開著。", 4200); };
   if (!NET.on) NET.open();
 }
 $("#roomBtn").onclick = openRoomPanel;
 $("#roomTop").onclick = openRoomPanel;
-$("#heroParty").onclick = openParty;
-$("#joinTop").onclick = () => {
+$$("[data-roomact=open]").forEach(b => b.onclick = () => (NET.on ? openRoomPanel() : openParty()));
+const joinRoom = () => {
   if ((G || NET.on) && !confirm("要離開目前的房間或遊戲，去加入別人的房間嗎？")) return;
   location.href = baseUrl() + "?room=";
 };
+$$("[data-roomact=join]").forEach(b => b.onclick = joinRoom);
 
 /* ---- phone controller: this page opened with ?room=… ---- */
 const CTL = {
@@ -2669,7 +2723,7 @@ const CTL = {
 /* ================= boot ================= */
 paintIcons(); renderMe();
 if (ROOM_ON) CTL.start();
-else { renderGrid(); $("#quickSub").textContent = `全部 ${allSongs().filter(usable).length} 首隨機四選一`; }
+else { renderGrid(); renderPick(); }
 window.__game = { get G(){ return G; }, YTP, cfg };   // for debugging in the console
 })();
 </script>
