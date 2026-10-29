@@ -1,6 +1,6 @@
 /* 這個檔案由 build-songs.js 自動產生，請改 songs.txt，不要直接改這裡。 */
 window.SONG_DATA = {
- "generated": "2026-10-29T06:12:17.413Z",
+ "generated": "2026-10-29T09:54:29.491Z",
  "lists": [
   {
    "id": "b-華語金曲90–00年代",
