@@ -973,6 +973,84 @@ input[type=range]{accent-color:var(--lime)}
 .btn.fav.on{color:var(--sun);border-color:var(--sun)}
 .cta details{margin-top:8px}
 .cta summary{cursor:pointer;color:var(--teal)}
+/* ---- photo avatars ---- */
+.av{position:relative}
+.av.ph{background:#1a2633;overflow:visible}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}
+.avedit{display:flex;align-items:center;gap:14px;width:100%;padding:10px 14px;border:1px dashed var(--line2);border-radius:16px;background:rgba(255,255,255,.04);color:var(--text);font-weight:600;text-align:left;cursor:pointer;transition:background .15s,border-color .15s}
+.avedit:hover{background:rgba(255,255,255,.08);border-color:var(--sky)}
+.avedit .avp{width:56px;height:56px;flex:none;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.25);color:var(--mute)}
+.avedit .avp img{width:100%;height:100%;object-fit:cover;display:block}
+.avedit .avp .i{width:26px;height:26px}
+.avedit small{display:block;font-weight:400;color:var(--mute);font-size:12.5px;margin-top:2px}
+.prow .pav{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;overflow:hidden;padding:0;background:rgba(255,255,255,.07);border:2px solid var(--c);color:var(--mute);cursor:pointer;box-shadow:0 0 10px color-mix(in srgb,var(--c) 55%,transparent)}
+.prow .pav img{width:100%;height:100%;object-fit:cover;display:block}
+.prow .pav .i{width:16px;height:16px}
+.pad .padav{width:46px;height:46px;margin-bottom:2px;border:2px solid rgba(255,255,255,.7);position:relative;z-index:1}
+.pads.dense .pad .padav{display:none}
+.cjoin .avedit{margin:0 0 2px;border-radius:18px}
+/* picker overlay: crop a photo into a round head shot */
+.avpick{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:16px;background:rgba(3,5,10,.78);backdrop-filter:blur(6px);animation:fade .2s}
+.avbox{width:min(360px,100%);max-height:100%;overflow:auto;padding:22px 22px 18px;border-radius:26px;background:linear-gradient(180deg,#0f1b27,#0a1118);border:1px solid var(--line2);box-shadow:0 30px 90px rgba(0,0,0,.6);text-align:center}
+.avbox h3{margin:0 0 14px;font-size:17px}
+.avstage{position:relative;width:min(260px,70vw);aspect-ratio:1;margin:0 auto 14px;border-radius:50%;overflow:hidden;background:#0b141c;border:3px solid rgba(255,255,255,.35);box-shadow:0 0 0 6px rgba(108,197,214,.15);touch-action:none;cursor:grab}
+.avstage.drag{cursor:grabbing}
+.avstage canvas{width:100%;height:100%;display:block}
+.avempty{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:8px;color:var(--mute);font-size:14px;pointer-events:none}
+.avempty .i{width:40px;height:40px}
+.avstage.has .avempty{display:none}
+.avzoom{width:min(260px,70vw);margin:0 auto 6px;display:block}
+.avhint{margin:0 0 14px;color:var(--mute);font-size:12.5px;min-height:1.4em}
+.avact{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.avact .btn{flex:1 1 120px;justify-content:center}
+.avact .btn.link{flex-basis:100%;background:none;border:0;color:var(--mute);font-size:13px;min-height:0;padding:4px}
+.avact .btn.link:hover{color:var(--bad)}
+
+/* ---- Kahoot-style podium before the result card ---- */
+.podium-ov{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;overflow:hidden;padding:clamp(14px,3vh,30px) 14px clamp(14px,3vh,26px);
+  background:radial-gradient(90% 75% at 50% 105%,#4a2896 0,#26145f 42%,#0d0925 100%);animation:fade .35s;--ph:clamp(190px,42vh,380px)}
+.podium-ov.out{animation:fadeout .3s forwards;pointer-events:none}
+.pd-rays{position:absolute;left:50%;bottom:-30%;width:170vmax;height:170vmax;margin-left:-85vmax;pointer-events:none;opacity:0;transition:opacity 1.2s;
+  background:repeating-conic-gradient(from 0deg,rgba(255,214,102,.2) 0 7deg,transparent 7deg 22deg);-webkit-mask:radial-gradient(closest-side,#000 0,transparent 70%);mask:radial-gradient(closest-side,#000 0,transparent 70%);animation:pdSpin 40s linear infinite}
+.podium-ov.won .pd-rays{opacity:1}
+@keyframes pdSpin{to{transform:rotate(360deg)}}
+.pd-title{position:relative;z-index:2;text-align:center;flex:none}
+.pd-title .pill{display:inline-block;padding:8px 22px;border-radius:10px;background:#fff;color:#2a1766;font:800 clamp(16px,2.6vw,24px) var(--num);box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.pd-title small{display:block;margin-top:10px;color:rgba(255,255,255,.72);font-size:13px;letter-spacing:.12em}
+.pd-stage{position:relative;z-index:2;flex:1;width:100%;max-width:820px;display:flex;align-items:flex-end;justify-content:center;gap:clamp(6px,1.6vw,20px);min-height:0}
+.pd-col{--m:#ffc93c;width:clamp(92px,27vw,236px);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0}
+.pd-col.k2{--m:#cfd8e3}.pd-col.k3{--m:#e08f55}
+.pd-col.k1{--bh:var(--ph)}.pd-col.k2{--bh:calc(var(--ph)*.76)}.pd-col.k3{--bh:calc(var(--ph)*.56)}
+.pd-who{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:10px;opacity:0;transform:translateY(-70px) scale(.7);pointer-events:none}
+.pd-col.show .pd-who{opacity:1;transform:none;transition:opacity .25s .75s,transform .7s .75s cubic-bezier(.3,1.6,.5,1)}
+.pd-av{position:relative;width:clamp(64px,13vw,120px);height:clamp(64px,13vw,120px);border-radius:50%;display:grid;place-items:center;background:var(--c);color:#162033;font:800 clamp(28px,6vw,52px) var(--num);box-shadow:0 0 0 4px rgba(255,255,255,.9),0 10px 26px rgba(0,0,0,.45)}
+.pd-av.ph{background:#1a2633}
+.pd-av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.pd-av .crown{left:-10%;top:-34%;width:46%;height:auto}
+.pd-block{position:relative;width:100%;height:0;border-radius:14px 14px 0 0;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:14px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--m) 26%,#2b1a70),#1c1050 62%,#150b3f);border:2px solid color-mix(in srgb,var(--m) 70%,transparent);border-bottom:0;box-shadow:inset 0 3px 0 rgba(255,255,255,.28),0 -8px 30px color-mix(in srgb,var(--m) 25%,transparent)}
+.pd-col.show .pd-block{height:var(--bh);transition:height 1s cubic-bezier(.2,.9,.25,1.04)}
+.pd-in{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:0 6px;opacity:0}
+.pd-col.show .pd-in{opacity:1;transition:opacity .4s 1s}
+.pd-medal{display:grid;place-items:center;width:clamp(40px,6.4vw,58px);aspect-ratio:1;clip-path:polygon(50% 0,100% 38%,82% 100%,18% 100%,0 38%);background:linear-gradient(160deg,#fff,var(--m) 45%,color-mix(in srgb,var(--m) 70%,#000));color:#2a1766;font:900 clamp(20px,3.4vw,30px) var(--num);font-style:normal}
+.pd-nm{max-width:100%;color:#fff;font-weight:800;font-size:clamp(15px,2.2vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pd-sc{color:rgba(255,255,255,.85);font:700 clamp(14px,2vw,19px) var(--num)}
+.pd-sub{color:rgba(255,255,255,.6);font-size:12px;text-align:center}
+.pd-foot{position:relative;z-index:3;flex:none;display:flex;gap:12px;align-items:center;justify-content:center;min-height:52px;margin-top:14px}
+.pd-foot .btn{min-width:150px;justify-content:center}
+.pd-foot .btn.ghost{background:rgba(255,255,255,.08)}
+.pd-foot .btn.go{animation:pdPop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pdPop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+.podium-ov.fast *,.podium-ov.fast *::before{transition:none!important;animation-duration:.001s!important;animation-delay:0s!important}
+.pd-col.show.fast .pd-who,.pd-col.show.fast .pd-block,.pd-col.show.fast .pd-in{transition:none!important}
+@media (prefers-reduced-motion:reduce){.pd-rays{animation:none}.pd-col .pd-who,.pd-col .pd-block,.pd-col .pd-in{transition:none!important}}
+/* phone: my final place */
+.cend{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding-top:24px}
+.cend .pd-av{width:92px;height:92px;font-size:40px}
+.cend .pd-medal{width:74px;font-size:36px}
+.cend .rk1{--m:#ffc93c}.cend .rk2{--m:#cfd8e3}.cend .rk3{--m:#e08f55}.cend .rkn{--m:#8fa1b5}
+.cend .nm{font-weight:800;font-size:22px}
+.cend .scx{font:800 30px var(--num)}
 </style>
 <link rel="stylesheet" href="decor.css?v=6">
 </head>
@@ -984,7 +1062,7 @@ input[type=range]{accent-color:var(--lime)}
 <header class="top" id="topbar">
   <div class="logo"><img src="assets/logo.png" alt="世志猜歌王" width="520" height="355"></div>
   <div class="topr"><button class="chip roomtop" id="roomTop" hidden><span data-i="users"></span><span id="roomTopT">房間</span></button><button class="chip" id="openTop" data-roomact="open"><span data-i="users"></span><span>開啟房間</span></button><button class="chip" id="joinTop" data-roomact="join"><span data-i="globe"></span><span>加入房間</span></button>
-  <button class="me" id="meBtn" aria-label="改暱稱" title="點一下改暱稱"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
+  <button class="me" id="meBtn" aria-label="改暱稱和頭貼" title="點一下改暱稱、換照片頭貼"><span class="av" id="meAv">玩</span><span id="meName">玩家</span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></div>
 </header>
 
 <!-- ================= LOBBY ================= -->
@@ -1108,6 +1186,7 @@ const ICONS = {
   check:'<path d="M20 6 9 17l-5-5"/>', edit:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
   trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>', star:'<path d="m12 2 3 6.5 7 .8-5.2 4.7 1.5 7L12 17.3 5.7 21l1.5-7L2 9.3l7-.8z" fill="currentColor" stroke="none"/>',
   timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>', lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  camera:'<path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.8"/>',
   sofa:'<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3"/><path d="M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/><path d="M5 18v2M19 18v2"/>'
 };
 const icon = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
@@ -1133,6 +1212,35 @@ function beep(kind){
       o.connect(g).connect(AC.destination); o.start(t); o.stop(t + .3);
     });
   } catch {}
+}
+// podium sounds: a rolling drum, a single kick and a short fanfare (all WebAudio, no files)
+function sfxCtx(){ try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); return AC; } catch { return null; } }
+function drumRoll(ms){                                           // returns a function that cuts the roll short
+  const a = sfxCtx(); if (!a) return () => {};
+  const n = Math.floor(ms / 55), m = a.createGain(); m.connect(a.destination);
+  for (let i = 0; i < n; i++) {
+    const t = a.currentTime + i * .055, k = i / n, o = a.createOscillator(), g = a.createGain();
+    o.type = "triangle"; o.frequency.setValueAtTime(190 - 70 * k, t); o.frequency.exponentialRampToValueAtTime(70, t + .05);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.05 + .14 * k, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + .06);
+    o.connect(g).connect(m); o.start(t); o.stop(t + .08);
+  }
+  return () => { try { m.gain.setTargetAtTime(0, a.currentTime, .015); } catch {} };
+}
+function thump(f = 110){
+  const a = sfxCtx(); if (!a) return;
+  const t = a.currentTime, o = a.createOscillator(), g = a.createGain();
+  o.type = "sine"; o.frequency.setValueAtTime(f * 1.8, t); o.frequency.exponentialRampToValueAtTime(f, t + .12);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.4, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .45);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + .5);
+}
+function fanfare(){
+  const a = sfxCtx(); if (!a) return;
+  [[523, 0, .5], [659, .13, .5], [784, .26, .5], [1046, .4, 1.1], [784, .4, 1.1], [659, .4, 1.1]].forEach(([f, d, len]) => {
+    const t = a.currentTime + d, o = a.createOscillator(), g = a.createGain();
+    o.type = "square"; o.frequency.value = f;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.07, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + len);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + len + .05);
+  });
 }
 function vibrate(p){ try { navigator.vibrate && navigator.vibrate(p); } catch {} }
 
@@ -1187,6 +1295,90 @@ const PCOL = ["#6cc5d6","#ff7eb6","#ffb23f","#9b8cff","#8cc63f","#ff8a5c","#5aa9
 let cfg = Object.assign({ mode: "quiz", count: 10, ansTime: 20, singTime: 25, reveal: 4, optShow: "both", start: "auto", win: 0, wrong: "lock", vol: 60, show: "video", players: ["玩家 1", "玩家 2"], judge: "host", hostPlays: true, board: true, lt: false }, store.get("yt.cfg", {}));
 const saveCfg = () => store.set("yt.cfg", cfg);
 let me = store.get("yt.name", "") || "玩家";
+
+/* ================= photo avatars =================
+   A head shot is a 128×128 JPEG (about 5 KB) kept as a data URL. Mine lives in localStorage ("yt.avatar"); on-screen players keep
+   theirs in cfg.pav (same order as cfg.players). Phones send theirs inside "hello"; the host hands each phone a given picture once
+   ({t:"av"}) and later snapshots only carry a short hash (ah), so the pictures are never resent with every state. */
+const AV_RE = /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/;
+const avOK = s => typeof s === "string" && s.length > 40 && s.length < 40000 && AV_RE.test(s);
+const avHash = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + s.length.toString(36); };
+const avKey = p => p && p.av ? (p._ah || (p._ah = avHash(p.av))) : "";
+let myAv = store.get("yt.avatar", ""); if (!avOK(myAv)) myAv = "";
+function setMyAv(d){ myAv = avOK(d) ? d : ""; if (myAv) store.set("yt.avatar", myAv); else { try { localStorage.removeItem("yt.avatar"); } catch {} } }
+const pavOf = i => { const v = cfg.pav && cfg.pav[i]; return avOK(v) ? v : ""; };
+const AVC = new Map();                                            // phone side: hash → data URL received from the host
+const avSrc = p => !p ? "" : p.av ? p.av : p.ah ? (AVC.get(p.ah) || "") : "";
+// one round avatar: the photo when there is one, otherwise the first letter on the player's colour; `extra` goes inside (e.g. the crown)
+const avHTML = (p, extra = "", cls = "av") => { const s = avSrc(p); return `<span class="${cls}${s ? " ph" : ""}" style="background:${p.color}">${s ? `<img src="${s}" alt="" draggable="false">` : esc([...p.name][0] || "?")}${extra}</span>`; };
+const avPreview = src => src ? `<img src="${src}" alt="">` : icon("camera");
+
+// crop dialog: choose a photo → drag / pinch / slider to frame it → a small square JPEG. done(dataURL) gets "" when the photo is removed; Cancel calls nothing.
+function openAvatarPicker(cur, done){
+  const old = $("#avPick"); if (old) old.remove();
+  const S = 260, OUT = 128, el = document.createElement("div");
+  el.id = "avPick"; el.className = "avpick";
+  el.innerHTML = `<div class="avbox" role="dialog" aria-modal="true" aria-label="設定頭貼"><h3>設定頭貼</h3>
+    <div class="avstage" id="avStage"><canvas id="avCv" width="${S}" height="${S}"></canvas><div class="avempty">${icon("camera")}<span>選一張照片</span></div></div>
+    <input type="range" class="avzoom" id="avZoom" min="1" max="4" step="0.01" value="1" disabled aria-label="縮放">
+    <p class="avhint" id="avHint">選好照片後，拖曳調整位置，滑桿或雙指縮放。</p>
+    <input type="file" id="avFile" accept="image/*" hidden>
+    <div class="avact"><button class="btn" id="avChoose" type="button">${icon("image")}選擇照片</button><button class="btn pri" id="avUse" type="button" disabled>${icon("check")}使用</button>
+      ${cur ? `<button class="btn link" id="avDel" type="button">移除目前的頭貼</button>` : ""}<button class="btn link" id="avCancel" type="button">取消</button></div></div>`;
+  document.body.appendChild(el);
+  const cv = $("#avCv", el), ctx = cv.getContext("2d"), stage = $("#avStage", el), zoom = $("#avZoom", el), use = $("#avUse", el), hint = $("#avHint", el);
+  let src = null, ox = 0, oy = 0, z = 1;                          // src: a canvas holding the (already shrunk) photo
+  const base = () => src ? Math.max(S / src.width, S / src.height) : 1;
+  const clampPos = () => { const sc = base() * z, mx = Math.max(0, (src.width * sc - S) / 2), my = Math.max(0, (src.height * sc - S) / 2); ox = clamp(ox, -mx, mx); oy = clamp(oy, -my, my); };
+  const draw = (c, size) => {                                     // same framing at any output size
+    const k = size / S, g = c.getContext("2d"), sc = base() * z * k;
+    g.fillStyle = "#fff"; g.fillRect(0, 0, size, size); g.imageSmoothingQuality = "high";
+    g.drawImage(src, size / 2 - src.width * sc / 2 + ox * k, size / 2 - src.height * sc / 2 + oy * k, src.width * sc, src.height * sc);
+  };
+  const paint = () => { if (!src) { ctx.clearRect(0, 0, S, S); return; } clampPos(); draw(cv, S); };
+  const load = url => new Promise((ok, no) => {
+    const im = new Image(); im.onload = () => {
+      const m = 900, k = Math.min(1, m / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(im.naturalWidth * k)); c.height = Math.max(1, Math.round(im.naturalHeight * k));
+      const g = c.getContext("2d"); g.imageSmoothingQuality = "high"; g.drawImage(im, 0, 0, c.width, c.height);
+      src = c; ox = oy = 0; z = 1; zoom.value = 1; zoom.disabled = false; use.disabled = false; stage.classList.add("has");
+      hint.textContent = "拖曳照片調整位置，滑桿或雙指縮放。"; paint(); ok();
+    }; im.onerror = () => no(new Error("load")); im.src = url;
+  });
+  const close = () => { document.removeEventListener("keydown", onKey, true); el.remove(); };
+  const onKey = e => { if (e.key === "Escape") { e.stopPropagation(); e.preventDefault(); close(); } };
+  document.addEventListener("keydown", onKey, true);
+  el.addEventListener("pointerdown", e => { if (e.target === el) close(); });
+  if (cur) load(cur).then(() => { hint.textContent = "這是目前的頭貼，可以重新調整或換一張。"; }).catch(() => {});
+  $("#avChoose", el).onclick = () => $("#avFile", el).click();
+  $("#avFile", el).onchange = e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
+    const url = URL.createObjectURL(f);
+    load(url).catch(() => { hint.textContent = "這張照片讀不進來，換一張試試。"; }).finally(() => URL.revokeObjectURL(url));
+  };
+  zoom.oninput = () => { z = +zoom.value; paint(); };
+  stage.addEventListener("wheel", e => { if (!src) return; e.preventDefault(); z = clamp(z * (e.deltaY < 0 ? 1.08 : 1 / 1.08), 1, 4); zoom.value = z; paint(); }, { passive: false });
+  const ptrs = new Map(); let pd = 0;                             // drag with one pointer, pinch with two
+  stage.addEventListener("pointerdown", e => { if (!src) return $("#avChoose", el).click(); stage.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); stage.classList.add("drag"); pd = 0; });
+  stage.addEventListener("pointermove", e => {
+    if (!ptrs.has(e.pointerId) || !src) return;
+    const o = ptrs.get(e.pointerId), r = stage.getBoundingClientRect(), k = S / r.width; ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    if (ptrs.size === 1) { ox += (e.clientX - o[0]) * k; oy += (e.clientY - o[1]) * k; }
+    else if (ptrs.size === 2) { const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pd) { z = clamp(z * d / pd, 1, 4); zoom.value = z; } pd = d; }
+    paint();
+  });
+  const up = e => { ptrs.delete(e.pointerId); pd = 0; if (!ptrs.size) stage.classList.remove("drag"); };
+  stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+  use.onclick = () => {
+    if (!src) return;
+    const out = document.createElement("canvas"); out.width = out.height = OUT; draw(out, OUT);
+    let d = out.toDataURL("image/jpeg", .82); if (d.length > 30000) d = out.toDataURL("image/jpeg", .6);
+    if (!avOK(d)) { hint.textContent = "這個瀏覽器無法處理這張照片，換一張試試。"; return; }
+    close(); done(d);
+  };
+  const del = $("#avDel", el); if (del) del.onclick = () => { close(); done(""); };
+  $("#avCancel", el).onclick = close;
+}
 const recs = () => store.get("yt.rec", {});
 const plays = () => store.get("yt.plays", {});
 function bestOf(id){ const r = recs(); let b = 0; Object.keys(r).forEach(k => { if (k.startsWith(id + "|")) r[k].forEach(x => b = Math.max(b, x.score)); }); return b; }
@@ -1273,7 +1465,10 @@ if (!ROOM_ON) (function loadYT(){
 
 /* ================= lobby ================= */
 let tab = "builtin", view = store.get("yt.view", "grid"), query = "";
-function renderMe(){ $("#meName").textContent = me; $("#meAv").textContent = [...me][0] || "玩"; }
+function renderMe(){
+  $("#meName").textContent = me; const a = $("#meAv");
+  if (myAv) { a.classList.add("ph"); a.innerHTML = `<img src="${myAv}" alt="">`; } else { a.classList.remove("ph"); a.textContent = [...me][0] || "玩"; }
+}
 function coverHTML(l){
   const vs = l.songs.filter(usable).slice(0, 4).map(s => s.v);
   const cls = vs.length >= 4 ? "cv" : "cv one";
@@ -1367,8 +1562,13 @@ function closeModal(){
 const mhead = (title, extra = "", back) => `<div class="mh">${back ? `<button class="x" data-back aria-label="返回">${icon("back")}</button>` : ""}${extra}<h2>${esc(title)}</h2><span class="esc">Esc 關閉</span><button class="x" data-close aria-label="關閉">${icon("x")}</button></div>`;
 
 function openName(){
-  openModal(`${mhead("你的暱稱")}<div style="padding:28px;flex:1"><p style="color:var(--mute);margin-top:0">顯示在排行榜和遊戲裡。</p><input class="field" id="nameIn" maxlength="12" value="${esc(me)}"></div>
+  openModal(`${mhead("暱稱和頭貼")}<div style="padding:28px;flex:1"><p style="color:var(--mute);margin-top:0">顯示在排行榜、頒獎台和遊戲裡。</p>
+    <button class="avedit" id="nameAv" type="button" style="margin-bottom:16px"></button>
+    <input class="field" id="nameIn" maxlength="12" value="${esc(me)}"></div>
     <div class="mf"><span class="lbl"></span><button class="btn" data-close>取消</button><button class="btn pri" id="nameOk">儲存</button></div>`, true);
+  const paintAv = () => { $("#nameAv").innerHTML = `<span class="avp">${avPreview(myAv)}</span><span>${myAv ? "更換照片頭貼" : "加一張照片頭貼"}<small>${myAv ? "也可以重新裁切或移除" : "不加的話會顯示暱稱第一個字"}</small></span>`; };
+  paintAv();
+  $("#nameAv").onclick = () => openAvatarPicker(myAv, d => { setMyAv(d); renderMe(); paintAv(); });
   const i = $("#nameIn"); i.focus(); i.select();
   const ok = () => { me = i.value.trim() || "玩家"; store.set("yt.name", me); renderMe(); closeModal(); };
   $("#nameOk").onclick = ok; i.onkeydown = e => { if (e.key === "Enter") ok(); };
@@ -1410,7 +1610,7 @@ function openDetail(id){
   };
   const lb = () => {
     const r = topRecs(l.id, dCount);
-    $("#dLb").innerHTML = r.length ? r.slice(0, 10).map((x, i) => `<div class="lrow ${i < 3 ? "g" + (i + 1) : ""}"><span class="rk">#${i + 1}</span><span class="av">${esc([...x.name][0] || "?")}</span>
+    $("#dLb").innerHTML = r.length ? r.slice(0, 10).map((x, i) => `<div class="lrow ${i < 3 ? "g" + (i + 1) : ""}"><span class="rk">#${i + 1}</span><span class="av${x.name === me && myAv ? " ph" : ""}">${x.name === me && myAv ? `<img src="${myAv}" alt="">` : esc([...x.name][0] || "?")}</span>
       <div class="who"><b>${esc(x.name)}</b><small>${x.correct}/${x.total} · 正確率 ${Math.round(x.correct / x.total * 100)}% · Combo x${x.maxCombo} / 耗時 ${mmss(x.time)}</small></div><span class="sc">${fmt(x.score)}</span></div>`).join("")
       : `<div class="note">還沒有 ${dCount} 題的紀錄。完成一次挑戰後，這裡會顯示你的最佳紀錄。</div>`;
     $("#dMode").textContent = modeText();
@@ -1450,7 +1650,7 @@ function renderSetup(){
   const qb = [-5, 10, 15, 20, 5].map(v => v === -5 ? `<button data-q="-5">−5</button>` : v === 5 ? `<button data-q="+5">+5</button>` : v <= maxQ ? `<button data-q="${v}" class="${cfg.count === v ? "on" : ""}">${v} 題</button>` : "").join("") + (maxQ > 20 || ![10, 15, 20].includes(maxQ) ? `<button data-q="${maxQ}" class="${cfg.count === maxQ ? "on" : ""}">全部 ${maxQ}</button>` : "");
   if (!cfg.players.length && !NET.on) cfg.players = ["玩家 1"];
   const minLocal = NET.on ? 0 : 1;
-  const players = locals().map((p, i) => `<div class="prow" style="--c:${PCOL[i]}"><span class="dot"></span><input data-p="${i}" value="${esc(p)}" maxlength="8" aria-label="玩家 ${i + 1} 名字"><kbd>${i + 1}</kbd>${locals().length > minLocal ? `<button class="rm" data-rm="${i}" aria-label="移除">${icon("x")}</button>` : ""}</div>`).join("")
+  const players = locals().map((p, i) => `<div class="prow" style="--c:${PCOL[i]}"><button class="pav" data-pav="${i}" type="button" aria-label="玩家 ${i + 1} 照片頭貼" title="設定照片頭貼">${avPreview(pavOf(i))}</button><input data-p="${i}" value="${esc(p)}" maxlength="8" aria-label="玩家 ${i + 1} 名字"><kbd>${i + 1}</kbd>${locals().length > minLocal ? `<button class="rm" data-rm="${i}" aria-label="移除">${icon("x")}</button>` : ""}</div>`).join("")
     + (locals().length + NET.count() < MAXP ? `<button class="addp" id="addP">${icon("plus")} 新增玩家</button>` : "");
   const keep = $(".setup .form") ? $(".setup .form").scrollTop : 0;
   openModal(`${mhead(quiz ? "四選一設定" : "搶唱派對設定", "", true)}
@@ -1459,7 +1659,8 @@ function renderSetup(){
       <div class="sec"><div class="sh">${icon("globe")}手機連線<small>朋友用自己的手機加入</small></div><div id="roomSlot">${NET.boxHTML()}</div></div>
       ${quiz && NET.on ? `<div class="sec"><div class="sh">${icon("users")}房主<small>手機玩家一起作答</small></div><div class="opts3">
         <button class="opt3 ${cfg.hostPlays ? "on" : ""}" data-hp="1"><b>房主也一起玩</b><span>用這個畫面的鍵盤或滑鼠作答</span></button>
-        <button class="opt3 ${cfg.hostPlays ? "" : "on"}" data-hp="0"><b>只當大螢幕</b><span>只有手機玩家作答</span></button></div></div>
+        <button class="opt3 ${cfg.hostPlays ? "" : "on"}" data-hp="0"><b>只當大螢幕</b><span>只有手機玩家作答</span></button></div>
+        ${cfg.hostPlays ? `<button class="avedit" id="hostAv" type="button" style="margin-top:12px"><span class="avp">${avPreview(myAv)}</span><span>${esc(me)} 的照片頭貼<small>${myAv ? "點一下更換、重新裁切或移除" : "加一張照片，頒獎台和排行榜會顯示"}</small></span></button>` : ""}</div>
       <div class="sec"><div class="sh">${icon("check")}每題結算<small>像 Kahoot 一樣公布名次</small></div><div class="opts3">
         <button class="opt3 ${cfg.board ? "on" : ""}" data-bd="1"><b>每題排行榜</b><span>公布答案後，秀出名次與升降</span></button>
         <button class="opt3 ${cfg.board ? "" : "on"}" data-bd="0"><b>只在最後</b><span>全部答完才公布名次</span></button></div></div>` : ""}
@@ -1509,9 +1710,11 @@ function renderSetup(){
   $$("[data-bd]", modal).forEach(b => b.onclick = () => { cfg.board = b.dataset.bd === "1"; re(); });
   $$("[data-hp]", modal).forEach(b => b.onclick = () => { cfg.hostPlays = b.dataset.hp === "1"; re(); });
   $$("[data-p]", modal).forEach(i => i.oninput = () => { cfg.players[+i.dataset.p] = i.value; saveCfg(); });
-  $$("[data-rm]", modal).forEach(b => b.onclick = () => { cfg.players.splice(+b.dataset.rm, 1); re(); });
+  $$("[data-rm]", modal).forEach(b => b.onclick = () => { cfg.players.splice(+b.dataset.rm, 1); if (cfg.pav) cfg.pav.splice(+b.dataset.rm, 1); re(); });
+  $$("[data-pav]", modal).forEach(b => b.onclick = () => { const i = +b.dataset.pav; openAvatarPicker(pavOf(i), d => { cfg.pav = Array.from({ length: cfg.players.length }, (_, k) => pavOf(k)); cfg.pav[i] = d; re(); }); });
   NET.bindBox(modal);
-  const ap = $("#addP"); if (ap) ap.onclick = () => { if (NET.on && !cfg.lt) { cfg.lt = true; cfg.players = []; } cfg.players.push("玩家 " + (cfg.players.length + 1)); re(); setTimeout(() => { const ins = $$("[data-p]", modal); ins[ins.length - 1].select(); }, 0); };
+  const hav = $("#hostAv"); if (hav) hav.onclick = () => openAvatarPicker(myAv, d => { setMyAv(d); renderMe(); re(); });
+  const ap = $("#addP"); if (ap) ap.onclick = () => { if (NET.on && !cfg.lt) { cfg.lt = true; cfg.players = []; cfg.pav = []; } cfg.players.push("玩家 " + (cfg.players.length + 1)); re(); setTimeout(() => { const ins = $$("[data-p]", modal); ins[ins.length - 1].select(); }, 0); };
   const rr = $("#revR"); if (rr) rr.oninput = () => { cfg.reveal = +rr.value; $("#revV").textContent = cfg.reveal + "s"; saveCfg(); };
   $("#goBtn").onclick = () => {
     if (cfg.mode === "quiz" && n < 4) return $("#setupMsg").textContent = "四選一至少要 4 首歌。";
@@ -1917,7 +2120,7 @@ function moveHTML(m){
 }
 function boardRow(p, r, m, res, i, fl){
   const crown = fl.first && !fl.nf ? crownHTML(false) : "";
-  return `<div class="rrow ${p.host ? "me" : ""} ${fl.first && !fl.nf ? "first" : ""}" data-pi="${i}" ${fl.nf ? "data-nf" : ""} style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}${crown}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${res && res.ok ? `<span class="st ok">+${res.gain}</span>` : ""}${moveHTML(m)}<span class="sc" data-from="${fl.from}" data-to="${p.score}" style="color:${p.color}">${fmt(p.score)}</span></div>`;
+  return `<div class="rrow ${p.host ? "me" : ""} ${fl.first && !fl.nf ? "first" : ""}" data-pi="${i}" ${fl.nf ? "data-nf" : ""} style="--c:${p.color}"><span class="n">#${r + 1}</span>${avHTML(p, crown)}<span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${res && res.ok ? `<span class="st ok">+${res.gain}</span>` : ""}${moveHTML(m)}<span class="sc" data-from="${fl.from}" data-to="${p.score}" style="color:${p.color}">${fmt(p.score)}</span></div>`;
 }
 function renderPop(){
   const c = G.cur, L = $("#popL");
@@ -2127,7 +2330,7 @@ function renderRank(){
       const a = c && c.picks && c.picks.get(i), res = c && c.results && c.results.find(x => x.pi === i);
       const st = p.off ? `<span class="st no">離線</span>` : !c ? "" : c.phase === "reveal" ? (res && res.ok ? `<span class="st ok">+${res.gain}</span>` : `<span class="st no">${a ? "答錯" : "超時"}</span>`) : c.phase === "answer" ? (a ? `<span class="st ok">已答</span>` : `<span class="st">待答</span>`) : "";
       const first = fl.first(i), nf = fl.fresh(i);
-      return `<div class="rrow ${p.host ? "me" : ""} ${first && !nf ? "first" : ""}" data-pi="${i}" ${nf ? "data-nf" : ""}><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}${first && !nf ? crownHTML(false) : ""}</span><span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${st}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
+      return `<div class="rrow ${p.host ? "me" : ""} ${first && !nf ? "first" : ""}" data-pi="${i}" ${nf ? "data-nf" : ""}><span class="n">#${r + 1}</span>${avHTML(p, first && !nf ? crownHTML(false) : "")}<span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${st}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
     }).join("");
     el._first = fl.now; rankPlay(el, snap);
   } else if (G.mode === "quiz") {
@@ -2139,7 +2342,7 @@ function renderRank(){
     const c = G.cur, max = Math.max(...G.players.map(p => p.score));
     el.innerHTML = `<h4>玩家</h4>` + G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
       const st = c && c.buzzer === i ? `<span class="st hot" style="--c:${p.color}">搶唱中</span>` : c && c.locked && c.locked.has(i) ? `<span class="st no">已鎖定</span>` : p.off ? `<span class="st no">離線</span>` : "";
-      return `<div class="rrow ${p.score === max && max > 0 ? "lead" : ""} ${c && c.locked && c.locked.has(i) ? "lock" : ""}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><span class="nm">${esc(p.name)}</span>${st}<span class="sc" style="color:${p.color}">${p.score}</span></div>`;
+      return `<div class="rrow ${p.score === max && max > 0 ? "lead" : ""} ${c && c.locked && c.locked.has(i) ? "lock" : ""}"><span class="n">#${r + 1}</span>${avHTML(p)}<span class="nm">${esc(p.name)}</span>${st}<span class="sc" style="color:${p.color}">${p.score}</span></div>`;
     }).join("");
   }
 }
@@ -2148,10 +2351,10 @@ function renderPads(){
   if (!G || G.mode !== "sing") { A.innerHTML = B.innerHTML = ""; A.dataset.sig = ""; return; }
   const n = G.players.length, half = Math.ceil(n / 2);
   A.classList.toggle("dense", n > 10); B.classList.toggle("dense", n > 10);
-  const sig = G.players.map(p => p.name + p.color + (p.remote ? "r" : "")).join("|");
+  const sig = G.players.map(p => p.name + p.color + (p.remote ? "r" : "") + (p.av ? "a" : "")).join("|");
   if (A.dataset.sig !== sig) {        // build once per game; afterwards only classes and scores change
     A.dataset.sig = sig;
-    const pad = (p, i) => `<button class="pad${p.remote ? " remote" : ""}" data-p="${i}" style="--c:${p.color}" aria-label="${esc(p.name)} 搶答">${p.remote ? `<span class="rt">手機</span>` : `<kbd>${i + 1}</kbd>`}<b>${esc(p.name)}</b><span class="ps">${p.score}</span><span class="lk">${icon("lock")} 這首鎖定</span></button>`;
+    const pad = (p, i) => `<button class="pad${p.remote ? " remote" : ""}" data-p="${i}" style="--c:${p.color}" aria-label="${esc(p.name)} 搶答">${p.remote ? `<span class="rt">手機</span>` : `<kbd>${i + 1}</kbd>`}${p.av ? avHTML(p, "", "av padav") : ""}<b>${esc(p.name)}</b><span class="ps">${p.score}</span><span class="lk">${icon("lock")} 這首鎖定</span></button>`;
     A.innerHTML = G.players.slice(0, half).map((p, i) => pad(p, i)).join("");
     B.innerHTML = G.players.slice(half).map((p, i) => pad(p, i + half)).join("");
   }
@@ -2182,6 +2385,7 @@ $("#nextQBtn").onclick = advance;
 $("#restartBtn").onclick = () => { if (!G) return; const lib = G.lib; clearTimers(); startGame(lib); };
 $("#leaveBtn").onclick = leave;
 function leave(){
+  closePodium();
   if (G) { clearTimers(); cancelAnimationFrame(G.twRaf); }
   cancelAnimationFrame(raf); clearInterval(tickT); YTP.stopAll(); releaseWake(); stopBar();
   G = null; scrub.hidden = true; NET.push(); NET.renderChip();
@@ -2191,7 +2395,8 @@ function leave(){
 
 /* keyboard */
 document.addEventListener("keydown", e => {
-  if (!G || modalOpen() || e.target.matches("input,textarea,select") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (podActive() && (e.key === "Enter" || e.key === " " || e.key === "Escape")) { e.preventDefault(); if (POD.ready) POD.next(); else POD.skip(); return; }
+  if (!G || modalOpen() || podActive() || e.target.matches("input,textarea,select") || e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (!$("#result").hidden) { if (k === "enter") $("#againBtn") && $("#againBtn").click(); return; }
   const c = G.cur; if (!c) return;
@@ -2209,10 +2414,83 @@ document.addEventListener("keydown", e => {
   }
 });
 
+/* ---- podium (Kahoot style): 3rd rises, then 2nd, a drum roll, and finally 1st with the crown and confetti ---- */
+const POD = { el: null, timers: [], ready: false, skip: null, next: null };
+const podActive = () => !!POD.el;
+function rankNums(order){                                        // 1,1,3,4… so players on the same score share a place
+  const r = []; order.forEach((p, k) => { r[k] = k > 0 && p.score === order[k - 1].score ? r[k - 1] : k + 1; }); return r;
+}
+// order: players sorted best first ({name,color,score,av,sub}); onDone runs after the player leaves the podium
+function showPodium(order, meta, onDone){
+  closePodium();
+  const ranks = rankNums(order), top = order.slice(0, 3).map((p, k) => ({ p, rk: ranks[k] }));
+  const slots = [top[1], top[0], top[2]].filter(Boolean);        // left to right: 2nd, 1st, 3rd
+  const el = document.createElement("div"); POD.el = el; POD.ready = false;
+  el.className = "podium-ov"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "頒獎台");
+  el.innerHTML = `<div class="pd-rays"></div>
+    <div class="pd-title"><span class="pill">${esc(meta.title || "頒獎台")}</span><small>${esc(meta.sub || "")}</small></div>
+    <div class="pd-stage">${slots.map(({ p, rk }) => `<div class="pd-col k${rk}" data-rk="${rk}">
+        <div class="pd-who"><div class="pd-av${avSrc(p) ? " ph" : ""}" style="--c:${p.color}">${avSrc(p) ? `<img src="${avSrc(p)}" alt="">` : esc([...p.name][0] || "?")}<span class="pd-crown"></span></div></div>
+        <div class="pd-block"><div class="pd-in"><i class="pd-medal">${rk}</i><b class="pd-nm" style="color:#fff">${esc(p.name)}</b><span class="pd-sc" data-to="${p.score}">0</span>${p.sub ? `<small class="pd-sub">${esc(p.sub)}</small>` : ""}</div></div></div>`).join("")}</div>
+    <div class="pd-foot"><button class="btn ghost" id="pdSkip" type="button">略過動畫</button><button class="btn pri go" id="pdNext" type="button" hidden>看完整結果${icon("next")}</button></div>`;
+  document.body.appendChild(el); paintIcons(el);
+  const cols = () => [...el.querySelectorAll(".pd-col")], fmtSc = n => meta.pts ? meta.pts(n) : fmt(n);
+  let stopDrum = () => {};
+  const count = (c, ms) => {                                       // score counts up while the block rises
+    const sc = c.querySelector(".pd-sc"), to = +sc.dataset.to, t0 = performance.now() + 700, id = c._cnt = (c._cnt || 0) + 1;
+    if (!ms) { sc.textContent = fmtSc(to); return; }
+    const step = t => { if (c._cnt !== id || POD.el !== el) return; const k = clamp((t - t0) / ms, 0, 1); sc.textContent = fmtSc(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  };
+  const crown = (c, anim) => { const h = c.querySelector(".pd-crown"); if (h && !h.firstChild) h.outerHTML = crownHTML(anim); };
+  const reveal = (rk, fast) => cols().filter(c => +c.dataset.rk === rk).forEach(c => {
+    if (c.classList.contains("show")) return;
+    c.classList.toggle("fast", !!fast); c.classList.add("show"); count(c, fast ? 0 : 900);
+    if (rk === 1) { el.classList.add("won"); setTimeout(() => crown(c, !fast), fast ? 0 : 1300); }
+  });
+  const ready = () => {
+    POD.ready = true; POD.readyAt = performance.now(); $("#pdSkip", el).hidden = true;
+    const nb = $("#pdNext", el); nb.hidden = false; nb.focus({ preventScroll: true });
+  };
+  const at = (ms, fn) => POD.timers.push(setTimeout(fn, ms));
+  const groups = [...new Set(top.map(x => x.rk))].sort((a, b) => b - a);   // worst place first
+  const calm = calmMotion();
+  if (calm) { groups.forEach(rk => reveal(rk, true)); ready(); }
+  else {
+    let t = 900;
+    groups.forEach(rk => {
+      if (rk === 1) { at(t, () => { stopDrum = drumRoll(1900); }); t += 2000; }
+      at(t, () => { reveal(rk, false); if (rk === 1) { fanfare(); confetti(["#ffc93c", "#ffffff", "#6cc5d6", "#ff7eb6"], 150); setTimeout(() => confetti(["#ffc93c", "#8cc63f", "#9b8cff"], 110), 650); } else thump(rk === 2 ? 130 : 100); });
+      t += rk === 1 ? 2600 : 2200;
+    });
+    at(t, ready);
+  }
+  const crownAll = () => cols().filter(c => +c.dataset.rk === 1).forEach(c => crown(c, false));
+  POD.skip = () => {
+    POD.timers.forEach(clearTimeout); POD.timers = []; stopDrum();
+    el.classList.add("fast"); groups.forEach(rk => reveal(rk, true));
+    cols().forEach(c => { c._cnt = -1; c.classList.add("fast", "show"); const sc = c.querySelector(".pd-sc"); sc.textContent = fmtSc(+sc.dataset.to); });
+    el.classList.add("won"); crownAll(); setTimeout(() => el.classList.remove("fast"), 80); ready();
+  };
+  POD.next = () => { closePodium(); onDone && onDone(); };
+  $("#pdSkip", el).onclick = POD.skip;
+  $("#pdNext", el).onclick = POD.next;
+  el.addEventListener("pointerdown", e => {
+    if (!(e.target === el || e.target.closest(".pd-stage"))) return;
+    if (!POD.ready) POD.skip(); else if (performance.now() - POD.readyAt > 700) POD.next();   // a double tap that skipped must not also leave
+  });
+}
+function closePodium(){
+  POD.timers.forEach(clearTimeout); POD.timers = [];
+  if (POD.el) { POD.el.remove(); POD.el = null; }
+  POD.ready = false; POD.skip = POD.next = null;
+}
+
 /* ---- results ---- */
 function finish(){
   clearTimers(); cancelAnimationFrame(raf); stopBar();
   const r = $("#result"), time = Math.round((Date.now() - G.t0) / 1000);
+  let after = null;                                               // multiplayer: what to run once the podium is over
   if (G.mode === "quiz" && !G.multi) {
     YTP.stopAll();
     const rec = { name: me, score: G.score, correct: G.correct, total: G.n, maxCombo: G.maxCombo, time, date: Date.now() };
@@ -2236,13 +2514,17 @@ function finish(){
     r.innerHTML = `<div class="rcard podium"><h2>${quiz ? `四選一多人結束 · 共 ${G.log.length} 題` : `搶唱派對結束 · 唱了 ${G.log.length} 首`}</h2>
       <div class="rbig" style="font-size:56px;background:none;color:${tie ? "#fff" : top.color}">${tie ? "平手！" : `🏆 ${esc(top.name)}`}</div>
       <div style="height:18px"></div>
-      ${order.map((p, k) => `<div class="lrow ${k < 3 ? "g" + (k + 1) : ""}" style="--c:${p.color}"><span class="rk">#${k + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}</span><div class="who"><b>${esc(p.name)}</b><small>${sub(p)}</small></div><span class="sc">${pts(p)}</span></div>`).join("")}
+      ${order.map((p, k) => `<div class="lrow ${k < 3 ? "g" + (k + 1) : ""}" style="--c:${p.color}"><span class="rk">#${k + 1}</span>${avHTML(p)}<div class="who"><b>${esc(p.name)}</b><small>${sub(p)}</small></div><span class="sc">${pts(p)}</span></div>`).join("")}
       <ol class="rlist" style="margin-top:16px">${items}</ol>
       <div class="ract"><button class="btn" id="backBtn">${icon("back")}回大廳</button><button class="btn pri" id="againBtn">${icon("restart")}再玩一局</button></div></div>`;
-    confetti([top.color, "#ffffff", "#ffb23f"]);
-    beep("win");
+    const celebrate = () => { confetti([top.color, "#ffffff", "#ffb23f"]); beep("win"); };
+    after = top.score > 0
+      ? { podium: () => showPodium(order.map(p => ({ ...p, sub: sub(p) })), { title: quiz ? "四選一頒獎台" : "搶唱頒獎台", sub: quiz ? `共 ${G.log.length} 題` : `唱了 ${G.log.length} 首`, pts: n => pts({ score: n }) }, () => { if (G) G.podium = false; r.hidden = false; celebrate(); NET.push(); }) }
+      : { podium: null, celebrate };
   }
-  r.hidden = false; G.done = true; NET.push();
+  G.done = true;
+  if (after && after.podium) { r.hidden = true; G.podium = true; NET.push(); after.podium(); }
+  else { r.hidden = false; if (after) after.celebrate(); NET.push(); }
   $("#backBtn").onclick = leave;
   $("#againBtn").onclick = () => { const lib = G.lib; r.hidden = true; startGame(lib); };
 }
@@ -2286,8 +2568,8 @@ const locals = () => (NET.on && !cfg.lt) ? [] : cfg.players;
 const newPlayer = (name, i, extra) => Object.assign({ name, score: 0, combo: 0, maxCombo: 0, correct: 0, color: PCOL[i % PCOL.length] }, extra);
 function buildPlayers(){
   const quiz = cfg.mode === "quiz";
-  const loc = quiz ? (cfg.hostPlays ? [{ name: me, host: true }] : []) : locals().map(name => ({ name }));
-  const rem = NET.list().map(g => ({ name: g.name, pid: g.pid, remote: true }));
+  const loc = quiz ? (cfg.hostPlays ? [{ name: me, host: true, av: myAv }] : []) : locals().map((name, i) => ({ name, av: pavOf(i) }));
+  const rem = NET.list().map(g => ({ name: g.name, pid: g.pid, remote: true, av: g.av || "" }));
   return [...loc, ...rem].slice(0, MAXP).map((p, i) => newPlayer(p.name, i, p));
 }
 const gameLive = () => !!(G && !G.done && (G.mode === "sing" || G.multi));
@@ -2420,9 +2702,10 @@ const NET = {
       if (!old && !inGame && total >= MAXP) { try { conn.send({ t: "full" }); } catch {} setTimeout(() => { try { conn.close(); } catch {} }, 300); return; }
       if (old && old.conn !== conn) { try { old.conn.removeAllListeners && old.conn.removeAllListeners("close"); old.conn.send({ t: "kicked" }); old.conn.close(); } catch {} }
       const name = this.uniqueName(String(m.name || "").trim().slice(0, 8) || "玩家", pid);
-      const g = { pid, name: inGame ? inGame.name : name, conn }; this.guests.set(pid, g); conn._g = g;
-      if (live && inGame) inGame.off = false;
-      else if (live) G.players.push(newPlayer(name, G.players.length, { pid, remote: true }));
+      const av = avOK(m.av) ? m.av : "";
+      const g = { pid, name: inGame ? inGame.name : name, conn, av, sent: new Set() }; this.guests.set(pid, g); conn._g = g;
+      if (live && inGame) { inGame.off = false; if (av) { inGame.av = av; delete inGame._ah; } }
+      else if (live) G.players.push(newPlayer(name, G.players.length, { pid, remote: true, av }));
       try { conn.send({ t: "welcome" }); } catch {}
       toast(`${g.name} 加入了房間`);
       if (live) { renderPads(); renderRank(); renderCover(); }
@@ -2450,11 +2733,11 @@ const NET = {
     toast(`${g.name} 離線了`); this.push(); this.refresh();
   },
   snap(){
-    if (!G) return { phase: "lobby", mode: null, players: [...this.guests.values()].map((g, i) => ({ name: g.name, color: PCOL[(locals().length + i) % PCOL.length], score: 0, off: !(g.conn && g.conn.open) })) };
+    if (!G) return { phase: "lobby", mode: null, players: [...this.guests.values()].map((g, i) => ({ name: g.name, color: PCOL[(locals().length + i) % PCOL.length], score: 0, off: !(g.conn && g.conn.open), ah: avKey(g) })) };
     if (G.mode === "quiz" && !G.multi) return { phase: "other", mode: "quiz", players: [] };
     const c = G.cur, sing = G.mode === "sing";
-    const o = { mode: G.mode, judge: cfg.judge, phase: G.done ? "end" : c ? c.phase : "load", n: G.n, total: G.total, buzzer: -1, winner: -1,
-      players: G.players.map(p => ({ name: p.name, color: p.color, score: p.score, combo: p.combo || 0, off: !!p.off })) };
+    const o = { mode: G.mode, judge: cfg.judge, phase: G.done ? "end" : c ? c.phase : "load", pod: !!G.podium, n: G.n, total: G.total, buzzer: -1, winner: -1,
+      players: G.players.map(p => ({ name: p.name, color: p.color, score: p.score, combo: p.combo || 0, off: !!p.off, ah: avKey(p) })) };
     if (c && !G.done) {
       if (sing) {
         o.title = nameOf(c.song); o.artist = c.song.artist || "";
@@ -2472,8 +2755,11 @@ const NET = {
   push(){
     if (!this.on || !this.guests.size) return;
     const s = this.snap(), c = G && G.cur;
+    const avs = new Map();                                        // every picture this snapshot refers to (hash → data URL)
+    (G && G.players && s.players.length ? G.players : [...this.guests.values()]).forEach(p => { const h = avKey(p); if (h) avs.set(h, p.av); });
     this.guests.forEach(g => {
       if (!g.conn || !g.conn.open) return;
+      avs.forEach((d, h) => { if (!g.sent.has(h)) { g.sent.add(h); try { g.conn.send({ t: "av", h, d }); } catch {} } });
       const me = G && G.players ? G.players.findIndex(p => p.pid === g.pid) : -1;
       const o = Object.assign({ t: "state", me }, s);
       if (G && me >= 0 && c && !G.done) {
@@ -2565,6 +2851,7 @@ const CTL = {
     el.innerHTML = `<div class="ctop"><div class="logo"><img src="assets/logo.png" alt="世志猜歌王" width="520" height="355"></div><span class="st" id="cSt"></span></div>
       <div class="cjoin" id="cBody"><p class="kicker">跟朋友玩</p><h2 class="mega">加入<em>房間</em></h2>
         <input class="field" id="cCode" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 位數字房號" aria-label="房號" value="${esc(ROOM_Q)}">
+        <button class="avedit" id="cAv" type="button"></button>
         <input class="field" id="cName" maxlength="8" autocomplete="off" placeholder="你的暱稱（最多 8 字）" aria-label="暱稱" value="${esc(store.get("yt.gname", ""))}">
         <button class="btn pri" id="cGo">${icon("mic")}加入房間</button><p class="msg" id="cMsg"></p></div>`;
     const go = () => {
@@ -2574,6 +2861,8 @@ const CTL = {
       try { history.replaceState(null, "", baseUrl() + "?room=" + code); } catch {}
       keepAwake(); this.wait(); this.connect();
     };
+    const paintAv = () => { $("#cAv").innerHTML = `<span class="avp">${avPreview(myAv)}</span><span>${myAv ? "更換照片頭貼" : "加一張照片頭貼"}<small>${myAv ? "遊戲和頒獎台會顯示這張" : "可以跳過，會顯示暱稱第一個字"}</small></span>`; };
+    paintAv(); $("#cAv").onclick = () => openAvatarPicker(myAv, d => { setMyAv(d); paintAv(); });
     $("#cGo").onclick = go; $("#cName").onkeydown = $("#cCode").onkeydown = e => { if (e.key === "Enter") go(); };
     if (!ROOM_Q) $("#cCode").focus(); else $("#cName").focus();
     document.addEventListener("visibilitychange", () => {
@@ -2618,7 +2907,7 @@ const CTL = {
   dial(){
     const conn = this.conn = this.peer.connect(RID + this.code, { reliable: true });
     let opened = false;
-    conn.on("open", () => { opened = true; this.retry = 0; conn.send({ t: "hello", pid: PID, name: this.name }); });
+    conn.on("open", () => { opened = true; this.retry = 0; conn.send({ t: "hello", pid: PID, name: this.name, av: myAv }); });
     conn.on("data", m => this.onData(m));
     const lost = () => { if (this.conn === conn && !this.kicked) { this.status("連線中斷，重連中…", "bad"); this.again(); } };
     conn.on("close", lost); conn.on("error", lost);
@@ -2634,6 +2923,7 @@ const CTL = {
   onData(m){
     if (!m || typeof m !== "object") return;
     if (m.t === "state") { const p = this.st; m.players = Array.isArray(m.players) ? m.players : []; this.st = m; this.got = performance.now(); this.status(m.me >= 0 ? `已連線 · ${this.name}` : "已連線", "ok"); this.cues(p, m); this.render(); }
+    else if (m.t === "av") { if (typeof m.h === "string" && m.h.length < 24 && avOK(m.d)) { AVC.set(m.h, m.d); if (this.st) this.render(); } }
     else if (m.t === "welcome") this.status("已連線", "ok");
     else if (m.t === "full") this.fail("房間已滿（最多 18 人）。");
     else if (m.t === "closed") this.fail("房主關閉了房間。");
@@ -2668,7 +2958,7 @@ const CTL = {
     const bd = s.board && s.mv, fl = rankFlags(s.players, this._first);
     const html = s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
       const first = fl.first(i), nf = fl.fresh(i);
-      return `<div class="rrow${i === s.me ? " me" : ""}${first && !nf ? " first" : ""}" data-pi="${i}" ${nf ? "data-nf" : ""} style="--c:${p.color}"><span class="n">#${r + 1}</span><span class="av" style="background:${p.color}">${esc([...p.name][0] || "?")}${first && !nf ? crownHTML(false) : ""}</span><span class="nm">${esc(p.name)}${i === s.me ? `<span class="you">YOU</span>` : ""}${p.off ? "（離線）" : ""}</span>${bd && s.gains && s.gains[i] ? `<span class="st ok">+${s.gains[i]}</span>` : ""}${bd ? moveHTML(s.mv[i]) : ""}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
+      return `<div class="rrow${i === s.me ? " me" : ""}${first && !nf ? " first" : ""}" data-pi="${i}" ${nf ? "data-nf" : ""} style="--c:${p.color}"><span class="n">#${r + 1}</span>${avHTML(p, first && !nf ? crownHTML(false) : "")}<span class="nm">${esc(p.name)}${i === s.me ? `<span class="you">YOU</span>` : ""}${p.off ? "（離線）" : ""}</span>${bd && s.gains && s.gains[i] ? `<span class="st ok">+${s.gains[i]}</span>` : ""}${bd ? moveHTML(s.mv[i]) : ""}<span class="sc" style="color:${p.color}">${fmt(p.score)}${p.combo > 1 ? `<i>x${p.combo}</i>` : ""}</span></div>`;
     }).join("");
     this._first = fl.now;
     return html;
@@ -2687,7 +2977,15 @@ const CTL = {
     } else if (s.phase === "load") {
       blk = `${pill}<div class="t">準備中…</div><div class="s">下一首馬上開始</div>`;
     } else if (s.phase === "end") {
-      blk = `<div class="t">遊戲結束</div><div class="s">看大螢幕的結果，房主可以再開一局</div>`;
+      if (s.pod) blk = `<div class="t">頒獎典禮進行中 🥁</div><div class="s">看大螢幕，名次馬上揭曉！</div>`;
+      else if (me) {                                                // my final place (players on the same score share it)
+        const ord = s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score || a.i - b.i), pos = ord.findIndex(x => x.i === s.me);
+        let rk = pos + 1; while (rk > 1 && ord[rk - 2].p.score === me.score) rk--;
+        const tied = ord.filter(x => x.p.score === me.score).length > 1;
+        blk = `<div class="cend"><div class="pd-av${avSrc(me) ? " ph" : ""}" style="--c:${me.color}">${avSrc(me) ? `<img src="${avSrc(me)}" alt="">` : esc([...me.name][0] || "?")}${rk === 1 ? crownHTML(false) : ""}</div>
+          <i class="pd-medal rk${rk <= 3 ? rk : "n"}">${rk}</i><div class="nm">${esc(me.name)}</div><div class="scx">${fmt(me.score)} 分</div>
+          <div class="s">${rk === 1 ? (tied ? "並列第一名！" : "你是第一名！🏆") : `第 ${rk} 名${tied ? "（並列）" : ""} · 共 ${s.players.length} 人`}</div><div class="s" style="opacity:.75">房主可以再開一局</div></div>`;
+      } else blk = `<div class="t">遊戲結束</div><div class="s">看大螢幕的結果，房主可以再開一局</div>`;
     } else if (s.mode === "sing") {
       if (s.phase === "show") { blk = `${pill}${song}${ring}<div class="s">會唱的人搶先按！</div>`; main = pad(s.locked ? "這首已鎖定" : "搶唱！", !s.locked && s.me >= 0, false); }
       else if (s.phase === "buzz") {
@@ -2733,7 +3031,7 @@ const CTL = {
 paintIcons(); renderMe();
 if (ROOM_ON) CTL.start();
 else { renderGrid(); renderPick(); }
-window.__game = { get G(){ return G; }, YTP, cfg };   // for debugging in the console
+window.__game = { get G(){ return G; }, YTP, cfg, finish, showPodium };   // for debugging in the console
 })();
 </script>
 <script>
