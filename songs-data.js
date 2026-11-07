@@ -1,6 +1,6 @@
 /* 這個檔案由 build-songs.js 自動產生，請改 songs.txt，不要直接改這裡。 */
 window.SONG_DATA = {
- "generated": "2026-11-07T08:40:53.899Z",
+ "generated": "2026-11-07T09:07:45.398Z",
  "lists": [
   {
    "id": "b-華語金曲90–00年代",
@@ -3530,10 +3530,10 @@ window.SONG_DATA = {
      "al": "那女孩對我說 - Single",
      "c": "high",
      "cc": "TW",
-     "v": "MWCc35quSp4",
-     "vt": "Uu - 那女孩對我說（原唱：黃義達）『那女孩對我說 說我保護她的夢，說這個世界 對她這樣的不多。』【動態歌詞MV】",
-     "ch": "BOMBING Music",
-     "d": 282,
+     "v": "Qf8mhBx6odg",
+     "vt": "Uu - 那女孩對我說【那女孩對我說，說我保護她的夢】[ 歌詞 ]",
+     "ch": "TWKchannel",
+     "d": 291,
      "yc": "medium",
      "k": "那女孩對我說|uu",
      "title": "那女孩對我說",
@@ -3995,10 +3995,10 @@ window.SONG_DATA = {
      "al": "聽說當初你找過我 - Single",
      "c": "high",
      "cc": "TW",
-     "v": "3MdH7eWobPY",
-     "vt": "賀一航【聽說當初你找過我】HD 高清官方歌詞版 MV",
-     "ch": "太合音樂 Taihe Music-精選",
-     "d": 247,
+     "v": "Vf-jO4In57s",
+     "vt": "(KTV)賀一航-聽說當初你找過我 左伴右唱",
+     "ch": "michaellinpo",
+     "d": 244,
      "yc": "medium",
      "k": "聽說當初你找過我|賀一航",
      "title": "聽說當初你找過我",
@@ -4031,10 +4031,10 @@ window.SONG_DATA = {
      "al": "側臉 - Single",
      "c": "high",
      "cc": "TW",
-     "v": "TbdWhN_ZT0M",
-     "vt": "于果 - 側臉『曾經是心心念念隨隨便便深深淺淺，愛上了不語不言不計前嫌不知疲倦，向後向前遇見改變 那殘破的碎片。』【動態歌詞MV】",
-     "ch": "SEEK Music Studio",
-     "d": 218,
+     "v": "lRevZ1JlWNk",
+     "vt": "【雪Koyuki】側臉 / 于果【歌回剪輯】",
+     "ch": "默宴",
+     "d": 214,
      "yc": "medium",
      "k": "側臉|于果",
      "title": "側臉",
@@ -4122,6 +4122,17 @@ window.SONG_DATA = {
      "k": "聽我的歌不許掉眼淚|夢然",
      "title": "聽我的歌不許掉眼淚",
      "artist": "夢然"
+    },
+    {
+     "v": "CIj9nULU__Y",
+     "vt": "你的重要 馬馬【創作MV】你對我多麼重要 是我一直的依靠",
+     "ch": "Music Selection",
+     "d": 285,
+     "yc": "high",
+     "an": 1,
+     "k": "你的重要|馬馬",
+     "title": "你的重要",
+     "artist": "馬馬"
     },
     {
      "v": "bQuIy9JlcKc",
@@ -4522,6 +4533,24 @@ window.SONG_DATA = {
      "k": "陷阱|王北車",
      "title": "陷阱",
      "artist": "王北車"
+    },
+    {
+     "t": "非酋",
+     "a": "薛明媛",
+     "y": 2017,
+     "u": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0f/f7/04/0ff7048c-4df9-2d2f-9c1b-9623f5f09e83/mzaf_13769613123880889578.plus.aac.p.m4a",
+     "art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/fd/bb/2e/fdbb2e1b-9b28-3e84-f2ae-c9a6aa9c8902/3614979673966.png/100x100bb.jpg",
+     "al": "非酋 - Single",
+     "c": "high",
+     "cc": "TW",
+     "v": "7EQ7wW3XIE8",
+     "vt": "薛明媛,朱賀 - 非酋",
+     "ch": "KANKUING MUSIC",
+     "d": 173,
+     "yc": "high",
+     "k": "非酋|薛明媛/朱賀",
+     "title": "非酋",
+     "artist": "薛明媛/朱賀"
     },
     {
      "t": "都怪我",
@@ -5118,6 +5147,24 @@ window.SONG_DATA = {
      "artist": "艾辰"
     },
     {
+     "t": "我願意平凡的陪在你身旁",
+     "a": "王七七",
+     "y": 2019,
+     "u": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/66/d7/c7/66d7c71c-9345-71d4-e218-0b0fa493aa8e/mzaf_4065067230351384278.plus.aac.p.m4a",
+     "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/2f/2c/ca/2f2ccaa5-e21c-5867-c1cf-df95933a7257/192508028034.jpg/100x100bb.jpg",
+     "al": "我願意平凡的陪在你身旁 - Single",
+     "c": "high",
+     "cc": "TW",
+     "v": "Re-n4P0Bohw",
+     "vt": "我願意平凡的陪在你身旁",
+     "ch": "王七七 - Topic",
+     "d": 150,
+     "yc": "high",
+     "k": "我願意平凡的陪在你身旁|王七七",
+     "title": "我願意平凡的陪在你身旁",
+     "artist": "王七七"
+    },
+    {
      "t": "失控",
      "a": "井迪",
      "y": 2020,
@@ -5418,11 +5465,11 @@ window.SONG_DATA = {
      "artist": "旺仔小乔"
     },
     {
-     "v": "TTomWAJbXSY",
-     "vt": "旺仔小喬 - 愛丫愛丫 (女版)「愛我的話 給我回答 我的愛丫愛丫沒時差」【動態歌詞】♪",
-     "ch": "4Leaf Music",
-     "d": 219,
-     "yc": "low",
+     "v": "-MDIaj1cHHE",
+     "vt": "[華語熱歌熱詞] 愛丫愛丫 -  旺仔小喬  [ 熱詞：愛我的話 給我回答，我的愛沒有時差 ]/Chinese music/Song review",
+     "ch": "熱歌熱評Hot song Reviews",
+     "d": 217,
+     "yc": "medium",
      "an": 1,
      "k": "愛丫愛丫|旺仔小喬",
      "title": "愛丫愛丫",
@@ -5556,11 +5603,11 @@ window.SONG_DATA = {
      "al": "莫問歸期 - Single",
      "c": "high",
      "cc": "TW",
-     "v": "27Gqgxoka2o",
-     "vt": "蔣雪兒&七叔- 莫問歸期【深情對唱版】「誰訣別相思成疾，莫問天涯也莫問歸期。」【動態歌詞/Pinyin Lyrics】",
-     "ch": "KarenDaidai Music Channel",
+     "v": "GY5LzfMYUdw",
+     "vt": "蔣雪兒, 七叔（葉澤浩） - 莫問歸期『誰訣別相思成疾 莫問天涯也莫問歸期』",
+     "ch": "小青 Xiǎo qīng",
      "d": 220,
-     "yc": "low",
+     "yc": "medium",
      "k": "莫問歸期|蔣雪兒/七叔",
      "title": "莫問歸期",
      "artist": "蔣雪兒/七叔"
@@ -6955,11 +7002,11 @@ window.SONG_DATA = {
      "al": "你不明白 - EP",
      "c": "high",
      "cc": "TW",
-     "v": "M91vAH7RCeE",
-     "vt": "你不明白 (DJ沈念版)",
-     "ch": "Joysaaaa - Topic",
-     "d": 223,
-     "yc": "high",
+     "v": "McNNH-42En4",
+     "vt": "你不明白",
+     "ch": "李千秋 - Topic",
+     "d": 182,
+     "yc": "medium",
      "k": "你不明白|joysaaaa",
      "title": "你不明白",
      "artist": "joysaaaa"
@@ -7117,11 +7164,11 @@ window.SONG_DATA = {
      "al": "忘了沒有 - Single",
      "c": "high",
      "cc": "TW",
-     "v": "M1PVOYGH734",
-     "vt": "王靖雯不胖 - 忘了沒有『我沒有勇氣卻還想問你，你怎麼會捨得放棄。』PS：小編就不說什麼了❤️【高音質】【動態歌詞】【Pinyin Lyrics】【嗨庫文化】",
-     "ch": "AWALK MUSIC CHANNEL",
-     "d": 258,
-     "yc": "low",
+     "v": "VrfdOHAorcM",
+     "vt": "阿冷[忘了沒有][王靖雯不胖][純歌聲無雜音][好聽][v3更新版]",
+     "ch": "Kent Lu",
+     "d": 239,
+     "yc": "medium",
      "k": "忘了沒有|王靖雯不胖",
      "title": "忘了沒有",
      "artist": "王靖雯不胖"
@@ -7326,11 +7373,11 @@ window.SONG_DATA = {
      "al": "故事還長 (DJ版) - EP",
      "c": "high",
      "cc": "TW",
-     "v": "Sd_9uMhs4uA",
-     "vt": "雲汐 - 故事還長『我們故事還長 有你就是遠方，把你刻在心上 讓我每一天有念想。』【動態歌詞MV】",
-     "ch": "BLUE MUSIC",
-     "d": 226,
-     "yc": "medium",
+     "v": "hse1GFtiFmU",
+     "vt": "故事還長  - 雲汐 【gu shi hai zhang   - yun xi  】",
+     "ch": "Mia Music",
+     "d": 230,
+     "yc": "high",
      "k": "故事還長|雲汐",
      "title": "故事還長",
      "artist": "雲汐"
@@ -7528,11 +7575,11 @@ window.SONG_DATA = {
      "al": "危險派對 (with 劉至佳) - Single",
      "c": "high",
      "cc": "TW",
-     "v": "IEpAo1y1JOI",
-     "vt": "🔥這氛圍感太上頭！王以太/劉至佳 《危險派對》 | 華語說唱歌詞 Lyrics #王以太 #刘至佳 #chinesehiphop",
-     "ch": "Fine Music",
-     "d": 181,
-     "yc": "low",
+     "v": "6MpkhRF7bfI",
+     "vt": "【汐Seki】危險派對-王以太&劉至佳",
+     "ch": "潛水花栗鼠",
+     "d": 180,
+     "yc": "medium",
      "k": "危險派對|王以太/劉至佳",
      "title": "危險派對",
      "artist": "王以太/劉至佳"
@@ -8077,6 +8124,815 @@ window.SONG_DATA = {
      "k": "若月亮沒來|王宇宙leto/喬浚丞",
      "title": "若月亮沒來",
      "artist": "王宇宙Leto/喬浚丞"
+    }
+   ]
+  },
+  {
+   "id": "b-我的歌單",
+   "name": "我的歌單",
+   "tags": [
+    "華語"
+   ],
+   "songs": [
+    {
+     "v": "uJARMO6k_Qs",
+     "vt": "2030",
+     "d": 0,
+     "k": "yt:uJARMO6k_Qs",
+     "title": "2030",
+     "artist": ""
+    },
+    {
+     "v": "R_0dH5_XDTc",
+     "vt": "Twenty Three",
+     "d": 0,
+     "k": "yt:R_0dH5_XDTc",
+     "title": "Twenty Three",
+     "artist": ""
+    },
+    {
+     "v": "lUCa4e5Mkrc",
+     "vt": "Mayday五月天 [ 任意門Dokodemo Door ]  RE:LIVE 現場就是起點版 Official Music Video",
+     "d": 0,
+     "k": "yt:lUCa4e5Mkrc",
+     "title": "Mayday五月天 RE:LIVE 現場就是起點版 Official Music Video",
+     "artist": ""
+    },
+    {
+     "v": "7gY8ZauMnX4",
+     "vt": "Doubt?",
+     "d": 0,
+     "k": "yt:7gY8ZauMnX4",
+     "title": "Doubt?",
+     "artist": ""
+    },
+    {
+     "v": "4PfWKqn5EzI",
+     "vt": "LOVE MYSELF",
+     "d": 0,
+     "k": "yt:4PfWKqn5EzI",
+     "title": "LOVE MYSELF",
+     "artist": ""
+    },
+    {
+     "v": "az7cnBm62bM",
+     "vt": "Nothing To Say",
+     "d": 0,
+     "k": "yt:az7cnBm62bM",
+     "title": "Nothing To Say",
+     "artist": ""
+    },
+    {
+     "v": "MyqSPc0fw7I",
+     "vt": "海邊 (Demo Version)",
+     "d": 0,
+     "k": "yt:MyqSPc0fw7I",
+     "title": "海邊",
+     "artist": ""
+    },
+    {
+     "v": "4FY8Co79leA",
+     "vt": "善良是 (ft. CHS)",
+     "d": 0,
+     "k": "yt:4FY8Co79leA",
+     "title": "善良是",
+     "artist": ""
+    },
+    {
+     "v": "iw37feGoAiY",
+     "vt": "That’s So True (Live From Radio City Music Hall)",
+     "d": 0,
+     "k": "yt:iw37feGoAiY",
+     "title": "That’s So True",
+     "artist": ""
+    },
+    {
+     "v": "SQMr0AvcKo4",
+     "vt": "多雲時晴",
+     "d": 0,
+     "k": "yt:SQMr0AvcKo4",
+     "title": "多雲時晴",
+     "artist": ""
+    },
+    {
+     "v": "fn1FSu4JzRs",
+     "vt": "花季",
+     "d": 0,
+     "k": "yt:fn1FSu4JzRs",
+     "title": "花季",
+     "artist": ""
+    },
+    {
+     "v": "w-Fzxz9gxSg",
+     "vt": "過程",
+     "d": 0,
+     "k": "yt:w-Fzxz9gxSg",
+     "title": "過程",
+     "artist": ""
+    },
+    {
+     "v": "659ezSgrFcU",
+     "vt": "Inside Out",
+     "d": 0,
+     "k": "yt:659ezSgrFcU",
+     "title": "Inside Out",
+     "artist": ""
+    },
+    {
+     "v": "KTQGxaSY-AE",
+     "vt": "旅行的意義 (Travel is Meaningful)",
+     "d": 0,
+     "k": "yt:KTQGxaSY-AE",
+     "title": "旅行的意義",
+     "artist": ""
+    },
+    {
+     "v": "KXzreM7kjaE",
+     "vt": "一半",
+     "d": 0,
+     "k": "yt:KXzreM7kjaE",
+     "title": "一半",
+     "artist": ""
+    },
+    {
+     "v": "7tR9kA9_vMc",
+     "vt": "LIGHTS IN YOUR EYES",
+     "d": 0,
+     "k": "yt:7tR9kA9_vMc",
+     "title": "LIGHTS IN YOUR EYES",
+     "artist": ""
+    },
+    {
+     "v": "DYD3_AbPLrA",
+     "vt": "這條小魚在乎",
+     "d": 0,
+     "k": "yt:DYD3_AbPLrA",
+     "title": "這條小魚在乎",
+     "artist": ""
+    },
+    {
+     "v": "E01FzvBKTNE",
+     "vt": "道別宣言",
+     "d": 0,
+     "k": "yt:E01FzvBKTNE",
+     "title": "道別宣言",
+     "artist": ""
+    },
+    {
+     "v": "uaqypTNjtFo",
+     "vt": "太聰明",
+     "d": 0,
+     "k": "yt:uaqypTNjtFo",
+     "title": "太聰明",
+     "artist": ""
+    },
+    {
+     "v": "u1iBReO1T9k",
+     "vt": "number one girl",
+     "d": 0,
+     "k": "yt:u1iBReO1T9k",
+     "title": "number one girl",
+     "artist": ""
+    },
+    {
+     "v": "lQhhNDSJktI",
+     "vt": "沒有人回答的問題",
+     "d": 0,
+     "k": "yt:lQhhNDSJktI",
+     "title": "沒有人回答的問題",
+     "artist": ""
+    },
+    {
+     "v": "AOz9V0NhJe8",
+     "vt": "That’s So True",
+     "d": 0,
+     "k": "yt:AOz9V0NhJe8",
+     "title": "That’s So True",
+     "artist": ""
+    },
+    {
+     "v": "QswG1CkvYpc",
+     "vt": "假象 (Unplugged)",
+     "d": 0,
+     "k": "yt:QswG1CkvYpc",
+     "title": "假象",
+     "artist": ""
+    },
+    {
+     "v": "Bs__cspD9_8",
+     "vt": "願你愛自己，像我愛你一樣",
+     "d": 0,
+     "k": "yt:Bs__cspD9_8",
+     "title": "願你愛自己，像我愛你一樣",
+     "artist": ""
+    },
+    {
+     "v": "mQh6VNgjw2k",
+     "vt": "直到我",
+     "d": 0,
+     "k": "yt:mQh6VNgjw2k",
+     "title": "直到我",
+     "artist": ""
+    },
+    {
+     "v": "3xsyRQ38AMI",
+     "vt": "23/17",
+     "d": 0,
+     "k": "yt:3xsyRQ38AMI",
+     "title": "23/17",
+     "artist": ""
+    },
+    {
+     "v": "4-7vdA-T-Ik",
+     "vt": "Three Tour",
+     "d": 0,
+     "k": "yt:4-7vdA-T-Ik",
+     "title": "Three Tour",
+     "artist": ""
+    },
+    {
+     "v": "wHJckiIlEJw",
+     "vt": "大人中 (Becomimg a Man)",
+     "d": 0,
+     "k": "yt:wHJckiIlEJw",
+     "title": "大人中",
+     "artist": ""
+    },
+    {
+     "v": "zDKG9LhxjFQ",
+     "vt": "Sailor Song",
+     "d": 0,
+     "k": "yt:zDKG9LhxjFQ",
+     "title": "Sailor Song",
+     "artist": ""
+    },
+    {
+     "v": "M7R7-qnTsFw",
+     "vt": "seasons",
+     "d": 0,
+     "k": "yt:M7R7-qnTsFw",
+     "title": "seasons",
+     "artist": ""
+    },
+    {
+     "v": "pZ0LlDbJpdM",
+     "vt": "just breathe",
+     "d": 0,
+     "k": "yt:pZ0LlDbJpdM",
+     "title": "just breathe",
+     "artist": ""
+    },
+    {
+     "v": "ZFcp9UBct0Y",
+     "vt": "最後一次",
+     "d": 0,
+     "k": "yt:ZFcp9UBct0Y",
+     "title": "最後一次",
+     "artist": ""
+    },
+    {
+     "v": "6LMBTDt2UJI",
+     "vt": "停靠 (Unplugged)",
+     "d": 0,
+     "k": "yt:6LMBTDt2UJI",
+     "title": "停靠",
+     "artist": ""
+    },
+    {
+     "v": "mZsm8aB-R6A",
+     "vt": "My Only Girl",
+     "d": 0,
+     "k": "yt:mZsm8aB-R6A",
+     "title": "My Only Girl",
+     "artist": ""
+    },
+    {
+     "v": "Yd1umf4hmpk",
+     "vt": "沒有關係",
+     "d": 0,
+     "k": "yt:Yd1umf4hmpk",
+     "title": "沒有關係",
+     "artist": ""
+    },
+    {
+     "v": "dRRRB-eQ9M4",
+     "vt": "英雄 (Heroes)",
+     "d": 0,
+     "k": "yt:dRRRB-eQ9M4",
+     "title": "英雄",
+     "artist": ""
+    },
+    {
+     "v": "TtYRd4qQK8s",
+     "vt": "你到底在選擇什麼",
+     "d": 0,
+     "k": "yt:TtYRd4qQK8s",
+     "title": "你到底在選擇什麼",
+     "artist": ""
+    },
+    {
+     "v": "bd5B-DVGGGQ",
+     "vt": "100種生活",
+     "d": 0,
+     "k": "yt:bd5B-DVGGGQ",
+     "title": "100種生活",
+     "artist": ""
+    },
+    {
+     "v": "1-iBQDveqtU",
+     "vt": "keshi - Soft Spot | Live From Vevo Studios",
+     "d": 0,
+     "k": "yt:1-iBQDveqtU",
+     "title": "Soft Spot",
+     "artist": "keshi"
+    },
+    {
+     "v": "PLM9-iDyB2E",
+     "vt": "回郵 (Re:)",
+     "d": 0,
+     "k": "yt:PLM9-iDyB2E",
+     "title": "回郵",
+     "artist": ""
+    },
+    {
+     "v": "G-k2jiIQOy8",
+     "vt": "擁有晴天 (What I had)",
+     "d": 0,
+     "k": "yt:G-k2jiIQOy8",
+     "title": "擁有晴天",
+     "artist": ""
+    },
+    {
+     "v": "od5qQ84pKIo",
+     "vt": "I Love You, I'm Sorry",
+     "d": 0,
+     "k": "yt:od5qQ84pKIo",
+     "title": "I Love You, I'm Sorry",
+     "artist": ""
+    },
+    {
+     "v": "wtEaSHGCcss",
+     "vt": "DESERVE",
+     "d": 0,
+     "k": "yt:wtEaSHGCcss",
+     "title": "DESERVE",
+     "artist": ""
+    },
+    {
+     "v": "pG8T8QQnNq8",
+     "vt": "I'm Alive",
+     "d": 0,
+     "k": "yt:pG8T8QQnNq8",
+     "title": "I'm Alive",
+     "artist": ""
+    },
+    {
+     "v": "yd5iolxOrUI",
+     "vt": "跟你住",
+     "d": 0,
+     "k": "yt:yd5iolxOrUI",
+     "title": "跟你住",
+     "artist": ""
+    },
+    {
+     "v": "EAyY3_xWZYY",
+     "vt": "bad",
+     "d": 0,
+     "k": "yt:EAyY3_xWZYY",
+     "title": "bad",
+     "artist": ""
+    },
+    {
+     "v": "HFtn3y77Vs0",
+     "vt": "BETELGEUSE",
+     "d": 0,
+     "k": "yt:HFtn3y77Vs0",
+     "title": "BETELGEUSE",
+     "artist": ""
+    },
+    {
+     "v": "VCHvbO8Sejk",
+     "vt": "DESERVE / NOVA / LOVE MYSELF (Medley)",
+     "d": 0,
+     "k": "yt:VCHvbO8Sejk",
+     "title": "DESERVE / NOVA / LOVE MYSELF",
+     "artist": ""
+    },
+    {
+     "v": "_-Ci1sXiWvU",
+     "vt": "Revisited",
+     "d": 0,
+     "k": "yt:_-Ci1sXiWvU",
+     "title": "Revisited",
+     "artist": ""
+    },
+    {
+     "v": "c9DNPfKCyyw",
+     "vt": "空拍 (Pause ll)",
+     "d": 0,
+     "k": "yt:c9DNPfKCyyw",
+     "title": "空拍",
+     "artist": ""
+    },
+    {
+     "v": "kPWg4lxF5Ms",
+     "vt": "你給過我的快樂",
+     "d": 0,
+     "k": "yt:kPWg4lxF5Ms",
+     "title": "你給過我的快樂",
+     "artist": ""
+    },
+    {
+     "v": "MAGhZ9KTPFQ",
+     "vt": "一定要相信自己 (Trust Myself)",
+     "d": 0,
+     "k": "yt:MAGhZ9KTPFQ",
+     "title": "一定要相信自己",
+     "artist": ""
+    },
+    {
+     "v": "RfKZc7DEfvc",
+     "vt": "diminished",
+     "d": 0,
+     "k": "yt:RfKZc7DEfvc",
+     "title": "diminished",
+     "artist": ""
+    },
+    {
+     "v": "d3vCkD7qVi8",
+     "vt": "Let It Happen",
+     "d": 0,
+     "k": "yt:d3vCkD7qVi8",
+     "title": "Let It Happen",
+     "artist": ""
+    },
+    {
+     "v": "N_skromwhCA",
+     "vt": "天色",
+     "d": 0,
+     "k": "yt:N_skromwhCA",
+     "title": "天色",
+     "artist": ""
+    },
+    {
+     "v": "QXotCERK_-A",
+     "vt": "成為一個厲害的普通人",
+     "d": 0,
+     "k": "yt:QXotCERK_-A",
+     "title": "成為一個厲害的普通人",
+     "artist": ""
+    },
+    {
+     "v": "P-tkTGHDOsg",
+     "vt": "朋友 (feat. 壞特?te)",
+     "d": 0,
+     "k": "yt:P-tkTGHDOsg",
+     "title": "朋友",
+     "artist": ""
+    },
+    {
+     "v": "g3EKfJh8ulA",
+     "vt": "時區 (Zone)",
+     "d": 0,
+     "k": "yt:g3EKfJh8ulA",
+     "title": "時區",
+     "artist": ""
+    },
+    {
+     "v": "P8j2S4i_vYs",
+     "vt": "史詩",
+     "d": 0,
+     "k": "yt:P8j2S4i_vYs",
+     "title": "史詩",
+     "artist": ""
+    },
+    {
+     "v": "sP9-y-HLN6U",
+     "vt": "你睡了之後 (The Way I Miss You)",
+     "d": 0,
+     "k": "yt:sP9-y-HLN6U",
+     "title": "你睡了之後",
+     "artist": ""
+    },
+    {
+     "v": "V1yoiDhB9ZI",
+     "vt": "I Can Do It With a Broken Heart",
+     "d": 0,
+     "k": "yt:V1yoiDhB9ZI",
+     "title": "I Can Do It With a Broken Heart",
+     "artist": ""
+    },
+    {
+     "v": "4Ky2y1XlhWw",
+     "vt": "REGRET",
+     "d": 0,
+     "k": "yt:4Ky2y1XlhWw",
+     "title": "REGRET",
+     "artist": ""
+    },
+    {
+     "v": "mo81hkaDcL4",
+     "vt": "ALL WELL",
+     "d": 0,
+     "k": "yt:mo81hkaDcL4",
+     "title": "ALL WELL",
+     "artist": ""
+    },
+    {
+     "v": "PnhAwNLRdFI",
+     "vt": "Risk",
+     "d": 0,
+     "k": "yt:PnhAwNLRdFI",
+     "title": "Risk",
+     "artist": ""
+    },
+    {
+     "v": "GBPCR2Bn6mw",
+     "vt": "你以外的日常",
+     "d": 0,
+     "k": "yt:GBPCR2Bn6mw",
+     "title": "你以外的日常",
+     "artist": ""
+    },
+    {
+     "v": "upM7elVUfls",
+     "vt": "若無你我欲去佗位",
+     "d": 0,
+     "k": "yt:upM7elVUfls",
+     "title": "若無你我欲去佗位",
+     "artist": ""
+    },
+    {
+     "v": "g5FCj8Z2V2U",
+     "vt": "PEDAL",
+     "d": 0,
+     "k": "yt:g5FCj8Z2V2U",
+     "title": "PEDAL",
+     "artist": ""
+    },
+    {
+     "v": "Jnr2ZyRHT1I",
+     "vt": "停靠",
+     "d": 0,
+     "k": "yt:Jnr2ZyRHT1I",
+     "title": "停靠",
+     "artist": ""
+    },
+    {
+     "v": "ItaEpySxTRw",
+     "vt": "你在哪裡？我去找你",
+     "d": 0,
+     "k": "yt:ItaEpySxTRw",
+     "title": "你在哪裡？我去找你",
+     "artist": ""
+    },
+    {
+     "v": "9dCEL16fdbA",
+     "vt": "浪人的…",
+     "d": 0,
+     "k": "yt:9dCEL16fdbA",
+     "title": "浪人的…",
+     "artist": ""
+    },
+    {
+     "v": "Nd3PQwRiXDw",
+     "vt": "一天",
+     "d": 0,
+     "k": "yt:Nd3PQwRiXDw",
+     "title": "一天",
+     "artist": ""
+    },
+    {
+     "v": "Ynaf-gzvVVs",
+     "vt": "全部的所有",
+     "d": 0,
+     "k": "yt:Ynaf-gzvVVs",
+     "title": "全部的所有",
+     "artist": ""
+    },
+    {
+     "v": "57VMfkViG7c",
+     "vt": "Red Bean",
+     "d": 0,
+     "k": "yt:57VMfkViG7c",
+     "title": "Red Bean",
+     "artist": ""
+    },
+    {
+     "v": "EkliiXVdo70",
+     "vt": "愛情怎麼了嗎 (Self-complacent)",
+     "d": 0,
+     "k": "yt:EkliiXVdo70",
+     "title": "愛情怎麼了嗎",
+     "artist": ""
+    },
+    {
+     "v": "f73laCUMUW0",
+     "vt": "toxic till the end",
+     "d": 0,
+     "k": "yt:f73laCUMUW0",
+     "title": "toxic till the end",
+     "artist": ""
+    },
+    {
+     "v": "gCCCRZ2G28A",
+     "vt": "What Am I",
+     "d": 0,
+     "k": "yt:gCCCRZ2G28A",
+     "title": "What Am I",
+     "artist": ""
+    },
+    {
+     "v": "3zNbh04UZjc",
+     "vt": "雙棲動物",
+     "d": 0,
+     "k": "yt:3zNbh04UZjc",
+     "title": "雙棲動物",
+     "artist": ""
+    },
+    {
+     "v": "kSjsaKQT90k",
+     "vt": "安眠曲",
+     "d": 0,
+     "k": "yt:kSjsaKQT90k",
+     "title": "安眠曲",
+     "artist": ""
+    },
+    {
+     "v": "kaiTMtspyIk",
+     "vt": "惑者",
+     "d": 0,
+     "k": "yt:kaiTMtspyIk",
+     "title": "惑者",
+     "artist": ""
+    },
+    {
+     "v": "BdYc6Ul0lyQ",
+     "vt": "藍色的你 (《比悲傷更悲傷的故事》 影集版 插曲)",
+     "d": 0,
+     "k": "yt:BdYc6Ul0lyQ",
+     "title": "比悲傷更悲傷的故事",
+     "artist": "藍色的你 ("
+    },
+    {
+     "v": "SukLQvDdO6E",
+     "vt": "愚人節快樂",
+     "d": 0,
+     "k": "yt:SukLQvDdO6E",
+     "title": "愚人節快樂",
+     "artist": ""
+    },
+    {
+     "v": "qn0D5kktiEY",
+     "vt": "逐漸抽離你的慣性",
+     "d": 0,
+     "k": "yt:qn0D5kktiEY",
+     "title": "逐漸抽離你的慣性",
+     "artist": ""
+    },
+    {
+     "v": "QX2dqXr8mOU",
+     "vt": "love.",
+     "d": 0,
+     "k": "yt:QX2dqXr8mOU",
+     "title": "love.",
+     "artist": ""
+    },
+    {
+     "v": "9Wh0jetghl0",
+     "vt": "只有我的天空有烏雲 (Acoustic Version)",
+     "d": 0,
+     "k": "yt:9Wh0jetghl0",
+     "title": "只有我的天空有烏雲",
+     "artist": ""
+    },
+    {
+     "v": "LM9uN7IlKSI",
+     "vt": "偷偷愛",
+     "d": 0,
+     "k": "yt:LM9uN7IlKSI",
+     "title": "偷偷愛",
+     "artist": ""
+    },
+    {
+     "v": "kJcBfP-e-wY",
+     "vt": "外面有點冷 feat. 蛋堡 Soft Lipa",
+     "d": 0,
+     "k": "yt:kJcBfP-e-wY",
+     "title": "外面有點冷 feat. 蛋堡 Soft Lipa",
+     "artist": ""
+    },
+    {
+     "v": "kbH9tgRvvq4",
+     "vt": "分手吧",
+     "d": 0,
+     "k": "yt:kbH9tgRvvq4",
+     "title": "分手吧",
+     "artist": ""
+    },
+    {
+     "v": "1V4LfP8bXMA",
+     "vt": "學會",
+     "d": 0,
+     "k": "yt:1V4LfP8bXMA",
+     "title": "學會",
+     "artist": ""
+    },
+    {
+     "v": "uaHE8ysXlVw",
+     "vt": "明年 (Let Go)",
+     "d": 0,
+     "k": "yt:uaHE8ysXlVw",
+     "title": "明年",
+     "artist": ""
+    },
+    {
+     "v": "uqPe-TfOsbo",
+     "vt": "輕輕對你說",
+     "d": 0,
+     "k": "yt:uqPe-TfOsbo",
+     "title": "輕輕對你說",
+     "artist": ""
+    },
+    {
+     "v": "i3j4sbOtlFw",
+     "vt": "Write A Song For You",
+     "d": 0,
+     "k": "yt:i3j4sbOtlFw",
+     "title": "Write A Song For You",
+     "artist": ""
+    },
+    {
+     "v": "nA6nNyGUZFg",
+     "vt": "還是會寂寞",
+     "d": 0,
+     "k": "yt:nA6nNyGUZFg",
+     "title": "還是會寂寞",
+     "artist": ""
+    },
+    {
+     "v": "vrkFXxcqfS4",
+     "vt": "孩子 (Especially Like You)",
+     "d": 0,
+     "k": "yt:vrkFXxcqfS4",
+     "title": "孩子",
+     "artist": ""
+    },
+    {
+     "v": "RZOZ8GRJL-Y",
+     "vt": "複寫 (More)",
+     "d": 0,
+     "k": "yt:RZOZ8GRJL-Y",
+     "title": "複寫",
+     "artist": ""
+    },
+    {
+     "v": "NvjeKUgSbPU",
+     "vt": "揹上悲傷北上",
+     "d": 0,
+     "k": "yt:NvjeKUgSbPU",
+     "title": "揹上悲傷北上",
+     "artist": ""
+    },
+    {
+     "v": "vZ0Iogdip40",
+     "vt": "Soft Spot",
+     "d": 0,
+     "k": "yt:vZ0Iogdip40",
+     "title": "Soft Spot",
+     "artist": ""
+    },
+    {
+     "v": "DAjkjL0Dwc4",
+     "vt": "自我的介紹 (in peace)",
+     "d": 0,
+     "k": "yt:DAjkjL0Dwc4",
+     "title": "自我的介紹",
+     "artist": ""
+    },
+    {
+     "v": "jJyxh2VvDVo",
+     "vt": "BLAME ON ME",
+     "d": 0,
+     "k": "yt:jJyxh2VvDVo",
+     "title": "BLAME ON ME",
+     "artist": ""
+    },
+    {
+     "v": "K01CZ0TA-Ls",
+     "vt": "但你知道吧",
+     "d": 0,
+     "k": "yt:K01CZ0TA-Ls",
+     "title": "但你知道吧",
+     "artist": ""
+    },
+    {
+     "v": "VUfNCkY0AsM",
+     "vt": "心向夏天",
+     "d": 0,
+     "k": "yt:VUfNCkY0AsM",
+     "title": "心向夏天",
+     "artist": ""
     }
    ]
   }
