@@ -2324,7 +2324,14 @@ $("#opts").addEventListener("click", e => {
 });
 function renderRank(){
   const el = $("#rank");
-  if (G.multi) {
+  if (lastRound()) {                                              // secret round: no order, no totals, only who has answered
+    const c = G.cur; el._first = null;
+    el.innerHTML = `<h4>🤫 最後一題 · 名次保密中</h4>` + G.players.map(p => {
+      const a = c.picks && c.picks.get(G.players.indexOf(p)), res = c.results && c.results.find(x => x.pi === G.players.indexOf(p));
+      const st = p.off ? `<span class="st no">離線</span>` : c.phase === "reveal" ? (res && res.ok ? `<span class="st ok">答對</span>` : `<span class="st no">${a ? "答錯" : "超時"}</span>`) : c.phase === "answer" ? (a ? `<span class="st ok">已答</span>` : `<span class="st">待答</span>`) : "";
+      return `<div class="rrow ${p.host ? "me" : ""}"><span class="n">?</span>${avHTML(p)}<span class="nm">${esc(p.name)}${p.host ? `<span class="you">YOU</span>` : ""}</span>${st}<span class="sc" style="color:${p.color}">???</span></div>`;
+    }).join("");
+  } else if (G.multi) {
     const c = G.cur, snap = rankSnap(el), fl = rankFlags(G.players, el._first);
     el.innerHTML = `<h4>玩家</h4>` + G.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
       const a = c && c.picks && c.picks.get(i), res = c && c.results && c.results.find(x => x.pi === i);
@@ -2636,6 +2643,8 @@ function resolveMulti(){
   renderAll(); renderPop(); runBar(c.revealTotal);
   later(afterReveal, c.revealTotal);
 }
+// final question of a multiplayer quiz: ranks and totals stay hidden until the podium reveals them
+const lastRound = () => !!(G && G.multi && G.mode === "quiz" && !G.done && G.cur && (G.n >= G.total || !G.queue.length));
 const boardOn = () => !!(G && G.multi && cfg.board && G.cur && !G.cur.board && G.n < G.total && G.queue.length);
 const BOARD_MS = 5000;
 function afterReveal(){ if (boardOn()) showBoard(); else nextQ(); }
@@ -2736,7 +2745,7 @@ const NET = {
     if (!G) return { phase: "lobby", mode: null, players: [...this.guests.values()].map((g, i) => ({ name: g.name, color: PCOL[(locals().length + i) % PCOL.length], score: 0, off: !(g.conn && g.conn.open), ah: avKey(g) })) };
     if (G.mode === "quiz" && !G.multi) return { phase: "other", mode: "quiz", players: [] };
     const c = G.cur, sing = G.mode === "sing";
-    const o = { mode: G.mode, judge: cfg.judge, phase: G.done ? "end" : c ? c.phase : "load", pod: !!G.podium, n: G.n, total: G.total, buzzer: -1, winner: -1,
+    const o = { mode: G.mode, judge: cfg.judge, phase: G.done ? "end" : c ? c.phase : "load", pod: !!G.podium, hide: !!(G.podium || lastRound()), n: G.n, total: G.total, buzzer: -1, winner: -1,
       players: G.players.map(p => ({ name: p.name, color: p.color, score: p.score, combo: p.combo || 0, off: !!p.off, ah: avKey(p) })) };
     if (c && !G.done) {
       if (sing) {
@@ -2955,6 +2964,7 @@ const CTL = {
     if (rw) rw.classList.toggle("hot", sec <= 5);
   },
   rankHTML(s){
+    if (s.hide) return `<p class="cnote">🤫 ${s.phase === "end" ? "名次保密中，看大螢幕的頒獎台！" : "最後一題，名次保密到頒獎台才揭曉！"}</p>`;
     const bd = s.board && s.mv, fl = rankFlags(s.players, this._first);
     const html = s.players.map((p, i) => ({ p, i })).sort((a, b) => b.p.score - a.p.score).map(({ p, i }, r) => {
       const first = fl.first(i), nf = fl.fresh(i);
